@@ -1,0 +1,1627 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>유럽 1939</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 작전 지도 테이블: 누렇게 바랜 참모 지도 위에 국가별 색 블록을 올린다. */
+:root{
+  --paper:#E8E1CF; --sheet:#F6F2E7; --ink:#1F2429; --mute:#5E625F; --line:#C9BFA6;
+  --sea:#BCD2DC; --seaink:#2D5569; --neu:#D6CCB1; --neuink:#3B372C; --void:#A6A6A0;
+  --hot:#B42A1F; --ok:#2F6B45; --gold:#8F6A12; --river:#3E7FB0;
+  --f-display:"Do Hyeon","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#15181C; --sheet:#1E2227; --ink:#E4E1D8; --mute:#9A9C98; --line:#353A40;
+  --sea:#1C3441; --seaink:#9CC4D6; --neu:#4A4536; --neuink:#EDE6D2; --void:#3A3C3F;
+  --hot:#EF6B5E; --ok:#71C38F; --gold:#D8B45C; --river:#6BA8D6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#15181C; --sheet:#1E2227; --ink:#E4E1D8; --mute:#9A9C98; --line:#353A40;
+  --sea:#1C3441; --seaink:#9CC4D6; --neu:#4A4536; --neuink:#EDE6D2; --void:#3A3C3F;
+  --hot:#EF6B5E; --ok:#71C38F; --gold:#D8B45C; --river:#6BA8D6; color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body)}
+button{font:inherit;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--sheet);border-radius:6px;padding:7px 12px;font-weight:600}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button.red{background:var(--hot);border-color:var(--hot);color:#fff}
+button.sm{padding:3px 9px;font-size:13px}
+button.on{outline:2px solid var(--gold);outline-offset:1px}
+input,select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--sheet);color:var(--ink)}
+header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
+header.top h1{font:400 26px/1 var(--f-display);margin:0;letter-spacing:.5px}
+header.top .sp{flex:1}
+.mono{font-family:var(--f-mono)}
+.mute{color:var(--mute)} .note{color:var(--mute);font-size:13px}
+.wrap{max-width:1480px;margin:0 auto;padding:12px 16px 40px}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.sheet h2{font:400 22px/1.2 var(--f-display);margin:0 0 8px}
+.lab{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--mute);margin-bottom:6px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:8px}
+.code{font:600 26px/1 var(--f-mono);letter-spacing:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;border:1px solid var(--line)}
+.pill.ok{color:var(--ok);border-color:var(--ok)} .pill.bad{color:var(--hot);border-color:var(--hot)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mute)} .dot.on{background:var(--ok)}
+.seats{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.seat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--sheet);border-left-width:6px}
+.seat.mine{box-shadow:0 0 0 2px var(--gold)}
+.seat ul{margin:6px 0;padding-left:18px;font-size:13px;color:var(--mute)}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:10px 16px;border-radius:8px;z-index:50;max-width:90vw;font-weight:600}
+/* 게임 화면 */
+.game{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:12px;align-items:start}
+@media (max-width:980px){.game{grid-template-columns:minmax(0,1fr)}}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.bar .big{font:400 22px/1 var(--f-display)}
+.flag{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.stat{font-family:var(--f-mono);font-weight:600}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{background:transparent;color:var(--mute);border-color:var(--line)}
+.tabs button.act{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.units{display:flex;flex-direction:column;gap:4px;margin:6px 0}
+.unit{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:4px 8px;border:1px solid var(--line);border-radius:6px}
+.hpbar{display:inline-block;width:46px;height:6px;background:var(--line);border-radius:3px;vertical-align:middle;overflow:hidden}
+.hpbar i{display:block;height:100%;background:var(--ok)}
+.log{max-height:260px;overflow:auto;font-size:13px;display:flex;flex-direction:column;gap:3px}
+.chat{max-height:200px;overflow:auto;font-size:14px;display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.fo{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.fo.done{opacity:.55} .fo.cur{border-color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
+.fo b{font-size:14px}
+.pv{border:2px solid var(--hot);border-radius:10px;padding:10px 12px;margin-top:8px}
+.pv table{width:100%;border-collapse:collapse;font-size:13px}
+.pv td{padding:2px 4px;vertical-align:top}
+.brk{font-size:12px;color:var(--mute)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:40;padding:16px}
+.modal .sheet{max-width:460px;width:100%}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left}
+#hurry{position:fixed;inset:0;pointer-events:none;border:6px solid var(--hot);z-index:30;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+@media (prefers-reduced-motion:reduce){#hurry{animation:none}}
+/* 지도 */
+:root{--ocean:#7FA6B8;--ocean2:#6C94A8;--sea:#A7C6D3;--sea-h:#B9D5E0;--seaink:#2B5366;--wave:rgba(255,255,255,.55);--shore:#EFE6CC;--shore2:#FBF6E8;
+  --offland:#CBC3AC;--offl:rgba(90,80,60,.25);--void:#A5A49C;--voidl:#8D8C84;--neu:#DDD3B5;--grat:rgba(255,255,255,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ocean:#0E1E27;--ocean2:#0B1920;--sea:#17313D;--sea-h:#1E3C4A;--seaink:#8FBBD0;--wave:rgba(160,210,235,.22);--shore:#29485A;--shore2:#35596B;
+  --offland:#2A2C2B;--offl:rgba(255,255,255,.07);--void:#3A3B3C;--voidl:#303132;--neu:#5B5543;--grat:rgba(255,255,255,.05)}}
+:root[data-theme="dark"]{--ocean:#0E1E27;--ocean2:#0B1920;--sea:#17313D;--sea-h:#1E3C4A;--seaink:#8FBBD0;--wave:rgba(160,210,235,.22);--shore:#29485A;--shore2:#35596B;
+  --offland:#2A2C2B;--offl:rgba(255,255,255,.07);--void:#3A3B3C;--voidl:#303132;--neu:#5B5543;--grat:rgba(255,255,255,.05)}
+.mapbox{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.mapwrap{overflow:auto;-webkit-overflow-scrolling:touch;cursor:grab;max-height:78vh;background:var(--ocean)}
+.mapwrap.drag{cursor:grabbing}
+#gmap{display:block;width:100%;min-width:760px;height:auto;user-select:none;-webkit-user-select:none}
+.ztools{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:4px}
+.ztools button{background:var(--sheet);width:34px;height:34px;padding:0;font-size:18px}
+#banner{position:absolute;left:0;right:0;top:40%;pointer-events:none;text-align:center;z-index:3}
+#banner .bn{display:inline-block;padding:10px 30px;font:400 28px/1.2 var(--f-display);color:#fff;background:rgba(20,22,26,.82);border-top:3px solid var(--gold);border-bottom:3px solid var(--gold);animation:ban 2.5s ease forwards;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#banner .bn.war{background:rgba(120,14,10,.88);border-color:#FFB199}
+#banner .bn.focus{font-size:20px;background:rgba(30,40,30,.85)}
+@keyframes ban{0%{transform:translateX(-80px);opacity:0}14%{transform:none;opacity:1}78%{transform:none;opacity:1}100%{transform:translateX(80px);opacity:0}}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
+.optg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}.optg label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mute)}.optg select{color:var(--ink)}
+.capb{display:inline-block;padding:1px 8px;border-radius:99px;border:1px solid var(--line);font-size:13px}.capb b{font-family:var(--f-mono)}
+.capb.near{border-color:var(--gold);color:var(--gold)}.capb.full{border-color:var(--hot);color:var(--hot);animation:pulse 1.2s ease-in-out infinite}
+.capm{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:4px 0 8px;font-size:14px}.capm b{font-family:var(--f-mono)}
+.bar2{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:6px}.bar2 i{display:block;height:100%;background:var(--ok);transition:width .4s}
+.capm.near .bar2 i{background:var(--gold)}.capm.full .bar2 i{background:var(--hot)}.capm.full{border-color:var(--hot)}
+.roomk{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px 14px}
+.roomk b{font:400 22px var(--f-display)}.roomk span{font-weight:400;font-size:13px;opacity:.85}
+.drawsheet{text-align:center;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,rgba(201,154,62,.18),transparent 70%),var(--sheet)}
+.stage{--cw:clamp(60px,16.5vw,132px);--ch:calc(var(--cw)*1.45);position:relative;height:calc(var(--ch) + 70px);margin:18px auto 6px;perspective:900px;max-width:760px}
+.card{position:absolute;left:50%;top:14px;width:var(--cw);height:var(--ch);padding:0;border:0;background:none;color:inherit;cursor:default;
+  transform:translateX(calc(-50% + var(--i)*var(--cw)*1.1)) translateY(calc(var(--a)*9px)) rotate(calc(var(--i)*5deg));transition:transform .75s cubic-bezier(.2,.9,.25,1.15);z-index:calc(5 - var(--a))}
+.card:disabled{opacity:1;cursor:default}
+.card.stack{transform:translateX(-50%) rotate(0);animation:riffle .38s ease-in-out infinite alternate;animation-delay:calc(var(--k)*-.08s)}
+.card.gather{transform:translateX(-50%) rotate(0);transition:none}
+.card.stack:nth-child(even){animation-direction:alternate-reverse}
+@keyframes riffle{0%{transform:translateX(calc(-50% - var(--cw)*.55)) translateY(-4px) rotate(-9deg)}100%{transform:translateX(calc(-50% + var(--cw)*.55)) translateY(4px) rotate(9deg)}}
+.card .inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,1.4,.4,1)}
+.card.can{cursor:pointer}
+.card.can:hover .inner{transform:translateY(-14px) scale(1.05)}
+.card.flip .inner{transform:rotateY(180deg)}
+.card.minec .inner{transform:rotateY(180deg) translateY(-16px) scale(1.08)}
+.card.minec .front{box-shadow:0 0 0 3px #FFD34D,0 0 28px rgba(255,211,77,.8)}
+.back,.front{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.back{background:repeating-linear-gradient(45deg,#7A1E16 0 6px,#8E271D 6px 12px);border:3px solid #E9C46A;display:flex;align-items:center;justify-content:center}
+.bem{width:62%;aspect-ratio:1;border-radius:50%;border:2px solid #E9C46A;background:#1F2A3A;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#E9C46A;font:400 13px var(--f-display);gap:2px}
+.card.can .back{animation:cglow 1.3s ease-in-out infinite}
+@keyframes cglow{50%{box-shadow:0 0 0 3px rgba(255,211,77,.7),0 6px 16px rgba(0,0,0,.35)}}
+.front{transform:rotateY(180deg);overflow:hidden;border:3px solid #E9C46A}
+.cfx{position:absolute;inset:0;background:linear-gradient(160deg,var(--c),#15181C 140%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px}
+.cfx b{font:400 clamp(16px,3.6vw,26px)/1 var(--f-display);text-shadow:0 2px 4px rgba(0,0,0,.5)}
+.cfl,.csp,.ccap{font-size:clamp(9px,1.6vw,12px);opacity:.9}
+.cfl{letter-spacing:2px}
+.who{position:absolute;left:0;right:0;bottom:-24px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card.minec .who{color:var(--gold)}
+.card.voidc .front{filter:grayscale(.9) brightness(.7)}.card.voidc .who{color:var(--mute);font-weight:400}
+@media (prefers-reduced-motion:reduce){.card.stack{animation:none}.card .inner,.card{transition-duration:.01s}}
+.order{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 10px}
+.oc{display:inline-flex;gap:6px;align-items:center;padding:3px 10px;border-radius:99px;border:1px solid var(--line);font-size:13px;background:var(--sheet)}
+.oc i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.oc b{font-family:var(--f-mono);font-weight:600}
+.oc small{color:var(--mute)}
+.oc.now{border-color:var(--c);box-shadow:0 0 0 2px var(--c);animation:ocg 1.6s ease-in-out infinite}
+.oc.out{opacity:.45;text-decoration:line-through}
+@keyframes ocg{50%{box-shadow:0 0 0 4px var(--c)}}
+.grat line{stroke:var(--grat);stroke-width:1;stroke-dasharray:2 5}
+.szp{fill:var(--sea);stroke:rgba(255,255,255,.28);stroke-width:1.2;stroke-dasharray:5 5;cursor:pointer;transition:fill .25s}
+.szp:hover{fill:var(--sea-h)}
+.szp.ctl{stroke-width:2.5;stroke-dasharray:10 6;stroke-opacity:.9}
+.wvp{fill:none;stroke:var(--wave);stroke-width:1.3;stroke-linecap:round}
+.shore1{fill:none;stroke:var(--shore);stroke-width:9;stroke-linejoin:round;opacity:.55}
+.shore2{fill:none;stroke:var(--shore2);stroke-width:3.5;stroke-linejoin:round;opacity:.8}
+.off{fill:var(--offland)}
+.offl{font:italic 600 13px var(--f-body);fill:var(--mute);opacity:.7;letter-spacing:2px}
+.lake{fill:var(--sea);stroke:var(--shore2);stroke-width:1.5}
+.ter{stroke:rgba(25,20,12,.55);stroke-width:1.1;stroke-linejoin:round;cursor:pointer;transition:fill .7s ease,filter .2s}
+.ter:hover{filter:brightness(1.13) saturate(1.1)}
+.ter.void{cursor:not-allowed}
+.ter.now{animation:nowg 2.4s ease-in-out infinite}
+@keyframes nowg{50%{filter:brightness(1.12)}}
+.decor .dm{fill:rgba(40,28,15,.28);stroke:rgba(30,20,10,.35);stroke-width:.8;stroke-linejoin:round}
+.decor .ds{fill:none;stroke:rgba(255,255,255,.85);stroke-width:1.6;stroke-linejoin:round}
+.decor .dh{fill:none;stroke:rgba(30,20,10,.3);stroke-width:1.5;stroke-linecap:round}
+.decor .dp{fill:none;stroke:rgba(30,40,10,.17);stroke-width:1.2;stroke-linecap:round}
+.rv1{fill:none;stroke:#2F6E9E;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+.rv2{fill:none;stroke:#9ED0F0;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:9 7;animation:flow 2.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-32}}
+.strait{stroke:#fff;stroke-width:2.5;stroke-dasharray:3 4;opacity:.9}
+.nm{font-family:var(--f-body);font-weight:700;fill:#fff;stroke:rgba(15,12,8,.72);stroke-width:3px;paint-order:stroke;stroke-linejoin:round}
+.nm.lt{fill:#2B2618;stroke:rgba(255,250,235,.85)}
+.nm.dim{fill:rgba(255,255,255,.55);stroke:rgba(0,0,0,.35)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nm.lt{fill:#F4EEDA;stroke:rgba(0,0,0,.7)}}
+:root[data-theme="dark"] .nm.lt{fill:#F4EEDA;stroke:rgba(0,0,0,.7)}
+.snm{font:italic 600 12px var(--f-body);fill:var(--seaink);letter-spacing:1.5px;stroke:var(--sea);stroke-width:3px;paint-order:stroke}
+.chip{stroke:#fff;stroke-width:1.1;stroke-opacity:.9}
+.cn{font:700 11.5px var(--f-mono);fill:#fff}
+.capstar{fill:#FFD34D;stroke:#5a3d00;stroke-width:1;animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{50%{fill:#FFF1B0}}
+.fac{fill:#2E2A26;stroke:#fff;stroke-width:.9;stroke-linejoin:round}
+.smoke circle{fill:rgba(235,235,235,.85);opacity:0;animation:puff 3s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes puff{0%{transform:translate(0,0) scale(.4);opacity:0}15%{opacity:.85}100%{transform:translate(5px,-15px) scale(1.7);opacity:0}}
+.warn path{fill:#FFCC33;stroke:#6b1d00;stroke-width:1.2;stroke-linejoin:round}.warn text{font:900 9px var(--f-body);fill:#6b1d00}.warn{animation:pulse 1s ease-in-out infinite}
+.fort{font:700 9px var(--f-body);fill:#FFE9A8;stroke:#3a2a00;stroke-width:2.5px;paint-order:stroke}
+.bob{animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-2.5px)}}
+.cloud{animation:drift 90s linear infinite}
+@keyframes drift{from{transform:translateX(-320px)}to{transform:translateX(1500px)}}
+.clouds{opacity:.55}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clouds{opacity:.12}}
+:root[data-theme="dark"] .clouds{opacity:.12}
+.grainr{opacity:.35;mix-blend-mode:multiply}
+.cart rect{fill:rgba(245,236,212,.92);stroke:#6B5a36;stroke-width:1.5}
+.cart rect.in{fill:none;stroke-width:.8}
+.cart .t1{font:400 24px var(--f-display);fill:#3A2E18;letter-spacing:3px}
+.cart .t2{font:600 10px var(--f-body);fill:#6B5a36;letter-spacing:2px}
+.compass .c1{fill:rgba(245,236,212,.25);stroke:rgba(255,255,255,.6)}
+.compass .c2{fill:none;stroke:rgba(255,255,255,.45);stroke-dasharray:2 3}
+.compass .cn{fill:#B42A1F;stroke:#fff;stroke-width:.8}
+.compass .cs{fill:rgba(255,255,255,.8)}
+.compass text{font:700 12px var(--f-body);fill:#fff}
+.nshade{fill:#040A18;opacity:0;transition:opacity .9s ease}
+.mapbox.night .nshade{opacity:.62}
+.mapbox.night .clouds{opacity:0}
+.mapbox.night .wvp{stroke:rgba(140,190,255,.18)}
+#gNight{opacity:0;transition:opacity .9s ease}
+.mapbox.night #gNight{opacity:1}
+.city .blob{fill:url(#nl);opacity:.75}
+.city .sprawl{animation:sprawl 7s ease-in-out infinite alternate;transform-origin:0 0}
+@keyframes sprawl{0%{transform:scale(.82) rotate(-2deg)}100%{transform:scale(1.12) rotate(2deg)}}
+.city .ld{fill:#FFF3C4;animation:bloom .7s ease-out both,ldtw 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center;filter:drop-shadow(0 0 1.5px #FFB84D)}
+@keyframes bloom{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:scale(1)}}
+@keyframes ldtw{50%{fill-opacity:.45}}
+.city .road{fill:none;stroke:rgba(255,200,110,.55);stroke-width:.9;stroke-linecap:round;stroke-dasharray:60;stroke-dashoffset:60;animation:roadin 1.4s ease-out .2s forwards}
+@keyframes roadin{to{stroke-dashoffset:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes twinkle{50%{opacity:.55}}
+.won circle{fill:#2B2414;stroke:#E9C46A;stroke-width:1.6}
+.won use{fill:#F2CF6B}
+.mapbox.night .won circle{filter:drop-shadow(0 0 4px rgba(255,210,110,.9))}
+.fogz{fill:url(#fogP);stroke:none}
+.fogc text{fill:#fff}
+.hl-air{fill:rgba(60,160,255,.22);stroke:#4FB3FF;stroke-width:3;stroke-dasharray:7 5;stroke-linejoin:round;animation:ants .8s linear infinite}
+.hl-nuke{fill:rgba(255,60,40,.08);stroke:rgba(255,80,60,.55);stroke-width:1.5;stroke-dasharray:3 4}
+.fall{fill:url(#falloutP);stroke:#7CFF4F;stroke-width:2;stroke-dasharray:4 3;animation:pulse 1.8s ease-in-out infinite}
+.fallt circle{fill:#1E2A10;stroke:#9BFF5A;stroke-width:1.5}.fallt text{font:700 13px var(--f-body);fill:#C6FF6B}.fallt .n{font:700 11px var(--f-mono);fill:#C6FF6B;stroke:#1E2A10;stroke-width:3px;paint-order:stroke}
+.labi circle{fill:#E8F4FF;stroke:#2E8FD0;stroke-width:1.4}.labi text{font-size:11px}
+.supm circle{fill:rgba(80,170,255,.12);stroke-width:2;stroke-dasharray:6 4;animation:ants 1.2s linear infinite}.supm text{font-size:16px;font-weight:700}
+.nukebox{border-color:#B42A1F;background:repeating-linear-gradient(-45deg,transparent 0 10px,rgba(180,42,31,.05) 10px 20px),var(--sheet)}
+.nk-flash{fill:#fff;opacity:0;animation:nkflash 1.1s ease-out forwards}
+@keyframes nkflash{0%{opacity:0}6%{opacity:.92}100%{opacity:0}}
+.nk-wave{fill:none;stroke:#FFE9B0;stroke-width:5;opacity:0;animation:nkwave 1.6s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes nkwave{0%{transform:scale(.3);opacity:1}100%{transform:scale(11);opacity:0}}
+.nk-fire{fill:url(#mush);animation:nkfire 5.5s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes nkfire{0%{transform:scale(.2)}15%{transform:scale(1.8)}60%{transform:scale(1.5);opacity:.8}100%{transform:scale(1.3);opacity:0}}
+.nk-rise{animation:nkrise 6s ease-out forwards;transform-box:fill-box;transform-origin:bottom}
+@keyframes nkrise{0%{transform:scaleY(.05) scaleX(.6);opacity:0}8%{opacity:1}35%{transform:scale(1)}80%{opacity:1}100%{transform:scale(1.15) translateY(-6px);opacity:0}}
+.nk-stem{fill:#B9805A;stroke:#5C3A28;stroke-width:1}
+.nk-skirt{fill:none;stroke:rgba(255,230,190,.8);stroke-width:3}
+.nk-cap circle{fill:url(#mush);stroke:rgba(60,40,30,.5);stroke-width:1;animation:nkcap 6s ease-out forwards;transform-box:fill-box;transform-origin:center}
+.nk-cap circle.hot{fill:#FFD27A;stroke:none;opacity:.9}
+@keyframes nkcap{0%{transform:scale(.1)}30%{transform:scale(1.15)}100%{transform:scale(1.35);filter:grayscale(.8) brightness(.7)}}
+.bigshake{animation:bigshake .9s}
+@keyframes bigshake{10%{transform:translate(-9px,5px)}25%{transform:translate(8px,-6px)}40%{transform:translate(-7px,4px)}55%{transform:translate(5px,-3px)}75%{transform:translate(-3px,2px)}}
+.fly{animation:fly .8s ease-in-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy))}}
+.fxg2{animation:fout .6s 2.1s forwards}
+.popin{animation:popin 1.6s ease-out .3s both}
+.fx-sup{fill:none;stroke-width:3;stroke-dasharray:8 5;opacity:0;animation:rip 1.4s .7s ease-out forwards;transform-box:fill-box;transform-origin:center}
+.hl-sel{fill:rgba(255,211,77,.18);stroke:#FFD34D;stroke-width:4.5;stroke-linejoin:round;animation:pulse 1.4s ease-in-out infinite}
+.hl-mv{fill:rgba(70,200,120,.26);stroke:#3FD07A;stroke-width:3;stroke-dasharray:9 6;stroke-linejoin:round;animation:ants .9s linear infinite}
+.hl-atk{fill:rgba(235,55,45,.28);stroke:#FF4B3E;stroke-width:3.2;stroke-dasharray:9 6;stroke-linejoin:round;animation:ants .7s linear infinite,pulse 1.1s ease-in-out infinite}
+.amph{fill:none;stroke:#3FD07A;stroke-width:2.5;stroke-dasharray:4 6;animation:ants 1s linear infinite}
+.amph.a{stroke:#FF4B3E}
+.xhair circle,.xhair path{fill:none;stroke:#FF4B3E;stroke-width:3}
+.xhair{animation:pulse .8s ease-in-out infinite}
+@keyframes ants{to{stroke-dashoffset:-30}}
+@keyframes pulse{50%{opacity:.5}}
+.fx-arr{fill:none;stroke-linecap:round;stroke-dashoffset:var(--len);animation:draw .5s ease-out forwards}
+.fx-head{opacity:0;animation:fin .15s .42s forwards}
+.fxg{animation:fout .6s 1.9s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fin{to{opacity:1}}
+@keyframes fout{to{opacity:0}}
+.fx-b1,.fx-b2,.fx-ring,.fx-sp{transform-box:fill-box;transform-origin:center;opacity:0}
+.fx-b1{fill:#FF8A2B;animation:boom .6s .45s ease-out}
+.fx-b2{fill:#FFE27A;animation:boom .45s .45s ease-out}
+.fx-ring{fill:none;stroke:#fff;stroke-width:3;animation:boom .8s .45s ease-out}
+.fx-sp{stroke:#FFC24A;stroke-width:2.5;stroke-linecap:round;animation:boom .55s .5s ease-out}
+@keyframes boom{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.3);opacity:0}}
+.fx-dmg{font:800 19px var(--f-mono);fill:#fff;stroke:#8A0E06;stroke-width:4px;paint-order:stroke;opacity:0;animation:rise 1.5s .55s ease-out forwards}
+.fx-dmg.d2{stroke:#1D3A8A}
+@keyframes rise{0%{transform:translateY(6px);opacity:0}15%{opacity:1}100%{transform:translateY(-28px);opacity:0}}
+.fx-cap{font:400 26px var(--f-display);stroke:#fff;stroke-width:4px;paint-order:stroke;opacity:0;animation:popin 1.4s .8s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes popin{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.15);opacity:1}80%{opacity:1}100%{transform:scale(1);opacity:0}}
+.fx-rip{fill:none;stroke-width:4;opacity:0;animation:rip 1.3s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes rip{0%{transform:scale(.3);opacity:1}100%{transform:scale(4.5);opacity:0}}
+.fx-flag{animation:flag 2.2s ease-out forwards;transform-box:fill-box;transform-origin:bottom}
+@keyframes flag{0%{transform:scaleY(0)}20%{transform:scaleY(1.1)}30%{transform:scaleY(1)}85%{opacity:1}100%{opacity:0}}
+.fx-bld{fill:none;stroke-width:3;opacity:0;animation:rip 1s ease-out forwards;transform-box:fill-box;transform-origin:center}
+.fx-plus{font:700 14px var(--f-body);stroke:#fff;stroke-width:3.5px;paint-order:stroke;animation:rise 1.6s ease-out forwards}
+@media (prefers-reduced-motion:reduce){.city .sprawl,.fly,.nk-rise,.nk-cap circle,.cloud,.bob,.smoke circle,.capstar,.rv2,.ter.now,.oc.now,.hl-sel,.hl-mv,.hl-atk,.amph,.xhair,.shake{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><h1>유럽 1939</h1><span class="note">2차대전 전략 보드게임 · 링크만 있으면 참가</span><span class="sp"></span>
+<span id="conn" class="note">○ 준비 중</span><button class="ghost sm" id="snd">소리 켜짐</button></header>
+<main class="wrap" id="app"></main>
+<div id="toast" hidden></div>
+<div id="hurry" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+'use strict';
+/* ================= 데이터 ================= */
+const NAT={
+ DE:{n:'독일',c:'#737A83',cap:'동독일',fac:'axis',sp:'panz'},
+ IT:{n:'이탈리아',c:'#5E9150',cap:'중이탈리아',fac:null,sp:'mari'},
+ SU:{n:'소련',c:'#B5493B',cap:'중앙러시아',fac:null,sp:'coss'},
+ GB:{n:'영국',c:'#C79A3E',cap:'잉글랜드',fac:'ally',sp:'dread'},
+ FR:{n:'프랑스',c:'#4F77B8',cap:'북프랑스',fac:null,sp:'magi'}};
+const ORDER=['DE','IT','SU','GB','FR'];
+const FACN={ally:'연합국',axis:'추축국',com:'코민테른'};
+const TRN={p:'평지',h:'언덕',m:'산'};
+const UT={
+ inf:{n:'보병',s:'보',c:3,p:2,m:2,k:'inf'},
+ arm:{n:'기갑',s:'기',c:8,p:4,m:3,k:'arm'},
+ art:{n:'포병',s:'포',c:6,p:4,m:1,k:'art'},
+ flt:{n:'함대',s:'함',c:8,p:3,m:1,k:'sea'},
+ dread:{n:'드레드노트',s:'드',c:8,p:4,m:1,k:'sea',only:'GB'},
+ magi:{n:'마지노 산악보병',s:'마',c:3,p:2,m:2,k:'inf',only:'FR'},
+ panz:{n:'판저',s:'판',c:6,p:5,m:3,k:'arm',only:'DE'},
+ mari:{n:'레지아 마리나',s:'레',c:7,p:3,m:2,k:'sea',only:'IT'},
+ coss:{n:'카자크 군단',s:'카',c:2,p:2,m:2,k:'inf',only:'SU'}};
+const TRAIT={
+ GB:['해군 비용 -2 (함대·드레드노트)','해안 요새화: 영국 땅에 상륙하는 적은 총 -3','대륙 진출의 한계: 대륙 공장 +2 (대독 재반격으로 해제)','특수: 드레드노트 (8 · 파워 4 · 이동 1)','항공기: 스핏파이어 — 요격해도 쿨타임이 늘지 않음'],
+ FR:['난공불락의 요새: 산·언덕 방어 +2','부패 정부: 생산·건설 +1 (정부 예산 증가로 해제)','특수: 마지노 산악보병 (3 · 파워 2 · 이동 2, 언덕 방어 +1)','항공기: 파르망 F.222 — 폭격기 쿨타임 1턴'],
+ DE:['전격전: 평지 출발 이동 +1, 평원 기갑 공격 +1 추가','자원 갈증: 공장 +2 (자원 자급자족으로 해제)','특수: 판저 (6 · 파워 5 · 이동 3)','항공기: 슈투카 — 지상 타격 피해 6'],
+ IT:['산악 국가: 산·언덕 전투 시 모든 유닛 +1','지중해 통제: 상륙 패널티 없음','산업 기반 부족: 생산 +1 (산업 현대화로 해제)','특수: 레지아 마리나 (7 · 파워 3 · 이동 2)','항공기: 스파르비에로 — 해상 뇌격(함대 피해 5) 추가'],
+ SU:['카자크 군단 비용 -1, 매 턴 자원 +1','대숙청: 기본 이동력·파워 -1 (군 재편성으로 해제)','특수: 카자크 군단 (2 · 파워 2 · 이동 2)','항공기: 슈투르모빅 — 자원 3 + 과학 2']};
+/* [이름, 지도 표기, 지형, 공장, x, y, 주인, 수비대] */
+const LAND=[
+['아일랜드','아일랜드','p',0,70,250,'N',{inf:2}],
+['북아일랜드','북아일랜드','p',0,140,190,'GB'],
+['스코틀랜드','스코틀랜드','m',0,230,120,'GB'],
+['웨일스','웨일스','h',0,160,300,'GB'],
+['잉글랜드','잉글랜드','p',1,250,250,'GB'],
+['서프랑스','서프랑스','p',0,220,420,'FR'],
+['북프랑스','북프랑스','p',1,330,360,'FR'],
+['남프랑스','남프랑스','h',0,330,470,'FR'],
+['알자스로렌','알자스로렌','h',0,0,0,'FR'],
+['북스페인','북스페인','h',0,160,515,'N',{inf:1}],
+['동스페인','동스페인','h',0,255,565,'N',{inf:1}],
+['포르투갈','포르투갈','h',0,60,590,'N',{inf:2}],
+['남스페인','남스페인','h',1,150,645,'N',{inf:2,art:1}],
+['베네룩스','베네룩스','p',1,400,290,'N',{inf:2}],
+['서독일','서독일','p',0,470,350,'DE'],
+['덴마크','덴마크','p',0,470,210,'N',{inf:2}],
+['동독일','동독일','p',1,570,300,'DE'],
+['동프로이센','동프로이센','p',0,0,0,'DE'],
+['남독일','남독일','h',0,500,420,'DE'],
+['스위스','스위스','m',0,410,450,'N',{art:3}],
+['오스트리아','오스트리아','h',0,590,430,'N',{art:2}],
+['체코슬로바키아','체코','h',0,620,360,'N',{inf:2}],
+['헝가리','헝가리','p',0,680,470,'N',{inf:2}],
+['북이탈리아','북이탈리아','p',0,440,530,'IT'],
+['중이탈리아','중이탈리아','h',1,520,610,'IT'],
+['시칠리아','시칠리아','h',0,520,700,'IT'],
+['알프스','알프스','m',0,0,0,'IT'],
+['서유고슬라비아','서유고','h',1,590,530,'N',{inf:2,art:1}],
+['동유고슬라비아','동유고','h',0,680,560,'N',{inf:1}],
+['그리스','그리스','h',0,690,660,'N',{inf:2,art:1}],
+['동발칸','동발칸','p',0,770,500,'N',{inf:2,art:1}],
+['서터키','서터키','h',1,800,630,'N',{inf:2,art:1}],
+['동터키','동터키','m',0,950,640,'N',{art:2}],
+['서폴란드','서폴란드','p',1,660,290,'N',{inf:2,art:1}],
+['동폴란드','동폴란드','p',0,750,330,'N',{inf:1}],
+['발트 3국','발트3국','p',0,730,220,'N',{inf:2}],
+['핀란드','핀란드','p',0,770,70,'N',{inf:2,art:1}],
+['남노르웨이','남노르웨이','m',1,0,0,'N',{inf:2,art:1}],
+['북노르웨이','북노르웨이','m',0,0,0,'N',{inf:1}],
+['남스웨덴','남스웨덴','p',0,0,0,'N',{inf:2,art:1}],
+['북스웨덴','북스웨덴','h',0,0,0,'N',{inf:2}],
+['서북아프리카','서북아프리카','m',0,0,0,'N',{inf:2,art:1}],
+['동북아프리카','동북아프리카','p',0,0,0,'N',{inf:1}],
+['레닌그라드 인근','레닌그라드','p',1,840,150,'SU'],
+['북서러시아','북서러시아','p',0,940,90,'SU'],
+['북동러시아','북동러시아','h',0,1040,140,'SU'],
+['중서러시아','중서러시아','p',0,850,270,'SU'],
+['중앙러시아','중앙러시아','p',1,970,260,'SU'],
+['우크라이나','우크라이나','p',0,870,410,'SU'],
+['코카서스','코카서스','h',0,1010,480,'SU'],
+['볼가','볼가','p',0,0,0,'SU']];
+const ALIAS={체코:'체코슬로바키아',서유고:'서유고슬라비아',동유고:'동유고슬라비아',발트:'발트 3국',레닌그라드:'레닌그라드 인근'};
+const RIVERS='남독일-알자스로렌 서독일-베네룩스 서폴란드-동폴란드 중서러시아-우크라이나 헝가리-동발칸';
+const MAP={"W":1184,"H":752,"sh":{"잉글랜드":"M270,365L221,364L215,336L209,328L209,324L201,318L195,308L197,304L197,290L183,278L193,274L207,258L214,245L218,245L229,254L238,275L257,286L267,300L272,313L292,315L301,324L283,346L295,354Z","웨일스":"M148,379L139,378L150,371L170,353L188,353L191,350L190,347L170,347L149,338L171,330L171,318L161,306L194,305L201,318L209,324L209,328L215,336L221,364L200,365L170,375L150,377ZM138,381L138,379Z","스코틀랜드":"M188,277L185,276L186,271L178,271L166,275L150,267L149,264L155,250L140,249L129,238L154,187L195,188L182,199L173,208L174,209L188,207L190,205L192,207L225,208L211,230L199,242L212,245L211,252L193,274Z","북아일랜드":"M126,307L118,305L101,290L101,276L105,264L108,261L128,261L143,276L131,290Z","아일랜드":"M52,347L35,334L55,322L45,304L41,286L72,285L78,263L88,263L102,259L106,261L101,276L101,290L118,305L127,308L123,332L110,333L78,343L66,343Z","북프랑스":"M376,471L366,471L356,465L334,463L322,439L312,433L308,435L294,435L282,425L268,419L259,408L253,396L266,395L288,383L295,378L298,361L310,359L318,355L323,356L339,378L341,386L346,391L374,389L376,387L393,402L397,410L391,428L391,434L399,440L393,446L391,458Z","알자스로렌":"M424,449L400,441L391,434L391,428L397,410L393,402L377,388L382,381L386,379L396,379L408,403L428,403L430,405L443,406L433,416L431,422L429,438L436,437L437,440Z","서프랑스":"M248,547L240,547L234,543L230,543L225,532L227,518L233,500L233,486L235,484L235,478L225,462L212,445L206,445L170,433L164,433L159,420L160,417L178,415L198,409L200,411L226,413L227,410L221,392L222,387L234,395L252,395L268,419L282,425L294,435L308,435L312,433L322,439L331,454L331,460L333,462L329,476L318,487L310,491L302,501L286,501L284,499L275,506L271,520L261,530L261,534L257,540Z","남프랑스":"M316,579L292,563L278,563L268,567L265,564L263,556L253,546L261,534L261,530L271,520L273,508L284,499L286,501L302,501L310,491L318,487L329,476L331,466L334,463L356,465L366,471L376,471L390,461L402,473L412,477L417,500L411,504L405,514L411,534L400,541L380,535L346,533L333,542L335,568ZM466,581L453,572L451,546L468,543L470,541L473,568Z","포르투갈":"M66,559L66,557ZM68,681L67,664L69,662L69,646L54,643L53,636L55,634L57,612L71,586L69,568L67,566L67,560L70,559L94,569L104,571L116,583L127,590L129,598L127,600L127,608L123,614L97,642L103,650L105,676L107,678L86,677L84,679L70,679Z","북스페인":"M152,621L136,617L127,608L129,594L126,589L116,583L104,571L68,559L63,554L57,542L86,525L88,527L136,529L138,531L180,531L182,533L222,533L224,531L229,540L229,550L214,567L197,580L191,602L180,609L162,613Z","동스페인":"M240,673L237,672L233,666L233,660L223,634L191,604L197,580L223,558L229,550L230,543L234,543L240,547L252,545L263,556L265,564L268,567L278,563L292,563L313,578L312,581L284,587L281,590L273,608L257,626L269,640L253,652L247,668ZM336,629L334,627L316,625L313,614L340,613L341,616Z","남스페인":"M140,705L122,685L110,681L105,676L103,650L97,642L126,609L140,619L152,621L162,613L180,609L190,603L223,634L237,674L222,685L188,687L186,689L164,689Z","베네룩스":"M356,391L346,391L341,386L339,378L323,358L323,354L336,351L351,336L374,305L412,305L414,303L420,303L421,306L419,308L417,322L408,331L395,338L397,350L393,360L403,376L400,379L386,379L374,389L358,389Z","서독일":"M452,269L452,267ZM432,405L428,403L407,402L397,382L397,380L403,376L393,360L397,350L395,338L408,331L417,322L419,308L422,303L444,301L457,290L453,276L454,269L482,269L486,275L501,288L499,302L505,318L492,323L488,327L474,327L463,342L463,346L469,350L473,362L473,370L475,372L469,390L458,395L442,393L437,396Z","덴마크":"M480,269L454,269L447,262L441,254L443,228L470,219L496,205L497,208L491,224L503,234L496,239L483,254L479,262L481,266ZM504,273L501,260L510,243L539,244L541,250L539,252L538,261L522,271L506,271Z","동독일":"M540,393L526,383L506,373L488,357L474,349L468,349L463,346L463,342L474,327L488,327L492,323L505,318L499,302L501,290L528,287L564,277L578,291L588,291L590,289L614,287L654,271L657,274L647,292L645,302L634,307L613,330L634,343L658,351L669,362L673,368L673,372L654,383L644,377L638,377L630,381L628,379L619,378L623,370L622,367L602,365L600,363L568,363L556,369L531,376L541,388Z","동프로이센":"M714,309L696,303L693,300L683,280L683,276L698,271L710,263L726,251L728,245L738,245L739,248L733,258L734,261L765,270L767,284L763,296L760,301L750,301L748,303L716,307Z","남독일":"M488,445L472,437L429,438L433,416L443,406L433,404L437,396L442,393L458,395L468,391L471,386L471,380L475,372L469,354L470,349L474,349L488,357L506,373L526,383L540,393L542,391L550,399L567,410L547,424L551,438L550,441L540,437L524,437L514,441L490,443Z","스위스":"M416,477L410,477L402,473L389,460L393,446L398,441L404,441L410,445L424,449L434,443L438,437L472,437L489,446L491,456L484,463L478,463L470,467L460,467L458,463L452,463L440,467L432,473L426,473Z","오스트리아":"M614,461L606,455L600,457L584,457L572,451L568,453L552,453L528,461L518,449L507,442L524,437L540,437L550,441L551,438L547,424L562,413L570,415L571,418L576,421L600,423L604,419L632,409L637,414L643,430L633,444Z","체코슬로바키아":"M674,435L668,433L646,433L641,426L637,414L632,409L604,419L600,423L576,421L565,412L567,410L564,407L547,396L531,376L556,369L568,363L600,363L602,365L622,367L623,370L619,378L628,379L630,381L638,377L644,377L654,383L660,381L670,373L676,373L687,380L693,390L693,394L700,399L722,391L740,379L746,379L749,382L747,384L747,390L751,396L750,417L732,423L722,423L720,425L700,425L696,431L682,431Z","헝가리":"M654,513L646,513L637,500L613,478L615,474L613,462L633,444L642,431L646,433L668,433L674,435L682,431L696,431L700,425L720,425L722,423L740,421L748,417L751,418L753,430L751,432L749,446L739,464L730,473L724,477L720,477L714,471L704,467L696,467L680,473L675,496L664,503L659,510Z","북이탈리아":"M508,557L493,542L489,530L476,517L462,511L456,511L440,521L429,500L435,488L458,487L462,479L480,479L490,475L494,471L508,483L520,477L532,479L537,486L535,488L537,506L539,508L539,514L543,518L531,532L529,538L516,547Z","알프스":"M414,533L409,530L405,518L407,510L411,504L417,500L413,486L413,478L418,475L432,473L440,467L452,463L458,463L460,467L470,467L478,463L484,463L491,456L489,452L490,443L504,443L506,441L518,449L528,461L552,453L568,453L570,451L589,458L589,462L581,478L581,490L566,501L563,488L560,485L538,487L533,480L528,477L520,477L508,483L496,471L480,479L462,479L458,487L436,487L429,500L439,522L426,525Z","중이탈리아":"M608,661L609,650L617,636L605,610L586,597L550,585L509,556L516,547L529,538L531,532L544,517L565,532L580,557L596,567L616,567L671,610L666,617L640,603L629,618L641,636L620,659L610,659ZM462,637L454,633L448,633L445,626L443,606L445,604L445,592L448,583L450,585L479,586L477,630Z","시칠리아":"M606,653L606,651ZM596,689L594,687L580,687L558,677L554,677L535,662L558,653L604,653L605,656L597,670Z","서유고슬라비아":"M684,567L670,555L662,553L620,531L595,514L581,490L581,478L590,457L600,457L602,455L610,457L613,460L613,466L615,468L613,478L637,500L646,513L658,511L671,522L671,526L674,529L688,533L693,538L703,552L690,565Z","동유고슬라비아":"M748,587L738,585L732,581L719,566L712,553L702,551L688,533L674,529L671,526L671,522L659,512L659,508L675,496L680,473L696,467L710,469L720,477L724,477L730,473L744,489L752,491L771,506L769,512L763,518L763,526L759,532L761,548L767,558L769,568L762,575L752,579Z","그리스":"M766,693L756,693L739,686L731,670L737,652L721,642L711,626L689,602L689,572L685,566L690,565L704,551L712,553L727,576L738,585L744,587L748,587L752,579L762,575L770,567L782,571L798,583L810,575L832,573L841,588L843,606L838,609L835,606L833,596L828,593L800,593L798,595L786,595L784,597L772,597L761,608L777,630L767,638L786,651L793,662L792,665L773,668ZM838,729L806,729L796,725L780,723L779,714L820,717L822,719L840,719L841,722Z","동발칸":"M798,583L782,571L772,569L763,554L759,532L763,526L763,518L769,512L771,506L752,491L744,489L731,472L739,464L749,446L754,425L770,425L774,429L788,435L800,435L806,439L814,439L836,431L850,419L858,417L863,428L871,436L873,444L885,454L887,460L896,469L911,480L909,488L872,539L862,539L832,573L810,575Z","서터키":"M972,703L956,703L932,687L928,687L906,701L878,685L859,680L857,660L841,652L851,624L837,614L843,608L843,598L841,596L841,588L833,576L833,572L862,539L871,540L865,552L865,556L875,576L893,584L866,591L856,597L852,603L892,601L896,587L918,587L940,575L949,586L949,590L969,608L969,614L965,620L969,628L967,642L965,644L965,676L973,694L977,698ZM840,609L840,607ZM838,611L838,609Z","동터키":"M978,697L973,694L965,676L965,644L969,632L965,620L969,614L969,608L949,590L949,586L941,576L944,571L948,569L958,569L960,567L970,567L972,565L998,565L1026,587L1062,587L1068,583L1074,583L1088,589L1098,589L1102,591L1123,608L1119,618L1121,646L1119,650L1108,659L1096,665L1092,665L1076,677L1066,671L1034,665L1024,677L1010,681L1000,689L990,687Z","서폴란드":"M700,399L693,394L693,390L687,380L674,373L669,362L658,351L634,343L613,330L634,307L645,302L647,292L658,273L670,279L682,277L693,300L696,303L714,309L716,307L748,303L750,301L759,302L757,332L751,348L751,360L749,362L751,378L748,381L746,379L740,379L722,391Z","동폴란드":"M814,439L806,439L800,435L788,435L774,429L770,425L754,425L751,420L751,396L747,390L747,384L751,378L749,362L751,360L751,348L757,332L759,302L762,299L770,303L784,303L796,307L804,313L814,315L824,323L834,325L857,350L861,358L863,376L867,382L867,396L861,414L858,417L850,419L840,429Z","발트 3국":"M816,315L804,313L800,309L784,303L764,301L761,298L767,284L765,270L734,261L733,258L739,246L726,245L723,232L738,211L744,211L760,205L788,221L797,204L779,190L780,175L788,175L808,169L862,169L865,172L863,198L871,222L856,235L834,245L829,250L831,276L823,290L823,300Z","핀란드":"M766,163L733,150L735,128L733,126L731,110L770,89L780,87L802,77L819,76L798,67L758,69L755,62L759,56L766,51L790,51L800,57L812,57L827,26L825,24L823,8L825,2L830,-1L874,-1L876,1L886,1L889,4L891,12L901,24L903,30L913,40L915,46L911,74L907,82L907,94L903,98L903,102L899,108L903,120L913,132L896,145L890,155L880,155L866,151L842,151L840,153L798,157L796,159L784,159L782,161L768,161Z","레닌그라드 인근":"M896,231L876,225L869,220L869,212L863,198L863,188L865,186L865,172L863,170L882,169L884,167L914,163L914,161L894,157L891,154L895,146L914,131L916,133L919,126L928,117L932,115L972,113L980,109L992,95L997,102L999,112L989,140L1008,141L1012,133L1020,137L1034,139L1037,142L1016,165L1010,167L992,183L982,183L974,179L966,179L964,181L950,179L934,195L925,198L925,202L919,212L919,218L912,227L898,229ZM927,160L946,159L958,151L961,148L959,136L936,129L928,133L922,133L909,144L926,161Z","북서러시아":"M888,3L888,1ZM1054,153L1050,153L1034,139L1014,135L1011,132L1017,118L1002,111L997,106L997,102L992,95L980,109L972,113L932,115L919,126L916,133L903,120L899,110L903,98L907,94L907,82L911,74L915,46L913,40L903,30L901,24L891,12L889,4L902,3L904,5L930,7L966,21L1010,23L1038,33L1064,39L1079,52L1050,63L1048,61L996,57L994,55L982,55L980,53L968,53L966,51L957,52L992,79L1008,83L1032,93L1040,93L1072,83L1103,62L1114,31L1124,35L1127,52L1137,68L1145,74L1135,82L1129,94L1129,98L1123,110L1125,116L1114,125L1109,134L1102,137L1092,149L1082,145L1064,145Z","북동러시아":"M1168,237L1146,237L1144,235L1122,233L1111,224L1111,200L1113,198L1111,174L1093,148L1097,142L1102,137L1108,135L1113,126L1125,116L1123,110L1129,98L1129,94L1135,82L1145,74L1137,68L1127,52L1125,36L1134,37L1136,39L1148,39L1150,37L1180,33L1182,31L1183,228Z","중서러시아":"M866,351L858,351L834,325L824,323L815,316L823,300L823,290L831,276L829,250L834,245L856,235L870,223L894,231L912,227L919,218L919,212L925,202L925,198L934,195L950,179L956,179L958,181L974,179L982,183L988,183L993,198L1009,214L1021,230L1011,240L1003,256L1003,260L997,272L997,280L974,297L954,303L948,303L946,301L939,310L939,324L932,333L922,331L914,339L902,345L876,345Z","중앙러시아":"M1050,375L1038,375L1024,371L1020,373L1008,373L1006,375L988,375L982,371L970,373L931,336L939,324L939,310L946,301L948,303L954,303L974,297L997,280L997,272L1003,260L1003,256L1011,240L1021,230L1009,214L993,198L989,184L998,179L1010,167L1016,165L1036,143L1050,153L1054,153L1064,145L1090,147L1107,166L1111,174L1111,186L1113,188L1111,224L1122,233L1163,238L1149,252L1141,266L1143,272L1143,294L1139,300L1126,311L1114,317L1104,317L1094,311L1085,324L1085,332L1081,342L1067,352L1065,358Z","우크라이나":"M980,509L972,509L955,488L964,481L973,472L972,471L942,461L926,461L913,478L910,479L896,469L887,460L885,454L873,444L871,436L863,428L859,420L867,396L867,382L863,376L863,366L858,351L866,351L876,345L902,345L924,331L930,333L934,339L970,373L982,371L988,375L1006,375L1008,373L1020,373L1024,371L1026,373L1051,376L1051,386L1047,394L1047,406L1049,410L1045,414L1041,424L1041,436L1039,438L1037,452L1004,467L995,478L1003,490Z","코카서스":"M1124,643L1121,642L1121,636L1119,634L1119,618L1123,608L1102,591L1098,589L1088,589L1071,582L1081,576L1081,552L1047,518L1025,490L1041,470L1044,463L1048,463L1058,471L1064,471L1074,475L1082,489L1096,483L1100,479L1112,477L1126,487L1138,487L1144,491L1150,491L1153,494L1153,500L1151,502L1151,522L1153,524L1155,544L1163,562L1165,572L1171,582L1171,586L1183,606L1183,630L1180,631L1166,627L1154,631L1146,631L1138,637Z","볼가":"M1152,493L1138,487L1126,487L1112,477L1100,479L1096,483L1082,489L1074,475L1064,471L1058,471L1045,462L1051,450L1050,447L1038,453L1037,446L1041,436L1043,418L1049,410L1047,406L1047,394L1051,386L1051,374L1065,358L1067,352L1081,342L1085,332L1085,324L1089,316L1096,311L1104,317L1114,317L1134,305L1143,294L1143,272L1141,266L1145,258L1164,237L1168,237L1182,229L1183,458L1168,467L1161,474L1153,486Z","남노르웨이":"M438,199L408,199L385,182L375,156L373,130L396,113L430,105L438,101L490,97L510,81L516,77L520,77L535,98L531,132L523,144L517,162L517,174L521,180L521,196L517,196L508,181L504,181L498,177L488,177L480,181L474,181Z","북노르웨이":"M756,61L751,58L749,52L751,46L750,37L714,35L712,37L702,37L690,41L670,43L650,49L643,36L634,29L631,24L640,21L650,21L652,19L676,17L678,15L746,11L748,9L796,5L798,3L812,3L814,1L825,2L823,14L827,26L812,57L800,57L790,51L766,51L762,53ZM564,101L554,99L550,95L534,97L519,76L540,63L568,51L572,51L600,35L603,38L603,44L595,58L593,66L587,72L585,78L573,88Z","남스웨덴":"M546,259L543,250L539,248L539,238L519,200L521,196L521,180L517,174L517,162L523,144L531,132L535,98L550,95L554,99L564,101L576,115L584,115L592,121L614,123L642,149L650,153L662,167L666,169L674,169L676,167L679,174L639,190L629,216L627,234L624,241L602,247L578,257L548,257Z","북스웨덴":"M674,169L662,167L650,153L630,139L614,123L592,121L584,115L576,115L565,104L567,96L575,86L585,78L587,72L593,66L595,58L603,44L603,38L601,36L626,23L630,23L634,29L643,36L650,49L670,43L690,41L692,39L712,37L714,35L732,35L734,37L751,38L749,52L757,66L756,69L750,69L722,87L688,99L649,118L645,142L672,155L677,166Z","서북아프리카":"M358,751L-1,750L112,749L134,707L144,707L146,705L172,721L238,719L266,703L280,699L296,691L316,689L328,685L337,688L335,690L335,702L337,704L339,724L351,738Z","동북아프리카":"M490,751L360,751L339,724L337,704L335,702L335,690L338,687L386,687L388,685L400,685L414,681L460,677L462,675L476,675L478,673L490,685L502,681L503,684L497,690L495,696L509,722L501,738ZM504,681L504,679Z","#중동":"M1182,751L1008,751L1007,696L1011,690L1004,689L1002,691L1001,688L1010,681L1024,677L1034,665L1066,671L1076,677L1092,665L1096,665L1108,659L1119,650L1122,643L1134,639L1146,631L1154,631L1166,627L1178,629L1183,632ZM990,711L990,709ZM964,737L951,732L957,724L964,717L988,711L989,714L981,730Z","북대서양":"M90,749L-1,748L0,-1L58,-1L61,2L61,6L55,18L55,34L53,40L43,48L46,49L79,84L79,114L83,120L83,126L79,132L79,136L81,138L81,146L89,158L93,188L97,196L104,201L134,201L136,203L142,203L145,206L129,238L140,249L155,250L149,264L150,267L166,275L178,271L186,271L183,278L197,290L196,305L161,306L171,318L170,331L162,331L160,329L158,331L148,331L142,335L118,343L110,351L100,355L96,359L82,363L66,363L65,378L85,406L89,416L89,422L96,427L102,427L118,437L160,437L170,443L192,443L204,451L216,451L235,478L231,510L227,518L225,530L222,533L138,531L136,529L112,529L110,527L88,527L86,525L57,542L67,560L71,586L57,612L53,642L69,646L67,680L83,680L73,700L79,708L79,716L83,730L91,742ZM53,346L64,345L66,343L78,343L110,333L122,333L129,294L143,276L128,261L104,261L102,259L100,261L78,263L72,285L42,285L41,290L45,304L55,322L35,334Z","영국 해협":"M214,451L204,451L192,443L170,443L160,437L118,437L102,427L96,427L89,422L89,416L85,406L65,378L65,364L82,363L96,359L126,339L142,335L148,331L158,331L160,329L165,332L149,338L170,347L190,347L191,350L188,353L170,353L150,371L140,377L138,381L150,377L170,375L200,365L270,365L295,354L286,349L286,347L302,347L313,356L310,359L298,361L295,378L266,395L234,395L222,387L221,392L227,410L226,413L214,413L212,411L200,411L198,409L196,411L188,411L178,415L159,418L164,433L170,433L206,445L212,445L215,448Z","북해":"M378,127L375,126L378,125ZM374,129L374,127ZM316,357L302,347L284,347L287,340L301,324L292,315L272,313L267,300L257,286L237,274L233,262L226,251L218,245L199,242L211,230L219,216L227,208L229,184L235,172L235,166L238,163L244,161L272,161L288,171L294,171L310,163L328,145L340,147L356,137L368,133L372,129L373,140L375,142L375,156L385,182L408,199L438,199L456,189L462,187L467,188L469,218L454,225L444,227L443,240L441,242L441,254L453,270L457,290L444,301L430,301L428,303L414,303L412,305L374,305L351,336L336,351L324,353Z","발트해":"M588,291L578,291L564,277L546,283L538,283L528,287L516,287L514,289L502,289L494,283L483,272L479,262L487,248L503,234L491,224L497,206L470,219L469,210L467,208L467,188L465,186L488,177L498,177L504,181L508,181L517,194L539,238L538,243L510,243L501,260L504,273L506,271L522,271L526,269L539,260L539,252L542,249L546,259L548,257L578,257L602,247L624,241L627,234L629,216L639,190L679,174L672,155L645,142L649,118L688,99L722,87L750,69L772,69L774,67L798,67L819,76L796,79L780,87L760,93L732,109L731,114L735,128L734,151L738,151L766,163L768,161L812,157L814,155L840,153L842,151L866,151L880,155L892,155L915,162L896,165L894,167L884,167L882,169L808,169L788,175L780,175L779,190L797,204L788,221L760,205L744,211L738,211L723,232L727,250L698,271L684,275L678,279L670,279L654,271L614,287L590,289Z","서지중해":"M586,753L-1,752L490,751L501,738L509,722L495,696L497,690L505,680L490,685L478,673L476,675L414,681L412,683L388,685L386,687L330,687L328,685L316,689L306,689L304,691L296,691L290,695L266,703L238,719L172,721L146,705L144,707L134,707L112,749L91,748L91,742L81,724L79,708L73,700L86,677L102,677L122,685L140,705L164,689L186,689L188,687L222,685L246,669L253,652L269,640L257,626L273,608L281,590L284,587L312,581L335,568L334,541L346,533L380,535L400,541L426,525L438,523L456,511L462,511L476,517L485,526L489,530L493,542L508,557L520,563L550,585L586,597L605,610L617,636L609,650L609,656L606,659L603,658L606,651L604,653L558,653L535,662L554,677L558,677L577,686L575,700L587,728L585,734ZM467,580L473,568L470,541L468,543L451,546L453,572ZM463,636L477,630L479,586L450,585L448,583L445,592L445,604L443,606L445,626L448,633ZM337,628L341,616L340,613L313,614L316,625Z","동지중해":"M1134,753L588,753L585,746L587,728L575,700L577,686L594,687L596,689L597,670L601,662L604,659L608,661L610,659L620,659L641,636L629,618L640,603L666,617L671,610L616,567L596,567L580,557L565,532L539,514L535,488L560,485L563,488L566,501L582,491L598,517L620,531L642,541L646,545L670,555L680,563L689,572L689,602L711,626L721,642L737,652L731,670L740,687L744,687L756,693L766,693L773,668L793,664L789,654L767,638L777,630L761,608L772,597L784,597L786,595L798,595L800,593L828,593L833,596L835,600L835,606L839,612L837,614L851,624L841,652L857,660L860,681L878,685L906,701L928,687L932,687L956,703L972,703L990,687L1002,691L1004,689L1010,689L1007,696L1008,751L1134,751ZM878,603L851,602L866,591L884,585L892,585L892,583L884,581L881,578L886,575L900,577L917,586L896,587L892,601L880,601ZM842,609L842,607ZM840,611L840,609ZM965,736L981,730L990,709L976,715L964,717L951,732ZM839,728L840,719L822,719L820,717L779,714L779,722L788,725L796,725L806,729Z","흑해":"M1062,587L1026,587L998,565L972,565L958,569L948,569L918,587L914,583L894,575L886,575L880,579L876,577L865,556L865,552L887,516L907,492L913,476L926,461L942,461L972,471L971,474L955,488L972,509L980,509L1003,490L995,478L1004,467L1050,447L1051,450L1041,470L1025,490L1047,518L1081,552L1081,576Z","노르웨이해":"M226,209L224,207L192,207L190,205L188,207L174,209L173,208L187,196L195,188L194,187L154,187L144,205L134,201L104,201L97,196L93,188L89,158L81,146L81,138L79,136L79,132L83,126L83,120L79,114L79,84L77,80L43,48L53,40L55,34L55,18L61,6L60,-1L829,0L798,3L796,5L780,5L778,7L764,7L762,9L748,9L746,11L678,15L664,19L626,23L592,39L572,51L568,51L540,63L510,81L490,97L438,101L430,105L396,113L384,123L376,125L368,133L360,135L340,147L328,145L310,163L300,169L288,171L272,161L244,161L238,163L235,166L235,172L229,184L229,200ZM224,211L224,209Z","~북극해":"M1184,239L1182,31L1180,33L1150,37L1148,39L1136,39L1114,31L1102,63L1068,85L1040,93L1032,93L1008,83L992,79L957,52L966,51L968,53L994,55L996,57L1048,61L1050,63L1079,52L1064,39L1038,33L1010,23L966,21L930,7L918,7L916,5L904,5L902,3L875,0L1184,-1Z","~카스피해":"M1184,753L1135,752L1183,750L1183,606L1171,586L1171,582L1165,572L1163,562L1155,544L1153,524L1151,522L1151,502L1153,500L1153,486L1155,482L1168,467L1183,458L1184,239Z","~호수":"M1008,141L989,140L1000,109L1017,118ZM926,161L909,144L914,139L922,133L928,133L936,129L959,136L961,148L958,151L946,159L928,159Z"},"an":{"잉글랜드":[244,325,30.5],"웨일스":[181,335,10.8],"스코틀랜드":[174,234,25.6],"북아일랜드":[118,280,17.1],"아일랜드":[82,312,28.6],"북프랑스":[318,402,28.8],"알자스로렌":[412,424,18.4],"서프랑스":[244,440,29.5],"남프랑스":[338,506,28.3],"포르투갈":[92,606,28.3],"북스페인":[154,558,28.0],"동스페인":[242,600,28.4],"남스페인":[164,662,28.0],"베네룩스":[366,360,27.2],"서독일":[426,360,28.6],"덴마크":[464,244,22.4],"동독일":[554,326,40.5],"동프로이센":[724,282,24.2],"남독일":[512,412,28.3],"스위스":[410,460,15.2],"오스트리아":[612,438,19.0],"체코슬로바키아":[594,392,29.1],"헝가리":[654,462,28.4],"북이탈리아":[508,510,28.0],"알프스":[506,460,15.6],"중이탈리아":[548,552,24.4],"시칠리아":[580,670,16.1],"서유고슬라비아":[610,502,18.9],"동유고슬라비아":[726,522,34.9],"그리스":[734,612,27.8],"동발칸":[814,544,31.0],"서터키":[878,630,28.0],"동터키":[1038,624,38.0],"서폴란드":[664,324,28.6],"동폴란드":[782,348,29.1],"발트 3국":[792,248,28.3],"핀란드":[834,116,36.9],"레닌그라드 인근":[896,194,28.1],"북서러시아":[1038,100,8.0],"북동러시아":[1154,110,28.6],"중서러시아":[912,280,40.5],"중앙러시아":[1038,256,31.1],"우크라이나":[930,406,52.3],"코카서스":[1100,514,30.5],"볼가":[1118,412,66.0],"남노르웨이":[450,152,37.6],"북노르웨이":[558,76,19.0],"남스웨덴":[584,210,42.0],"북스웨덴":[630,98,28.3],"서북아프리카":[292,724,28.0],"동북아프리카":[398,712,28.0],"#중동":[1038,724,28.0],"북대서양":[0,382,59.7],"영국 해협":[132,408,28.6],"북해":[330,244,76.0],"발트해":[682,234,39.4],"서지중해":[374,636,37.9],"동지중해":[748,728,32.6],"흑해":[980,538,28.0],"노르웨이해":[308,124,29.7]},"dc":[["잉글랜드","p",230,274],["북프랑스","p",270,404],["북프랑스","p",358,442],["서프랑스","p",268,484],["남프랑스","h",382,492],["남프랑스","h",292,520],["남프랑스","h",394,510],["남프랑스","h",292,550],["남프랑스","h",320,544],["북스페인","h",72,542],["북스페인","h",98,548],["베네룩스","p",394,320],["서독일","p",452,316],["서독일","p",488,310],["동독일","p",614,314],["동독일","p",626,354],["남독일","h",462,426],["체코슬로바키아","h",684,390],["체코슬로바키아","h",684,414],["헝가리","p",702,446],["알프스","m",446,474],["알프스","m",552,474],["중이탈리아","h",584,586],["중이탈리아","h",614,576],["중이탈리아","h",452,612],["서유고슬라비아","h",648,526],["서유고슬라비아","h",680,550],["동유고슬라비아","h",706,488],["그리스","h",770,588],["동발칸","p",794,450],["동발칸","p",848,454],["동발칸","p",798,490],["동발칸","p",842,498],["동발칸","p",890,484],["서터키","h",866,574],["서터키","h",940,606],["서터키","h",926,642],["서터키","h",900,680],["서터키","h",942,686],["서터키","h",958,684],["동터키","m",964,578],["동터키","m",994,582],["동터키","m",1106,638],["동터키","m",976,656],["동터키","m",1000,650],["동터키","m",1074,656],["동터키","m",1094,650],["서폴란드","p",718,316],["서폴란드","p",718,356],["동폴란드","p",842,366],["동폴란드","p",760,410],["동폴란드","p",796,408],["동폴란드","p",844,396],["발트 3국","p",842,176],["발트 3국","p",754,226],["발트 3국","p",844,228],["핀란드","p",850,14],["핀란드","p",848,50],["핀란드","p",890,44],["핀란드","p",790,100],["핀란드","p",886,96],["핀란드","p",748,146],["핀란드","p",800,142],["핀란드","p",880,132],["레닌그라드 인근","p",972,134],["북서러시아","p",928,46],["북서러시아","p",974,44],["북서러시아","p",1022,42],["북서러시아","p",1112,58],["북서러시아","p",938,92],["북서러시아","p",972,92],["북서러시아","p",1104,88],["북서러시아","p",1064,134],["북동러시아","h",1154,44],["북동러시아","h",1158,68],["북동러시아","h",1130,172],["북동러시아","h",1162,158],["북동러시아","h",1120,196],["북동러시아","h",1160,204],["북동러시아","h",1130,222],["중서러시아","p",934,220],["중서러시아","p",968,218],["중서러시아","p",846,266],["중서러시아","p",978,268],["중서러시아","p",840,322],["중서러시아","p",880,308],["중앙러시아","p",1014,182],["중앙러시아","p",1068,184],["중앙러시아","p",1112,278],["중앙러시아","p",980,316],["중앙러시아","p",1020,308],["중앙러시아","p",1060,306],["중앙러시아","p",966,356],["중앙러시아","p",1022,352],["우크라이나","p",880,366],["우크라이나","p",928,356],["우크라이나","p",882,398],["우크라이나","p",1010,398],["우크라이나","p",880,440],["우크라이나","p",924,444],["우크라이나","p",978,440],["우크라이나","p",1018,454],["우크라이나","p",974,498],["코카서스","h",1056,488],["코카서스","h",1128,546],["코카서스","h",1100,580],["코카서스","h",1132,582],["코카서스","h",1134,618],["코카서스","h",1164,620],["볼가","p",1156,276],["볼가","p",1156,312],["볼가","p",1104,358],["볼가","p",1148,352],["볼가","p",1068,400],["볼가","p",1066,444],["볼가","p",1154,450],["남노르웨이","m",456,110],["남노르웨이","m",466,110],["남노르웨이","m",500,110],["남노르웨이","m",522,116],["남노르웨이","m",394,136],["남노르웨이","m",504,136],["남노르웨이","m",396,162],["남노르웨이","m",498,162],["북노르웨이","m",658,32],["북노르웨이","m",764,32],["북노르웨이","m",778,40],["남스웨덴","p",542,142],["남스웨덴","p",582,144],["남스웨덴","p",540,178],["북스웨덴","h",616,42],["북스웨덴","h",738,46],["북스웨덴","h",672,78],["북스웨덴","h",708,70],["서북아프리카","m",138,734],["서북아프리카","m",158,736],["서북아프리카","m",196,734],["서북아프리카","m",212,730],["서북아프리카","m",236,734],["동북아프리카","p",498,718],["#중동","x",1106,674],["#중동","x",1148,668],["#중동","x",1104,716],["#중동","x",1150,702]],"rv":{"남독일|알자스로렌":"431,436 431,427 433,419 436,412 440,406","서독일|베네룩스":"420,307 418,315 414,323 408,330 401,336 397,343 395,351 396,359 398,368 401,377","서폴란드|동폴란드":"759,306 758,314 757,322 756,330 755,338 753,345 751,353 750,361 750,370 750,377","중서러시아|우크라이나":"926,332 918,336 911,340 904,343 896,345 887,345 879,346 872,348 866,350 859,351","헝가리|동발칸":"752,429 751,438 748,445 745,453 741,460 736,466 732,471"},"ld":"M1182,751L1008,751L1007,696L1010,689L1004,689L1002,691L990,687L972,703L956,703L932,687L928,687L906,701L878,685L860,681L857,660L841,652L851,624L837,614L843,608L838,611L833,596L828,593L800,593L798,595L786,595L784,597L772,597L761,608L777,630L767,638L786,651L793,664L773,668L766,693L756,693L744,687L740,687L731,670L737,652L721,642L711,626L689,602L689,572L670,555L646,545L642,541L620,531L598,517L582,491L566,501L563,488L560,485L535,488L539,514L565,532L580,557L596,567L616,567L671,610L666,617L640,603L629,618L641,636L620,659L607,660L609,650L617,636L602,607L586,597L550,585L526,567L508,557L493,542L489,530L476,517L462,511L456,511L442,521L426,525L400,541L380,535L346,533L333,542L333,548L335,550L334,569L312,581L284,587L281,590L273,608L257,626L269,640L253,652L246,669L222,685L188,687L186,689L164,689L140,705L122,685L108,679L102,677L86,677L84,679L67,680L69,646L53,642L57,612L71,586L67,560L57,542L86,525L88,527L110,527L112,529L136,529L138,531L222,533L225,530L227,518L231,510L231,502L233,500L233,486L235,484L233,474L212,445L206,445L170,433L164,433L159,418L178,415L188,411L196,411L198,409L200,411L226,413L227,410L221,392L222,387L234,395L266,395L274,391L295,378L298,361L336,351L351,336L374,305L412,305L414,303L444,301L457,290L453,270L441,254L444,227L470,219L497,206L491,224L503,234L487,248L479,264L483,272L502,289L528,287L564,277L578,291L588,291L590,289L614,287L654,271L670,279L678,279L684,275L698,271L727,250L723,232L738,211L744,211L760,205L782,219L786,221L789,220L797,204L779,190L780,175L788,175L808,169L882,169L884,167L894,167L896,165L915,162L892,155L880,155L866,151L842,151L840,153L798,157L796,159L784,159L782,161L768,161L766,163L754,157L734,151L735,128L731,114L732,109L760,93L780,87L796,79L819,76L798,67L750,69L722,87L688,99L649,118L645,142L672,155L679,174L639,190L629,216L627,234L624,241L602,247L578,257L548,257L546,259L542,249L539,252L539,260L526,269L522,271L506,271L504,273L501,260L510,243L539,242L539,238L511,184L498,177L488,177L480,181L474,181L438,199L408,199L385,182L375,156L373,130L396,113L430,105L438,101L490,97L510,81L540,63L568,51L572,51L592,39L626,23L638,23L640,21L664,19L678,15L746,11L748,9L762,9L764,7L778,7L780,5L828,1L830,-1L874,-1L876,1L930,7L966,21L1010,23L1038,33L1064,39L1079,52L1050,63L1048,61L996,57L994,55L982,55L980,53L968,53L966,51L957,52L992,79L1008,83L1032,93L1040,93L1068,85L1102,63L1114,31L1136,39L1160,37L1162,35L1180,33L1182,31L1183,458L1168,467L1155,482L1153,486L1153,500L1151,502L1151,522L1153,524L1155,544L1163,562L1165,572L1171,582L1171,586L1183,606ZM1009,140L1017,118L1000,109L989,140ZM927,160L946,159L958,151L961,148L959,136L936,129L928,133L922,133L909,144L926,161ZM148,379L139,378L150,371L170,353L188,353L191,350L190,347L170,347L149,338L171,330L171,318L161,306L196,305L197,290L183,278L186,271L178,271L166,275L150,267L149,264L155,250L140,249L129,238L154,187L194,187L191,192L173,208L178,209L190,205L192,207L225,208L211,230L199,242L218,245L226,251L233,262L237,274L257,286L267,300L272,313L292,315L301,324L283,346L295,354L270,365L200,365L170,375L150,377ZM52,347L35,334L55,322L45,304L41,290L42,285L72,285L78,263L88,263L102,259L104,261L128,261L143,276L129,294L122,333L110,333L78,343L66,343ZM138,381L138,379ZM879,602L892,601L896,587L918,587L948,569L958,569L972,565L998,565L1026,587L1062,587L1080,577L1081,552L1047,518L1025,490L1041,470L1051,448L1034,453L1004,467L995,478L1003,490L980,509L972,509L955,488L964,481L973,472L972,471L942,461L926,461L913,476L907,492L887,516L865,552L865,556L875,576L893,584L866,591L851,602ZM466,581L453,572L451,546L468,543L470,541L473,568ZM462,637L454,633L448,633L445,626L443,606L445,604L445,592L448,583L450,585L479,586L477,630ZM336,629L334,627L316,625L313,614L340,613L341,616ZM606,653L606,651ZM596,689L594,687L580,687L558,677L554,677L535,662L558,653L604,653L605,656L597,670ZM490,751L-1,750L112,749L133,708L144,707L146,705L172,721L238,719L266,703L280,699L296,691L304,691L306,689L316,689L328,685L330,687L386,687L388,685L400,685L414,681L460,677L462,675L476,675L478,673L490,685L500,681L503,682L495,696L509,722L501,738ZM504,681L504,679ZM990,711L990,709ZM964,737L951,732L957,724L964,717L988,711L989,714L981,730ZM838,729L806,729L796,725L780,723L779,714L820,717L822,719L840,719L841,722Z","gr":{"x":[44.0,264.0,484.0,704.0,912.8,1064.0,1184.0],"y":[728.0,613.0,498.0,383.0,268.0,161.0,78.5,13.0]},"ed":[["그리스","동발칸"],["그리스","동유고슬라비아"],["그리스","서유고슬라비아"],["그리스","서터키"],["남노르웨이","남스웨덴"],["남노르웨이","북노르웨이"],["남독일","동독일"],["남독일","서독일"],["남독일","스위스"],["남독일","알자스로렌"],["남독일","오스트리아"],["남독일","체코슬로바키아"],["남스웨덴","북노르웨이"],["남스웨덴","북스웨덴"],["남스페인","동스페인"],["남스페인","북스페인"],["남스페인","포르투갈"],["남프랑스","동스페인"],["남프랑스","북프랑스"],["남프랑스","서프랑스"],["남프랑스","스위스"],["남프랑스","알프스"],["덴마크","서독일"],["동독일","서독일"],["동독일","서폴란드"],["동독일","체코슬로바키아"],["동발칸","동유고슬라비아"],["동발칸","동폴란드"],["동발칸","서터키"],["동발칸","우크라이나"],["동발칸","헝가리"],["동북아프리카","서북아프리카"],["동스페인","북스페인"],["동스페인","서프랑스"],["동유고슬라비아","서유고슬라비아"],["동유고슬라비아","헝가리"],["동터키","서터키"],["동터키","코카서스"],["동폴란드","발트 3국"],["동폴란드","서폴란드"],["동폴란드","우크라이나"],["동폴란드","중서러시아"],["동폴란드","체코슬로바키아"],["동폴란드","헝가리"],["동프로이센","발트 3국"],["동프로이센","서폴란드"],["레닌그라드 인근","발트 3국"],["레닌그라드 인근","북서러시아"],["레닌그라드 인근","중서러시아"],["레닌그라드 인근","중앙러시아"],["레닌그라드 인근","핀란드"],["발트 3국","중서러시아"],["베네룩스","북프랑스"],["베네룩스","서독일"],["베네룩스","알자스로렌"],["볼가","북동러시아"],["볼가","우크라이나"],["볼가","중앙러시아"],["볼가","코카서스"],["북노르웨이","북스웨덴"],["북노르웨이","핀란드"],["북동러시아","북서러시아"],["북동러시아","중앙러시아"],["북서러시아","중앙러시아"],["북서러시아","핀란드"],["북스웨덴","핀란드"],["북스페인","서프랑스"],["북스페인","포르투갈"],["북아일랜드","아일랜드"],["북이탈리아","알프스"],["북이탈리아","중이탈리아"],["북프랑스","서프랑스"],["북프랑스","스위스"],["북프랑스","알자스로렌"],["서독일","알자스로렌"],["서유고슬라비아","알프스"],["서유고슬라비아","오스트리아"],["서유고슬라비아","헝가리"],["서폴란드","체코슬로바키아"],["스위스","알자스로렌"],["스위스","알프스"],["스코틀랜드","잉글랜드"],["시칠리아","중이탈리아"],["알프스","오스트리아"],["오스트리아","체코슬로바키아"],["오스트리아","헝가리"],["우크라이나","중서러시아"],["우크라이나","중앙러시아"],["웨일스","잉글랜드"],["중서러시아","중앙러시아"],["체코슬로바키아","헝가리"]],"co":{"북대서양":["북스페인","북아일랜드","서북아프리카","서프랑스","스코틀랜드","아일랜드","웨일스","잉글랜드","포르투갈"],"영국 해협":["북프랑스","서프랑스","웨일스","잉글랜드"],"북해":["남노르웨이","덴마크","베네룩스","북프랑스","서독일","스코틀랜드","잉글랜드"],"발트해":["남노르웨이","남스웨덴","덴마크","동독일","동프로이센","레닌그라드 인근","발트 3국","북스웨덴","서독일","서폴란드","핀란드"],"서지중해":["남스페인","남프랑스","동북아프리카","동스페인","북이탈리아","서북아프리카","시칠리아","알프스","중이탈리아","포르투갈"],"동지중해":["그리스","동터키","북이탈리아","서유고슬라비아","서터키","시칠리아","알프스","중이탈리아"],"흑해":["동발칸","동터키","볼가","서터키","우크라이나","코카서스"],"노르웨이해":["남노르웨이","북노르웨이","북스웨덴","스코틀랜드","핀란드"]},"sa":{"북대서양":["노르웨이해","서지중해","영국 해협"],"영국 해협":["북대서양","북해"],"북해":["노르웨이해","발트해","영국 해협"],"발트해":["북해"],"서지중해":["동지중해","북대서양"],"동지중해":["서지중해","흑해"],"흑해":["동지중해"],"노르웨이해":["북대서양","북해"]},"st":[[605.0,653.2,614.9,649.8]]};
+const SEA=Object.keys(MAP.co).map(k=>[k]);
+const BRIT=['잉글랜드','웨일스','스코틀랜드','북아일랜드','아일랜드'];
+/* 중점: [id, 이름, 턴, 선행, 배타, 효과] */
+const FOC={
+ DE:[['rhine','라인란트 재무장',3,'','','수도에 판저 1기'],['anschluss','안슐루스',4,'','','중립국 오스트리아 병합'],['fouryear','4개년 계획',4,'anschluss','','매 턴 자원 +1'],
+     ['blitzall','전격전 총공세',3,'','','즉시 자원 +8, 기갑·판저 이동 +2'],['autarky','자원 자급자족',4,'blitzall','','자원 갈증 해제']],
+ FR:[['maginot','마지노선 확장',4,'','','무료 공장 1개 · 그 영토 방어 +1'],['armA','[A] 육군 재무장',4,'','mechB','기갑 비용 -1'],['mechB','[B] 기계화 부대',4,'','armA','마지노 산악보병 비용 -1'],
+     ['budget','정부 예산 증가',3,'','','부패 정부 해제'],['joinally','연합국 가입',3,'budget','','연합국 진영 합류'],['antide','대독 동맹 결성',4,'joinally','','다음 영토 점령 때 1회 자원 +15']],
+ IT:[['alps','알프스 방벽',3,'','','산악 포병 +1 추가'],['medheg','[A] 지중해 패권',4,'','divart','함대 1 + 레지아 마리나 1'],['mare','우리의 바다',4,'medheg','','제해권 바다마다 매 턴 +1'],
+     ['divart','[B] 사단포병 창설',3,'','medheg','포병 1기'],['joinaxis','추축국 가입',3,'','','추축국 진영 합류'],['indmod','산업 현대화',4,'joinaxis','','산업 기반 부족 해제']],
+ GB:[['commonwealth','영연방 동원령',3,'','','즉시 자원 +10'],['rearm','제한적인 재무장',4,'commonwealth','','무료 공장 1개'],['navy','[A] 해군 재무장',4,'','air','드레드노트 1척'],
+     ['air','[B] 공군 재무장',3,'','navy','기갑 1기'],['homedef','본토 사수',3,'','','영국 본토 방어 +1'],['counter','대독 재반격',4,'homedef','','대륙 진출의 한계 해제']],
+ SU:[['ural','우랄 공장 배치',4,'','','외국과 안 닿은 영토에 무료 공장'],['tanks','기갑군단 보유',4,'','','카자크 군단 이동 +1'],['reorg','군 재편성',4,'tanks','','대숙청 해제'],
+     ['motherland','대조국 창설',4,'','','카자크 2기 · 코민테른 결성'],['deep','종심 전투',4,'motherland','','포병 비용 -1']]};
+/* ---- 내정: 인구·자본·불가사의 ---- */
+const POP_MAX=4,POP_COSTS=[0,0,18,28,42],EMERG_COST=5,EMERG_GAIN=3,LOOT_RES=5,SPY_COST=15,SPY_FAIL=.45;   // POP_COSTS[목표 인구]: 1→2 18, 2→3 28, 3→4 42
+const WONDERS={
+ bigben:{n:'빅벤',t:'잉글랜드',d:'턴 시작 시 자본 +3 · 방첩: 이 나라를 노린 적 첩보 실패 확률 +10%'},
+ eiffel:{n:'에펠탑',t:'북프랑스',d:'인구 증가 비용 20% 할인'},
+ colosseum:{n:'콜로세움',t:'중이탈리아',d:'포병 생산 비용 -1'},
+ kremlin:{n:'크렘린',t:'중앙러시아',d:'방어할 때 파워 +1'},
+ brandenburg:{n:'브란덴부르크 문',t:'동독일',d:'기갑·판저 생산 비용 -1'},
+ warsaw:{n:'바르샤바 왕궁',t:'서폴란드',d:'턴 시작 시 자본 +1'},
+ belem:{n:'벨렝 탑',t:'포르투갈',d:'서지중해·북대서양 해전에서 함대 파워 +1'},
+ parthenon:{n:'파르테논',t:'그리스',d:'턴 시작 시 자원 +1'}};
+const WONDER_AT={};for(const id in WONDERS)WONDER_AT[WONDERS[id].t]=id;
+/* ---- DLC 2: 과학 · 공군 · 핵 ---- */
+const LAB_RES=5,LAB_CAP=5,NUKE_COST=80,FALLOUT_T=3,AIR_MAX=12;
+const AIR={fighter:{n:'전투기',r:5,sc:3,cd:1},cas:{n:'공중지원기',r:5,sc:4,cd:1},bomber:{n:'폭격기',r:8,sc:8,cd:2}};
+const SKILL={sup:{n:'제공권 장악',p:'fighter',d:'범위 안 영토/바다에 이번 턴 제공권. 그 땅·바다(함대 또는 해안)를 지키는 적 전투기가 대기 중이면 요격당함'},
+ naval:{n:'해상 타격',p:'fighter',dmg:3,d:'제공권 있는 바다의 적 함대에 피해 3'},
+ ground:{n:'지상 타격',p:'cas',dmg:4,d:'제공권 있는 영토의 적 지상군에 피해 4'},
+ strat:{n:'전략 폭격',p:'bomber',d:'제공권 있는 적 영토의 공장·연구소 파괴 또는 인구 -1'},
+ torp:{n:'해상 뇌격',p:'special',dmg:5,d:'제공권 있는 바다의 적 함대에 피해 5 (스파르비에로 전용)'}};
+/* 나라별 대표 항공기: 기본 기종을 대신하며 고유 성능을 가진다 */
+const AIRV={
+ DE:{cas:{n:'슈투카',dmg:6,perk:'급강하 폭격: 지상 타격 피해 4 → 6'}},
+ GB:{fighter:{n:'스핏파이어',intFree:1,perk:'요격해도 쿨타임이 늘지 않아 적의 제공권 시도를 계속 막음'}},
+ SU:{cas:{n:'슈투르모빅',r:3,sc:2,perk:'생산 비용 자원 3 + 과학 2 고정'}},
+ IT:{bomber:{n:'스파르비에로',extra:['torp'],perk:'[해상 뇌격] 추가: 제공권 있는 바다의 적 함대에 피해 5'}},
+ FR:{bomber:{n:'파르망 F.222',cd:1,perk:'출격 후 쿨타임 1턴 (매 턴 폭격 가능)'}}};
+function airSpec(x,t){return Object.assign({},AIR[t],(AIRV[x]||{})[t]||{})}
+function airSkills(x,t){const sp=airSpec(x,t);return Object.keys(SKILL).filter(id=>SKILL[id].p===t).concat(sp.extra||[])}
+const SHUF_MS=2400,START_RES=10,WAR_COST=8,SEND_MAX=5,STACK=5;
+
+/* ================= 지도 색인 ================= */
+const LN={},SN={},ADJ={},CS={},RIV=new Set();
+const ek=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+LAND.forEach((a,i)=>{if(!MAP.an[a[0]])throw new Error('지도 모양 없음 '+a[0]);LN[a[0]]={i,name:a[0],sh:a[1],tr:a[2],f0:a[3],x:MAP.an[a[0]][0],y:MAP.an[a[0]][1],o0:a[6],g:a[7]||null};ADJ[a[0]]=[];CS[a[0]]=[]});
+SEA.forEach((a,i)=>{SN[a[0]]={i,name:a[0],seas:MAP.sa[a[0]],coast:MAP.co[a[0]]}});
+const fullName=n=>{const f=ALIAS[n]||n;if(!LN[f])throw new Error('지도 오류: '+n);return f};
+const EDGE_LIST=MAP.ed.map(e=>e.map(fullName));
+for(const[a,b]of EDGE_LIST){ADJ[a].push(b);ADJ[b].push(a)}
+RIVERS.split(' ').forEach(e=>{const[a,b]=e.split('-').map(fullName);if(!ADJ[a].includes(b))throw new Error('강 오류 '+e);RIV.add(ek(a,b))});
+for(const s of SEA){for(const c of SN[s[0]].coast){if(!LN[c])throw new Error('해안 오류 '+c);CS[c].push(s[0])}for(const o of SN[s[0]].seas)if(!SN[o])throw new Error('바다 오류 '+o)}
+
+/* ================= 규칙 엔진 (호스트와 미리보기 공용, s = 상태) ================= */
+const has=(s,x,id)=>!!(s.N[x]&&s.N[x].done.includes(id));
+function topOf(s,x){const n=s.N[x];return n&&n.st==='puppet'&&n.m?n.m:x}
+function facOf(s,x){const n=s.N[topOf(s,x)];return n?n.fac:null}
+function teamOf(s,x){if(x==='N'||x==='X')return x;return facOf(s,x)||topOf(s,x)}
+function teamName(t){return t==='N'?'중립국':FACN[t]||(NAT[t]?NAT[t].n:t)}
+const wk=(a,b)=>[a,b].sort().join('|');
+function atWar(s,a,b){
+  if(b==='X'||a===b||!s.N[a])return false;if(b==='N')return true;if(!s.N[b])return false;
+  const A=topOf(s,a),B=topOf(s,b);if(A===B)return false;const fa=s.N[A].fac;if(fa&&fa===s.N[B].fac)return false;
+  const r=s.war[wk(A,B)];return r!=null&&r<s.rd;
+}
+function warState(s,a,b){const A=topOf(s,a),B=topOf(s,b);const r=s.war[wk(A,B)];if(r==null)return 0;return r<s.rd?2:1}
+function maxHp(s,x,t){return Math.max(1,UT[t].p-(x==='SU'&&!has(s,'SU','reorg')?1:0))}
+function unitCost(s,x,t){const u=UT[t];let c=u.c;
+  if(x==='GB'&&u.k==='sea')c-=2;                 // 영국: 함대·드레드노트
+  if(x==='SU'&&t==='coss')c-=1;                  // 소련: 카자크 군단
+  if(facOf(s,x)==='com'&&u.k==='arm')c-=1;
+  if(x==='FR'&&!has(s,'FR','budget'))c+=1;
+  if(x==='IT'&&!has(s,'IT','indmod'))c+=1;
+  if(x==='FR'&&has(s,'FR','armA')&&u.k==='arm')c-=1;
+  if(x==='FR'&&has(s,'FR','mechB')&&t==='magi')c-=1;
+  if(x==='SU'&&has(s,'SU','deep')&&u.k==='art')c-=1;
+  if(u.k==='art'&&hasWonder(s,x,'colosseum'))c-=1;    // 보병 계열(보병·마지노 산악보병·카자크)
+  if(u.k==='arm'&&hasWonder(s,x,'brandenburg'))c-=1;  // 기갑 계열(기갑·판저)
+  return Math.max(1,c)}
+function facCost(s,x,terr){let c=10;if(x==='DE'&&!has(s,'DE','autarky'))c+=2;if(x==='GB'&&!has(s,'GB','counter')&&!BRIT.includes(terr))c+=2;if(x==='FR'&&!has(s,'FR','budget'))c+=1;return c}
+function buildable(x){return['inf','arm','art','flt',NAT[x].sp]}
+function mvOf(s,x,t,terr){const u=UT[t];let m=u.m;
+  if(x==='SU'&&!has(s,'SU','reorg'))m-=1;
+  if(u.k==='sea')return Math.max(1,m);
+  if(x==='SU'&&has(s,'SU','tanks')&&t==='coss')m+=1;
+  if(x==='DE'&&has(s,'DE','blitzall')&&u.k==='arm')m+=2;
+  if(x==='DE'&&LN[terr].tr==='p')m+=1;
+  if(LN[terr].tr==='m')m=1;
+  return Math.max(1,m)}
+function hasWonder(s,x,id){const t=s.T[WONDERS[id].t];return!!(t&&t.o===x&&t.wonder===id)}
+function popOf(t){return Math.max(1,Math.min(POP_MAX,t.pop||1))}
+/* 자본 수입: 내 영토 인구 합 + 빅벤·바르샤바 왕궁 각 +1 */
+/* 부대 보유 한도 = 내 영토 인구 합 × 2 (육·해군 합산). 한도를 넘겨도 기존 부대는 남고, 새 생산만 막힌다 */
+const CAP_MSG='인구 제한으로 더 이상 부대를 생산할 수 없습니다. 영토의 인구를 늘리세요.';
+function unitCap(s,x){let p=0;for(const k in s.T)if(s.T[k].o===x)p+=popOf(s.T[k]);return p*2}
+function unitCount(s,x){let c=0;for(const k in s.T)if(s.T[k].o===x)c+=s.T[k].u.length;for(const k in s.S)if(s.S[k].o===x)c+=s.S[k].u.length;return c}
+function capFull(s,x){return unitCount(s,x)>=unitCap(s,x)}
+function popCost(s,x,t){const p=t?popOf(s.T[t]):1;if(p>=POP_MAX)return 0;const c=POP_COSTS[p+1];return hasWonder(s,x,'eiffel')?Math.round(c*.8):c}
+function capitalIncome(s,x){let c=0;for(const k in s.T)if(s.T[k].o===x)c+=popOf(s.T[k]);if(hasWonder(s,x,'bigben'))c+=3;if(hasWonder(s,x,'warsaw'))c+=1;return c}
+function income(s,x){let r=hasWonder(s,x,'parthenon')?1:0;for(const k in s.T){const t=s.T[k];if(t.o===x){r+=1;if(t.f)r+=1}}
+  if(x==='SU')r+=1;if(has(s,x,'fouryear'))r+=1;if(has(s,x,'mare'))for(const k in s.S)if(s.S[k].o===x)r+=1;return r}
+function typePow(s,x,t,tr,role){const u=UT[t];let p=x==='N'?u.p:maxHp(s,x,t);const pr=[[u.n,p]];const add=(l,v)=>{p+=v;pr.push([l,v])};
+  if(tr==='p'&&u.k==='arm'&&role==='att'){add('평원 기갑',2);if(x==='DE')add('전격전',1)}
+  if(tr==='h'&&u.k==='inf')add('언덕 보병',2);
+  if(tr==='m'&&u.k==='art'){add('산악 포병',2);if(x==='IT'&&has(s,'IT','alps'))add('알프스 방벽',1)}
+  if(tr&&(tr==='h'||tr==='m')&&x==='IT')add('이탈리아 산악',1);
+  if(role==='def'&&(tr==='h'||tr==='m')&&x==='FR')add('난공불락',2);
+  if(role==='def'&&t==='magi'&&tr==='h')add('마지노 산악',1);
+  const up=x!=='N'&&s.N[x]&&s.N[x].up?s.N[x].up[t]||0:0;if(up)add('강화',up);
+  return[p,pr]}
+function amphPen(s,x,to){if(x==='IT')return 0;return s.T[to].o==='GB'?3:2}
+function stackPow(s,x,units,role,c){
+  if(!units.length)return{p:0,pr:[['병력 없음',0]]};
+  let best=null;for(const u of units){const r=typePow(s,x,u.t,c.tr,role);if(!best||r[0]>best[0])best=r}
+  let p=best[0];const pr=best[1].slice();const add=(l,v)=>{p+=v;pr.push([l,v])};
+  if(units.length>1)add('병력 '+units.length+'부대',units.length-1);
+  const f=x==='N'?null:facOf(s,x);
+  if(role==='def'){if(c.river)add('강 건너 방어',1);if(f==='ally')add('연합국 방어',1);
+    if(c.land&&x==='FR'&&s.T[c.land].fort==='FR')add('마지노선',1);
+    if(c.land&&x==='GB'&&has(s,'GB','homedef')&&BRIT.includes(c.land))add('본토 사수',1);
+    if(x!=='N'&&hasWonder(s,x,'kremlin'))add('크렘린',1)}
+  else{if(f==='axis')add('추축국 공격',1);if(c.amph){const pen=amphPen(s,x,c.land);if(pen)add(pen===3?'상륙(해안 요새)':'상륙',-pen);else add('지중해 통제',0)}}
+  if(c.sea&&(c.sea==='서지중해'||c.sea==='북대서양')&&x!=='N'&&hasWonder(s,x,'belem'))add('벨렝 탑',1);
+  if(p<1)pr.push(['최소',1-p]);
+  return{p:Math.max(1,p),pr}}
+function hurt(units,dmg){const us=units.map(u=>Object.assign({},u)).sort((a,b)=>a.hp-b.hp);for(const u of us){if(dmg<=0)break;const k=Math.min(u.hp,dmg);u.hp-=k;dmg-=k}return us.filter(u=>u.hp>0)}
+function sortPick(units,ok,n){return units.filter(ok).sort((a,b)=>b.mv-a.mv||b.hp-a.hp).slice(0,n)}
+const pickMv=(us,n)=>sortPick(us,u=>u.mv>0,n);
+const pickAtk=(us,n)=>sortPick(us,u=>u.mv>0&&!u.a,n);
+function canStack(s,v,g){const u=s.T[v].u;if(!u.length)return g.length<=STACK;return u[0].t===g[0].t&&u.length+g.length<=STACK}
+/* 공군: 내 영토에서 2칸 이내(땅·바다 연결 모두)의 영토/바다 */
+function airNbr(n){return SN[n]?SN[n].seas.concat(SN[n].coast):ADJ[n].concat(CS[n])}
+function airRange(s,x){const d={},q=[];for(const k in s.T)if(s.T[k].o===x){d[k]=0;q.push(k)}
+  while(q.length){const u=q.shift();if(d[u]>=2)continue;for(const v of airNbr(u)){if(d[v]!=null)continue;if(s.T[v]&&s.T[v].o==='X')continue;d[v]=d[u]+1;q.push(v)}}return d}
+/* 전장의 안개: 내 편 영토·함대와 맞닿은 곳, 정찰(제공권)한 곳만 적 병력이 보인다 */
+function fogOn(s){return s.ph==='play'&&s.opts&&s.opts.fog!==0}
+function visSet(s,M){const team=new Set();for(const y in s.N)if(M.some(m=>teamOf(s,y)===teamOf(s,m)))team.add(y);M.forEach(m=>team.add(m));
+  const vis=new Set();
+  for(const k in s.T)if(team.has(s.T[k].o)){vis.add(k);ADJ[k].forEach(v=>vis.add(v));CS[k].forEach(z=>vis.add(z))}
+  for(const k in s.S)if(team.has(s.S[k].o)){vis.add(k);SN[k].seas.forEach(z=>vis.add(z));SN[k].coast.forEach(c=>vis.add(c))}
+  for(const e of s.recon||[])if(team.has(e.x))vis.add(e.t);
+  return{vis,team}}
+function maskView(s,M){if(!fogOn(s)||!M.length)return s;const{vis,team}=visSet(s,M);const v=Object.assign({},s,{T:{},S:{}});
+  for(const k in s.T){const T=s.T[k];v.T[k]=(vis.has(k)||T.o==='N'||team.has(T.o)||!T.u.length)?T:Object.assign({},T,{u:[],hid:1})}
+  for(const k in s.S){const S=s.S[k];v.S[k]=(vis.has(k)||team.has(S.o)||!S.u.length)?S:Object.assign({},S,{u:[],hid:1})}
+  return v}
+function hasSup(s,x,t){return(s.sup||[]).some(e=>e.x===x&&e.t===t)}
+function supOwner(s,t){const e=(s.sup||[]).find(e=>e.t===t);return e?e.x:null}
+function isFoe(s,x,o){return!!o&&o!==x&&o!=='X'&&atWar(s,x,o)}
+function airBase(s,x,t){const R=airRange(s,x);let best=null,bd=9;for(const k in s.T)if(s.T[k].o===x){const ns=airNbr(k);const d=k===t?0:ns.includes(t)?1:ns.some(v=>airNbr(v).includes(t))?2:9;if(d<bd){bd=d;best=k}}return best}
+function labCount(s,x){let c=0;for(const k in s.T)if(s.T[k].o===x&&s.T[k].lab)c++;return c}
+function airTargets(s,x,sk){const R=airRange(s,x);const out=[];
+  for(const t in R){const L=s.T[t],S=s.S[t];
+    if(sk==='sup'){if(!(L&&L.o===x)&&!hasSup(s,x,t))out.push(t)}
+    else if(sk==='naval'||sk==='torp'){if(S&&S.u.length&&isFoe(s,x,S.o)&&hasSup(s,x,t))out.push(t)}
+    else if(sk==='ground'){if(L&&L.u.length&&isFoe(s,x,L.o)&&hasSup(s,x,t))out.push(t)}
+    else if(sk==='strat'){if(L&&isFoe(s,x,L.o)&&hasSup(s,x,t)&&(L.f||L.lab||popOf(L)>1))out.push(t)}}
+  return out}
+function reach(s,x,from,mx){
+  const d={[from]:0};const q=[from];const done=new Set();
+  while(q.length){q.sort((a,b)=>d[a]-d[b]);const u=q.shift();if(done.has(u))continue;done.add(u);
+    if(u!==from&&LN[u].tr==='m')continue;
+    for(const v of ADJ[u]){if(s.T[v].o!==x||s.T[v].fallout>0)continue;const cur=d[u];if(cur>=mx)continue;
+      let c;if(LN[v].tr==='m')c=mx-cur;else c=(LN[v].tr==='h'?2:1)+(RIV.has(ek(u,v))?1:0);
+      const nd=cur+c;if(nd<=mx&&(d[v]==null||nd<d[v])){d[v]=nd;q.push(v)}}}
+  return d}
+/* 선택한 땅에서 n부대로 할 수 있는 곳: mv 이동 · amv 상륙 이동 · atk 공격 · aatk 상륙 공격 · vul 반격 점령 */
+function landOpts(s,x,from,n){
+  const T=s.T[from];const res={};if(!T||T.o!==x||!T.u.length)return res;
+  const mg=pickMv(T.u,n),ag=pickAtk(T.u,n);
+  if(mg.length){const mx=Math.min(...mg.map(u=>u.mv));const d=reach(s,x,from,mx);
+    for(const v in d)if(v!==from&&canStack(s,v,mg))res[v]={k:'mv',cost:d[v],g:mg.length}}
+  if(ag.length)for(const v of ADJ[from]){const o=s.T[v].o;if(o===x||o==='X'||res[v])continue;if(atWar(s,x,o))res[v]={k:'atk',g:ag.length}}
+  for(const e of s.vul)if(e.act&&e.by===x&&e.from===from&&!res[e.t]&&mg.length){const t=s.T[e.t];if(t.o!==x&&t.o!=='X'&&!t.u.length&&!t.hid)res[e.t]={k:'vul',g:mg.length}}
+  for(const sz of CS[from]){if(s.S[sz].o!==x)continue;
+    for(const c of SN[sz].coast){if(c===from||res[c])continue;const o=s.T[c].o;if(o==='X')continue;
+      if(o===x){if(mg.length&&canStack(s,c,mg))res[c]={k:'amv',sea:sz,g:mg.length}}
+      else if(ag.length&&atWar(s,x,o))res[c]={k:'aatk',sea:sz,g:ag.length}}}
+  for(const k in res)if(s.T[k].fallout>0)delete res[k];   // 방사능 오염 지역은 진입·공격 불가
+  return res}
+function seaOpts(s,x,from,n){
+  const S=s.S[from];const res={};if(!S||S.o!==x||!S.u.length)return res;
+  const mg=pickMv(S.u,n),ag=pickAtk(S.u,n);
+  for(const v of SN[from].seas){const t=s.S[v];
+    if(!t.o||t.o===x){if(mg.length&&t.u.length+mg.length<=STACK)res[v]={k:'mv',g:mg.length}}
+    else if(ag.length&&atWar(s,x,t.o))res[v]={k:'atk',g:ag.length}}
+  return res}
+/* 전투 계산: 상태를 바꾸지 않는다 */
+function fight(s,x,from,to,n,mode){
+  const src=mode==='sea'?s.S[from]:s.T[from],dst=mode==='sea'?s.S[to]:s.T[to];
+  const att=pickAtk(src.u,n);const dO=dst.o;const def=dst.u;
+  const c={tr:mode==='sea'?null:LN[to].tr,river:mode==='land'&&RIV.has(ek(from,to)),amph:mode==='amph',land:mode==='sea'?null:to,sea:mode==='sea'?to:null};
+  const A=stackPow(s,x,att,'att',c);const D=def.length?stackPow(s,dO,def,'def',c):{p:0,pr:[['빈 땅',0]]};
+  const aS=def.length?hurt(att,D.p):att.map(u=>Object.assign({},u));const dS=hurt(def,A.p);
+  return{att,A,D,aS,dS,dO,def}}
+function sumHp(us){return us.reduce((a,u)=>a+u.hp,0)}
+function landCount(s,x){let c=0;for(const k in s.T)if(s.T[k].o===x)c++;return c}
+function activeNats(s){return ORDER.filter(x=>s.N[x]&&(s.N[x].st==='on'||s.N[x].st==='puppet'))}
+function focusState(s,x,f){const n=s.N[x];const[id,,,req,ex]=f;
+  if(n.done.includes(id))return'done';if(n.fo&&n.fo.id===id)return'cur';
+  if(req&&!n.done.includes(req))return'lock';if(ex&&(n.done.includes(ex)||(n.fo&&n.fo.id===ex)))return'ex';return'open'}
+function tokOk(s,x,tk,where){
+  if(tk.u){const u=UT[tk.u];
+    if(u.k==='sea'){const S=s.S[where];if(!S)return false;if(S.o&&S.o!==x)return false;if(S.u.length>=STACK)return false;return SN[where].coast.some(c=>s.T[c].o===x)}
+    const T=s.T[where];if(!T||T.o!==x)return false;return canStack(s,where,[{t:tk.u}])}
+  const T=s.T[where];if(!T||T.o!==x||T.f)return false;
+  if(tk.ural&&ADJ[where].some(v=>s.T[v].o!==x&&s.T[v].o!=='X'))return false;return true}
+function playersWinner(s){const alive=Object.keys(s.N).filter(x=>s.N[x].st==='on'||s.N[x].st==='puppet');if(!alive.length)return null;
+  const fallen=Object.keys(s.N).some(x=>s.N[x].st!=='on');if(!fallen)return null;const ts=new Set(alive.map(x=>teamOf(s,x)));return ts.size===1?[...ts][0]:null}
+function winnerTeam(s){let team=null;for(const k in s.T){const o=s.T[k].o;if(o==='X')continue;if(o==='N')return null;const t=teamOf(s,o);if(team===null)team=t;else if(team!==t)return null}return team}
+
+/* ================= 호스트 전용: 상태 변경 ================= */
+let G=null;
+function lg(m,x){G.log.push({r:G.rd,x:x||'',m});if(G.log.length>80)G.log=G.log.slice(-80)}
+function nu(s,x,t){return{t,hp:x==='N'?UT[t].p:maxHp(s,x,t),mv:0,h:1,a:1}}
+function newGame(prev){
+  const rand=prev?!!prev.rand:!!newGame.rand;
+  return{gen:(prev?prev.gen:0)+1,ph:'lobby',rand,part:[],cards:[],drawAt:0,drawDone:0,seats:prev&&!rand?prev.seats:{DE:null,IT:null,SU:null,GB:null,FR:null},nk:prev?prev.nk:{},on:{},
+    opts:prev?prev.opts:{tt:0,lim:0,neu:1,win:'all',fog:1},wt:[],T:{},S:{},N:{},war:{},vul:[],pend:null,rd:0,cur:null,te:0,log:[],end:null,hl:[],fx:[],fxn:0,trades:[],trn:0,sup:[],recon:[]};
+}
+function setupBoard(){
+  const act=ORDER.filter(x=>G.seats[x]);G.act=act;G.T={};G.S={};G.N={};G.war={};G.vul=[];G.pend=null;G.log=[];G.end=null;G.hl=[];G.fx=[];G.fxn=0;G.trades=[];G.trn=0;G.sup=[];G.recon=[];
+  for(const x of act)G.N[x]={r:START_RES,capital:0,science:0,airforce:[],fac:NAT[x].fac,st:'on',m:null,fo:null,done:[],tok:[],sent:0,b15:0,fp:0,up:{}};
+  for(const a of LAND){const L=LN[a[0]];let o=L.o0;if(o!=='N'&&!act.includes(o))o='X';
+    const u=[];if(o==='N'&&L.g)for(const t in L.g)for(let i=0;i<L.g[t];i++)u.push(nu(G,'N',t));
+    const isCap=o!=='N'&&o!=='X'&&NAT[o].cap===a[0];
+    G.T[a[0]]={o,u,f:o==='X'?0:L.f0,fort:null,pop:isCap?2:1,wonder:WONDER_AT[a[0]]||null,lab:0,fallout:0}}
+  for(const a of SEA)G.S[a[0]]={o:null,u:[]};
+  for(const x of act){const sp=NAT[x].sp;const unit=nu(G,x,sp);
+    if(UT[sp].k==='sea'){const sz=x==='GB'?'영국 해협':'서지중해';G.S[sz].o=x;G.S[sz].u.push(unit)}else G.T[NAT[x].cap].u.push(unit)}
+  G.rd=1;G.ph='play';G.cur=act[0];lg('1939년 9월. 유럽의 운명을 건 전쟁이 시작됩니다.');startTurn(G.cur);
+}
+function startTurn(x){
+  const n=G.N[x];n.sent=0;n.emU=0;const inc=income(G,x);n.r+=inc;const capInc=capitalIncome(G,x);n.capital=(n.capital||0)+capInc;const sciInc=labCount(G,x);n.science=(n.science||0)+sciInc;
+  for(const p of n.airforce||[])p.cd=Math.max(0,p.cd-1);for(const k in G.T){const t=G.T[k];if(t.o===x&&t.fallout>0)t.fallout--}
+  for(const k in G.T){const t=G.T[k];if(t.o!==x)continue;for(const u of t.u){u.mv=mvOf(G,x,u.t,k);u.h=0;u.a=0}}
+  for(const k in G.S){const t=G.S[k];if(t.o!==x)continue;for(const u of t.u){u.mv=mvOf(G,x,u.t,null);u.h=0;u.a=0}}
+  for(const e of G.vul)if(e.by===x)e.act=true;
+  G.te=Date.now();
+  lg(`${G.rd}라운드 · ${NAT[x].n} 차례 (자원 +${inc} · 자본 +${capInc}${sciInc?' · 과학 +'+sciInc:''})`,x);
+  if(n.ls)n.ls.started=1;
+  G.recon=(G.recon||[]).filter(e=>e.x!==x);   // 정찰 시야는 내 다음 차례 시작까지 유지
+  if(n.fo){n.fo.left--;if(n.fo.left<=0){const id=n.fo.id;n.fo=null;focusDone(x,id)}}
+}
+function give(x,t,auto){const cap=NAT[x].cap;const n=G.N[x];
+  if(auto&&UT[t].k!=='sea'&&G.T[cap].o===x&&canStack(G,cap,[{t}])){G.T[cap].u.push(nu(G,x,t));return`${NAT[x].n} 수도에 ${UT[t].n} 배치`}
+  n.tok.push({u:t});return`${UT[t].n} 보급 대기 (배치 필요)`}
+function focusDone(x,id){const n=G.N[x];n.done.push(id);n.fp=(n.fp||0)+1;const f=FOC[x].find(f=>f[0]===id);let extra='';
+  switch(id){
+    case'rhine':extra=give(x,'panz',true);break;
+    case'anschluss':{const a=G.T['오스트리아'];if(a.o==='N'){a.o='DE';a.u=[];extra='오스트리아가 독일에 병합됨';checkWin()}else extra='오스트리아가 이미 다른 나라 손에 있어 병합 실패';break}
+    case'blitzall':n.r+=8;extra='자원 +8';break;
+    case'maginot':n.tok.push({f:1,fort:1});extra='무료 공장 배치 대기';break;
+    case'joinally':n.fac='ally';extra='프랑스가 연합국에 합류';break;
+    case'antide':n.b15=1;break;
+    case'medheg':n.tok.push({u:'flt'},{u:'mari'});extra='함대 2척 배치 대기';break;
+    case'divart':extra=give(x,'art',true);break;
+    case'joinaxis':n.fac='axis';extra='이탈리아가 추축국에 합류';break;
+    case'commonwealth':n.r+=10;extra='자원 +10';break;
+    case'rearm':n.tok.push({f:1});extra='무료 공장 배치 대기';break;
+    case'navy':n.tok.push({u:'dread'});extra='드레드노트 배치 대기';break;
+    case'air':extra=give(x,'arm',true);break;
+    case'ural':n.tok.push({f:1,ural:1});extra='우랄 공장 배치 대기';break;
+    case'motherland':n.fac='com';extra=give(x,'coss',true)+' · '+give(x,'coss',true)+' · 코민테른 결성';break;
+    case'reorg':for(const k in G.T)if(G.T[k].o===x)for(const u of G.T[k].u)u.hp=Math.min(u.hp,maxHp(G,x,u.t));break;
+  }
+  lg(`중점 완료: ${f[1]}${extra?' — '+extra:''} · 중점 포인트 +1`,x);hl('focus',x);fx({k:'focus',x,t:'중점 완료: '+f[1]});
+}
+function fx(o){o.n=++G.fxn;G.fx.push(o);if(G.fx.length>10)G.fx=G.fx.slice(-10)}
+function hl(k,x){G.hl.push({k,x,n:(G.hl.length?G.hl[G.hl.length-1].n:0)+1});G.hl=G.hl.slice(-6)}
+function capture(x,to,units,prev,how){
+  const T=G.T[to];T.o=x;T.u=units;G.vul=G.vul.filter(e=>e.t!==to);
+  if(G.N[x]&&G.N[x].ls&&NAT[x].cap===to){G.N[x].ls=null;lg(`수도 탈환! ${NAT[x].n}의 결사항전이 성공했습니다`,x);fx({k:'ls',x,t:to,ok:1})}
+  lg(`${NAT[x].n}이(가) ${to} 점령${how?' ('+how+')':''}`,x);hl('cap',x);if(how==='반격 점령')fx({k:'cap',x,t:to});
+  const n=G.N[x];if(n.b15){n.b15=0;n.r+=15;lg('대독 동맹 결성: 자원 +15',x)}
+  if(prev!==x&&popOf(T)>=2){T.pop=popOf(T)-1;n.r+=LOOT_RES;lg(`약탈: ${to}의 인구 -1, 자원 +${LOOT_RES}`,x);fx({k:'loot',x,t:to})}
+  if(prev!=='N'&&G.N[prev]){
+    if(!landCount(G,prev))eliminate(prev,'모든 영토를 잃음');
+    else if(NAT[prev].cap===to&&(G.N[prev].st==='on'||G.N[prev].st==='puppet')){
+      // 결사항전: 다음 자기 차례가 끝날 때까지 수도를 되찾지 못하면 그때 항복
+      G.N[prev].ls={by:x,started:G.cur===prev?1:0};lg(`${NAT[prev].n}의 수도 ${to} 함락! 결사항전 — 다음 차례가 끝나기 전에 탈환하지 못하면 항복합니다`,prev);fx({k:'ls',x:prev,t:to})}
+  }
+  checkWin();
+}
+function eliminate(v,why){const n=G.N[v];n.st='dead';n.fo=null;for(const k in G.S)if(G.S[k].o===v){G.S[k].o=null;G.S[k].u=[]}
+  for(const y in G.N)if(G.N[y].st==='puppet'&&G.N[y].m===v)G.N[y].m=null,G.N[y].st='on';
+  lg(`${NAT[v].n} 몰락 — ${why}`,v)}
+function doCap(m){const{v,by,adv}=G.pend;G.pend=null;const M=topOf(G,by);const nv=G.N[v];
+  if(m==='annex'){for(const k in G.T)if(G.T[k].o===v){G.T[k].o=by;G.T[k].u=[]}
+    for(const k in G.S)if(G.S[k].o===v){G.S[k].o=null;G.S[k].u=[]}
+    nv.st='annexed';nv.fo=null;for(const y in G.N)if(G.N[y].st==='puppet'&&G.N[y].m===v)G.N[y].m=M;
+    lg(`${NAT[v].n} 병합 — ${NAT[by].n}의 영토가 되었습니다`,by)}
+  else{nv.st='puppet';nv.m=M;nv.fo=null;for(const k in G.war)if(k.split('|').includes(v))delete G.war[k];
+    for(const y in G.N)if(G.N[y].st==='puppet'&&G.N[y].m===v)G.N[y].m=M;
+    lg(`${NAT[v].n} 항복 — ${NAT[M].n}의 괴뢰국이 되었습니다`,by)}
+  hl('cap',by);if(!landCount(G,v)&&nv.st==='puppet')eliminate(v,'남은 영토가 없음');checkWin();if(adv&&G.ph==='play')nextTurn()}
+function checkWin(){if(G.ph!=='play')return;const t=winnerTeam(G);if(t)return finish(t,'유럽 전역 장악');if(G.opts.win==='players'){const p=playersWinner(G);if(p)finish(p,'적 플레이어 국가를 모두 무너뜨림')}}
+function finish(team,why){G.ph='end';G.pend=null;const mem=Object.keys(G.N).filter(x=>G.N[x].st!=='annexed'&&G.N[x].st!=='dead'&&teamOf(G,x)===team);
+  G.end={team,name:teamName(team),mem,why,rd:G.rd};lg(`종전 — ${teamName(team)} 승리 (${why})`)}
+const NEU_FROM=10;
+/* 10라운드부터: 중립국 군대가 맞닿은 플레이어 영토보다 강하거나 그 땅이 비어 있으면 진격한다 (상대가 플레이어일 때만) */
+function neutralOdds(s,from,v){const T=s.T[from],D=s.T[v];const c={tr:LN[v].tr,river:RIV.has(ek(from,v)),land:v};
+  const A=stackPow(s,'N',T.u,'att',c).p;const Dp=D.u.length?stackPow(s,D.o,D.u,'def',c).p:0;return{A,D:Dp}}
+function isPlayerLand(s,o){return!!(s.N[o]&&(s.N[o].st==='on'||s.N[o].st==='puppet'))}
+function neutralThreat(s,v){const D=s.T[v];if(s.opts&&s.opts.neu===0)return null;if(!isPlayerLand(s,D.o)||s.rd<NEU_FROM-1)return null;let w=null;
+  for(const f of ADJ[v]){const T=s.T[f];if(T.o!=='N'||!T.u.length)continue;const r=neutralOdds(s,f,v);if(!D.u.length||r.A>r.D){if(!w||r.A-r.D>w.A-w.D)w={from:f,A:r.A,D:r.D}}}return w}
+function neutralPhase(){if(G.rd<NEU_FROM||G.opts.neu===0)return;let moves=0;
+  const list=Object.keys(G.T).filter(k=>G.T[k].o==='N'&&G.T[k].u.length).sort(()=>Math.random()-.5);
+  for(const from of list){const T=G.T[from];if(T.o!=='N'||!T.u.length)continue;let best=null;
+    for(const v of ADJ[from]){const D=G.T[v];if(!isPlayerLand(G,D.o)||D.fallout>0)continue;const r=neutralOdds(G,from,v);if(D.u.length&&r.A<=r.D)continue;
+      const sc=(D.u.length?r.A-r.D:50)+(D.f?2:0)+Math.random();if(!best||sc>best.sc)best={v,sc,A:r.A,D:r.D}}
+    if(!best)continue;moves++;const v=best.v,D=G.T[v],prev=D.o;
+    const att=T.u;const aS=D.u.length?hurt(att,best.D):att.map(u=>Object.assign({},u));const dS=hurt(D.u,best.A);
+    T.u=[];D.u=dS;fx({k:'atk',x:'N',f:from,t:v,a:best.A,d:best.D,c:!dS.length&&aS.length?1:0});
+    if(!dS.length&&aS.length){D.o='N';D.u=aS.map(u=>Object.assign(u,{mv:0,a:1}));G.vul=G.vul.filter(e=>e.t!==v);
+      lg(`중립국 진격: ${from}의 수비대가 ${NAT[prev].n}의 ${v}을(를) 점령 (${best.A} vs ${best.D})`,prev);
+      if(NAT[prev].cap===v)lg(`${NAT[prev].n}의 수도가 중립군에게 넘어갔습니다! 되찾으세요`,prev);
+      if(!landCount(G,prev))eliminate(prev,'중립국 봉기로 모든 영토 상실')}
+    else{if(aS.length)T.u=aS;lg(`중립국 진격 실패: ${from} → ${v} (${best.A} vs ${best.D})`,prev)}}
+  if(moves){fx({k:'neu',m:moves});hl('war','N');checkWin()}}
+function tradeOk(s,o){const F=s.N[o.f],T=s.N[o.t];if(!F||!T||!['on','puppet'].includes(F.st)||!['on','puppet'].includes(T.st))return'거래 상대가 사라졌습니다';
+  if(F.r<o.gr)return NAT[o.f].n+'의 자원이 부족합니다';if(T.r<o.rr)return NAT[o.t].n+'의 자원이 부족합니다';
+  for(const[l,own]of[[o.gt,o.f],[o.rt,o.t]]){if(!l)continue;const L=s.T[l];if(!L||L.o!==own)return l+'의 주인이 바뀌었습니다';if(L.u.length)return l+'에 병력이 있어 넘길 수 없습니다';if(NAT[own].cap===l)return'수도는 거래할 수 없습니다'}
+  return null}
+function tradeAct(pid,a){
+  const ctl=x=>G.N[x]&&(G.seats[x]===pid||(pid===myPeer&&canProxy(x)));
+  if(a.k==='trade'){const f=a.from,t=a.to;if(!ctl(f))return'내 나라가 아닙니다';if(!G.N[t]||t===f)return'거래 상대를 고르세요';
+    const o={id:++G.trn,f,t,gr:Math.max(0,Math.min(999,int(a.gr))),rr:Math.max(0,Math.min(999,int(a.rr))),gt:a.gt||null,rt:a.rt||null,rd:G.rd};
+    if(!o.gr&&!o.rr&&!o.gt&&!o.rt)return'주거나 받을 것을 하나 이상 정하세요';
+    if(G.trades.filter(x=>x.f===f).length>=3)return'보낸 제안은 3개까지 걸어 둘 수 있습니다';
+    const e=tradeOk(G,o);if(e)return e;G.trades.push(o);lg(`${NAT[f].n} → ${NAT[t].n} 거래 제안`,f);return}
+  const o=G.trades.find(x=>x.id===int(a.id));if(!o)return'이미 끝난 제안입니다';
+  if(a.k==='tcan'){if(!ctl(o.f))return'내 제안이 아닙니다';G.trades=G.trades.filter(x=>x!==o);return}
+  if(!ctl(o.t))return'나에게 온 제안이 아닙니다';
+  G.trades=G.trades.filter(x=>x!==o);
+  if(a.k==='tdec'){lg(`${NAT[o.t].n}이(가) ${NAT[o.f].n}의 거래 제안을 거절`,o.t);return}
+  const e=tradeOk(G,o);if(e)return'거래 실패: '+e;
+  const F=G.N[o.f],T=G.N[o.t];F.r+=o.rr-o.gr;T.r+=o.gr-o.rr;if(o.gt)G.T[o.gt].o=o.t;if(o.rt)G.T[o.rt].o=o.f;
+  lg(`거래 성사: ${NAT[o.f].n} ↔ ${NAT[o.t].n}`+[o.gr?` 자원 ${o.gr}→`:'',o.gt?` ${o.gt}→`:'',o.rr?` ←자원 ${o.rr}`:'',o.rt?` ←${o.rt}`:''].join(''),o.f);
+  fx({k:'trade',x:o.f,y:o.t});checkWin();return}
+function nextTurn(){
+  if(G.ph!=='play'||G.pend)return;const x=G.cur;
+  {const n=G.N[x];if(n&&n.ls&&n.ls.started){const capT=G.T[NAT[x].cap];const by0=n.ls.by;n.ls=null;
+    if(capT.o!==x){const owner=capT.o;let by=G.N[owner]&&owner!==x&&['on','puppet'].includes(G.N[owner].st)?owner:by0;
+      if(!G.N[by]||!['on','puppet'].includes(G.N[by].st)){eliminate(x,'수도를 되찾지 못함');checkWin();if(G.ph!=='play')return}
+      else{lg(`${NAT[x].n}의 결사항전 실패 — 수도를 되찾지 못했습니다`,x);G.pend={v:x,by,adv:1,ls:1};return}}}}
+  G.vul=G.vul.filter(e=>!(e.by===x&&e.act));G.sup=(G.sup||[]).filter(e=>e.x!==x);
+  const act=activeNats(G);if(!act.length)return finish('N','모든 강대국이 무너짐');
+  let i=ORDER.indexOf(x),nx=null;for(let k=i+1;k<ORDER.length;k++)if(act.includes(ORDER[k])){nx=ORDER[k];break}
+  if(!nx){if(G.opts.lim&&G.rd>=G.opts.lim)return scoreEnd();G.rd++;G.trades=G.trades.filter(o=>o.rd>=G.rd-2);for(const k in G.T){const t=G.T[k];if(!G.N[t.o]&&t.fallout>0)t.fallout--}neutralPhase();if(G.ph!=='play')return;
+    const a2=activeNats(G);if(!a2.length)return finish('N','모든 강대국이 무너짐');nx=a2[0]}
+  G.cur=nx;startTurn(nx);
+}
+function scoreEnd(){const c={};for(const k in G.T){const o=G.T[k].o;if(o==='N'||o==='X')continue;const t=teamOf(G,o);c[t]=(c[t]||0)+1}
+  const best=Object.entries(c).sort((a,b)=>b[1]-a[1]);if(!best.length)return finish('N','제한 라운드 종료');
+  finish(best[0][0],`${G.opts.lim}라운드 종료 · 영토 ${best[0][1]}곳으로 최다`)}
+function autoTurn(x){const n=G.N[x];
+  if(!n.emU&&(n.capital||0)>=EMERG_COST){n.capital-=EMERG_COST;n.r+=EMERG_GAIN;n.emU=1}
+  for(const k in G.T){const t=G.T[k];if(t.o!==x)continue;for(const u of t.u){const need=maxHp(G,x,u.t)-u.hp;if(!u.h&&need>0&&n.r>=need){n.r-=need;u.hp+=need;u.h=1}}}
+  const cost=unitCost(G,x,'inf');let spots=Object.keys(G.T).filter(k=>G.T[k].o===x&&G.T[k].f);if(!spots.length)spots=Object.keys(G.T).filter(k=>G.T[k].o===x).slice(0,1);
+  let built=0;for(const k of spots)while(n.r>=cost&&!capFull(G,x)&&canStack(G,k,[{t:'inf'}])&&built<6){n.r-=cost;G.T[k].u.push(nu(G,x,'inf'));built++}
+  lg(`자동 진행: 치료 후 보병 ${built}부대 생산`,x);nextTurn()}
+/* 행동 처리. 실패하면 문자열을 돌려준다 */
+function act(x,a){
+  const n=G.N[x];const k=a.k;
+  if(k==='end'){nextTurn();return}
+  if(k==='go'){const cnt=Math.max(1,Math.min(STACK,int(a.n)));
+    if(SN[a.f]){const o=seaOpts(G,x,a.f,cnt)[a.to];if(!o)return'그 바다로는 갈 수 없습니다';
+      if(o.k==='mv'){const g=pickMv(G.S[a.f].u,cnt);G.S[a.f].u=G.S[a.f].u.filter(u=>!g.includes(u));g.forEach(u=>u.mv--);G.S[a.to].u.push(...g);G.S[a.to].o=x;if(!G.S[a.f].u.length)G.S[a.f].o=null;fx({k:'mv',x,f:a.f,t:a.to});return}
+      const r=fight(G,x,a.f,a.to,cnt,'sea');const S=G.S[a.f],D=G.S[a.to];S.u=S.u.filter(u=>!r.att.includes(u));r.aS.forEach(u=>{u.mv=0;u.a=1});D.u=r.dS;
+      lg(`해전: ${NAT[x].n} ${r.A.p} vs ${NAT[r.dO].n} ${r.D.p} (${a.to})`,x);hl('boom',x);fx({k:'atk',x,f:a.f,t:a.to,a:r.A.p,d:r.D.p,c:!r.dS.length&&r.aS.length?1:0});
+      if(!r.dS.length){D.o=r.aS.length?x:null;D.u=r.aS;if(r.aS.length)lg(`${a.to} 제해권 장악`,x)}else S.u.push(...r.aS);
+      if(!S.u.length)S.o=null;return}
+    const T=G.T[a.f];if(!T||T.o!==x)return'출발지가 내 영토가 아닙니다';
+    const o=landOpts(G,x,a.f,cnt)[a.to];if(!o)return'그곳으로는 갈 수 없습니다';
+    if(o.k==='mv'||o.k==='amv'||o.k==='vul'){const g=pickMv(T.u,cnt);T.u=T.u.filter(u=>!g.includes(u));
+      fx({k:'mv',x,f:a.f,t:a.to});
+      if(o.k==='mv'){g.forEach(u=>u.mv=Math.max(0,u.mv-o.cost));G.T[a.to].u.push(...g)}
+      else if(o.k==='amv'){g.forEach(u=>u.mv=0);G.T[a.to].u.push(...g);lg(`${o.sea}를 건너 ${a.to}(으)로 이동`,x)}
+      else{const prev=G.T[a.to].o;g.forEach(u=>{u.mv=0;u.a=1});capture(x,a.to,g,prev,'반격 점령')}
+      return}
+    const mode=o.k==='atk'?'land':'amph';const prevO=G.T[a.to].o;
+    const r=fight(G,x,a.f,a.to,cnt,mode);T.u=T.u.filter(u=>!r.att.includes(u));r.aS.forEach(u=>{u.mv=0;u.a=1});G.T[a.to].u=r.dS;
+    const dn=prevO==='N'?'중립군':NAT[prevO].n;
+    lg(`${mode==='amph'?'상륙전':'전투'}: ${a.f}→${a.to} · ${NAT[x].n} ${r.A.p} vs ${dn} ${r.D.p}`,x);hl('boom',x);fx({k:'atk',x,f:a.f,t:a.to,a:r.A.p,d:r.D.p,c:!r.dS.length&&r.aS.length?1:0});
+    if(!r.dS.length&&r.aS.length)capture(x,a.to,r.aS,prevO,mode==='amph'?'상륙':'');
+    else{if(r.aS.length)T.u.push(...r.aS);
+      else if(!T.u.length&&r.dS.length&&prevO!=='N'){G.vul.push({t:a.f,by:prevO,from:a.to,act:false});lg(`${a.f}이(가) 비었습니다. ${dn}은(는) 다음 차례에 반격 점령할 수 있습니다`,x)}
+      if(!r.dS.length&&!r.aS.length)lg(`양쪽 모두 전멸 — ${a.to}은(는) 빈 땅으로 남음`,x)}
+    return}
+  if(k==='lab'){const T=G.T[a.t];if(!T||T.o!==x)return'내 영토가 아닙니다';if(T.lab)return'이미 연구소가 있습니다';
+    if(n.r<LAB_RES||(n.capital||0)<LAB_CAP)return`자원 ${LAB_RES} + 자본 ${LAB_CAP}이 필요합니다`;n.r-=LAB_RES;n.capital-=LAB_CAP;T.lab=1;
+    lg(`${a.t}에 연구소 건설 (자원 -${LAB_RES}, 자본 -${LAB_CAP})`,x);fx({k:'build',x,t:a.t,u:'연구소'});return}
+  if(k==='air'){if(!AIR[a.u])return'없는 기종';const A=airSpec(x,a.u);n.airforce=n.airforce||[];if(n.airforce.length>=AIR_MAX)return`항공기는 ${AIR_MAX}대까지 보유할 수 있습니다`;
+    if(n.r<A.r||(n.science||0)<A.sc)return`자원 ${A.r} + 과학 ${A.sc}이 필요합니다`;n.r-=A.r;n.science-=A.sc;n.airforce.push({type:a.u,cd:1});
+    lg(`${A.n} 배치 (자원 -${A.r}, 과학 -${A.sc}) · 다음 턴부터 출격`,x);fx({k:'focus',x,t:`${A.n} 배치`});hl('focus',x);return}
+  if(k==='sortie'){const pl=(n.airforce||[])[int(a.i)];const sk=SKILL[a.sk];if(!pl||!sk)return'항공기를 고르세요';const sp=airSpec(x,pl.type);if(!airSkills(x,pl.type).includes(a.sk))return`${sp.n}은(는) 그 임무를 할 수 없습니다`;
+    if(pl.cd>0)return`재출격까지 ${pl.cd}턴 남았습니다`;if(!airTargets(G,x,a.sk).includes(a.t))return'출격 범위 밖이거나 조건(제공권·적 존재)이 맞지 않습니다';
+    const L=G.T[a.t],S=G.S[a.t];const from=airBase(G,x,a.t);
+    if(a.sk==='strat'&&!((a.op==='fac'&&L.f)||(a.op==='lab'&&L.lab)||(a.op==='pop'&&popOf(L)>1)))return'폭격할 대상(공장·연구소·인구)을 고르세요';
+    pl.cd=sp.cd;
+    if(a.sk==='sup'){
+      // 요격 주체: 영토면 그 주인, 바다면 함대 주인 → 함대가 없으면 그 바다 해안을 가진 적국(대기 중 전투기 보유)
+      const foe=o=>G.N[o]&&['on','puppet'].includes(G.N[o].st)&&teamOf(G,o)!==teamOf(G,x);const ready=o=>(G.N[o].airforce||[]).some(p=>p.type==='fighter'&&p.cd===0);
+      let o=L?L.o:S&&S.o?S.o:null;
+      if(S&&!(o&&foe(o)&&ready(o))){const c=SN[a.t].coast.map(k=>G.T[k].o).find(q=>foe(q)&&ready(q));if(c)o=c}
+      if(G.N[o]&&foe(o)){const ef=(G.N[o].airforce||[]).find(p=>p.type==='fighter'&&p.cd===0);
+        if(ef){const es=airSpec(o,'fighter');if(!es.intFree)ef.cd=es.cd;lg(`요격! ${NAT[o].n} ${es.n}이(가) ${a.t} 상공에서 ${NAT[x].n} ${sp.n}을(를) 막았습니다 (${es.intFree?'스핏파이어는 계속 대기':'양측 재출격 대기'})`,x);fx({k:'air',x,y:o,f:from,t:a.t,m:'int'});return}}
+      G.sup.push({t:a.t,x});G.recon=(G.recon||[]).filter(e=>!(e.x===x&&e.t===a.t));G.recon.push({t:a.t,x});lg(`${a.t} 제공권 장악 (이번 턴)`,x);fx({k:'air',x,f:from,t:a.t,m:'sup'});return}
+    if(a.sk==='naval'||a.sk==='torp'){const before=S.u.length;const o=S.o;const dm=SKILL[a.sk].dmg;S.u=hurt(S.u,dm);if(!S.u.length)S.o=null;lg(`${SKILL[a.sk].n}(${sp.n}): ${a.t}의 ${NAT[o].n} 함대에 피해 ${dm} (격침 ${before-S.u.length})`,x);fx({k:'air',x,f:from,t:a.t,m:'hit',d:dm});return}
+    if(a.sk==='ground'){const before=L.u.length;const dm=sp.dmg||SKILL.ground.dmg;L.u=hurt(L.u,dm);lg(`지상 타격(${sp.n}): ${a.t}에 피해 ${dm} (격파 ${before-L.u.length})`,x);fx({k:'air',x,f:from,t:a.t,m:'hit',d:dm});return}
+    if(a.sk==='strat'){if(a.op==='fac'){L.f=0;lg(`전략 폭격: ${a.t}의 공장 파괴`,x)}else if(a.op==='lab'){L.lab=0;lg(`전략 폭격: ${a.t}의 연구소 파괴`,x)}else{L.pop=popOf(L)-1;lg(`전략 폭격: ${a.t}의 인구 -1`,x)}
+      fx({k:'air',x,f:from,t:a.t,m:'bomb'});return}}
+  if(k==='nuke'){const T=G.T[a.t];if(!T||T.o==='X')return'투하할 수 없는 곳입니다';
+    if(n.r<NUKE_COST||(n.capital||0)<NUKE_COST||(n.science||0)<NUKE_COST)return`자원·자본·과학이 각각 ${NUKE_COST} 필요합니다`;
+    n.r-=NUKE_COST;n.capital-=NUKE_COST;n.science-=NUKE_COST;const owner=T.o,killed=T.u.length;
+    T.u=[];T.pop=1;T.f=0;T.lab=0;T.fallout=FALLOUT_T;G.vul=G.vul.filter(e=>e.t!==a.t&&e.from!==a.t);G.sup=G.sup.filter(e=>e.t!==a.t);
+    lg(`☢ ${NAT[x].n}이(가) ${a.t}에 핵폭탄 투하! 병력 ${killed}부대 소멸, 공장·연구소 파괴, ${FALLOUT_T}턴간 방사능 오염`,x);fx({k:'nuke',x,t:a.t});
+    const cv=ORDER.find(y=>y!==x&&NAT[y].cap===a.t&&G.N[y]&&(G.N[y].st==='on'||G.N[y].st==='puppet')&&owner===y);
+    if(cv){G.pend={v:cv,by:x,nk:1};lg(`${NAT[cv].n}의 수도가 핵에 맞아 전의를 상실했습니다. 무조건 항복`,cv)}
+    return}
+  if(k==='pop'){const T=G.T[a.t];if(!T||T.o!==x)return'내 영토가 아닙니다';if(popOf(T)>=POP_MAX)return'인구가 이미 최대(3단계)입니다';
+    const c=popCost(G,x,a.t);if((n.capital||0)<c)return`자본이 부족합니다 (${c})`;n.capital-=c;T.pop=popOf(T)+1;
+    lg(`${a.t} 인구 증가 → ${T.pop-1}단계 (자본 -${c})`,x);fx({k:'pop',x,t:a.t,p:T.pop});return}
+  if(k==='spy'){const t=a.t;const tn=G.N[t];if(!tn||t===x||!['on','puppet'].includes(tn.st))return'첩보 대상 나라를 고르세요';if(teamOf(G,t)===teamOf(G,x))return'같은 편에는 스파이를 보낼 수 없습니다';
+    if((n.capital||0)<SPY_COST)return`자본이 부족합니다 (${SPY_COST})`;n.capital-=SPY_COST;
+    const lands=Object.keys(G.T).filter(k=>G.T[k].o===t);const facs=lands.filter(k=>G.T[k].f),pops=lands.filter(k=>popOf(G.T[k])>=2);
+    const pick=a=>a[Math.floor(Math.random()*a.length)];let roll=Math.random(),msg;
+    const failP=SPY_FAIL+(hasWonder(G,t,'bigben')?.1:0);
+    if(roll<failP){lg(`🕵 첩보 실패: ${NAT[x].n} 스파이가 ${NAT[t].n}에서 체포되었습니다${hasWonder(G,t,'bigben')?' (빅벤 방첩)':''} (자본 -${SPY_COST})`,x);fx({k:'spy',x,y:t,m:'fail'});return}
+    roll=(roll-failP)/(1-failP);   // 성공했을 때의 결과 배분: 70 / 15 / 15
+    if(roll>=.85&&pops.length){const k=pick(pops);G.T[k].pop=popOf(G.T[k])-1;msg=`${NAT[t].n}의 ${k} 인구 -1 (사보타주)`;fx({k:'spy',x,y:t,t:k,m:'pop'})}
+    else if(roll>=.70&&roll<.85&&facs.length){const k=pick(facs);G.T[k].f=0;msg=`${NAT[t].n}의 ${k} 공장 파괴 (공작)`;fx({k:'spy',x,y:t,t:k,m:'fac'})}
+    else{const amt=10+Math.floor(Math.random()*11);const took=Math.min(amt,tn.capital||0);tn.capital=(tn.capital||0)-took;n.capital+=amt;msg=`${NAT[t].n}의 국고에서 자본 ${amt} 탈취${took<amt?` (상대 손실 ${took})`:''}`;fx({k:'spy',x,y:t,m:'cash',a:amt})}
+    lg(`🕵 첩보 작전 성공: ${msg} (자본 -${SPY_COST})`,x);return}
+  if(k==='emerg'){if(n.emU)return'비상금은 한 턴에 한 번만 쓸 수 있습니다';if((n.capital||0)<EMERG_COST)return`자본이 부족합니다 (${EMERG_COST})`;n.capital-=EMERG_COST;n.r+=EMERG_GAIN;n.emU=1;
+    lg(`비상금 집행: 자본 -${EMERG_COST}, 자원 +${EMERG_GAIN}`,x);hl('cap',x);return}
+  if(k==='heal'){const T=G.T[a.t];if(!T||T.o!==x)return'내 영토가 아닙니다';let paid=0,cnt=0;
+    for(const u of T.u){const need=maxHp(G,x,u.t)-u.hp;if(u.h||need<=0)continue;if(n.r<need)continue;n.r-=need;paid+=need;u.hp+=need;u.h=1;cnt++}
+    if(!cnt)return'치료할 유닛이 없거나 자원이 부족합니다';lg(`${a.t} ${cnt}부대 치료 (-${paid})`,x);return}
+  if(k==='build'){const t=a.u;if(!UT[t]||!buildable(x).includes(t))return'생산할 수 없는 유닛';if(capFull(G,x))return CAP_MSG;const T=G.T[a.t];if(!T||T.o!==x||!T.f)return'내 공장이 있는 영토에서만 생산합니다';
+    const c=unitCost(G,x,t);if(n.r<c)return'자원이 부족합니다';
+    if(UT[t].k==='sea'){if(!CS[a.t].includes(a.sea))return'인접한 바다를 고르세요';const S=G.S[a.sea];if(S.o&&S.o!==x)return'적 함대가 있는 바다입니다';if(S.u.length>=STACK)return'바다에 이미 5척이 있습니다';
+      n.r-=c;S.o=x;S.u.push(nu(G,x,t));fx({k:'build',x,t:a.sea,u:UT[t].n});lg(`${a.sea}에 ${UT[t].n} 진수 (-${c})`,x);return}
+    if(!canStack(G,a.t,[{t}]))return'한 영토에는 한 종류만, 최대 5부대까지 둘 수 있습니다';
+    n.r-=c;T.u.push(nu(G,x,t));fx({k:'build',x,t:a.t,u:UT[t].n});lg(`${a.t}에서 ${UT[t].n} 생산 (-${c})`,x);return}
+  if(k==='fac'){const T=G.T[a.t];if(!T||T.o!==x)return'내 영토가 아닙니다';if(T.f)return'이미 공장이 있습니다';const c=facCost(G,x,a.t);if(n.r<c)return'자원이 부족합니다';
+    n.r-=c;T.f=1;fx({k:'build',x,t:a.t,u:'공장'});lg(`${a.t}에 공장 건설 (-${c})`,x);return}
+  if(k==='tok'){const tk=n.tok[int(a.i)];if(!tk)return'보급품이 없습니다';if(!tokOk(G,x,tk,a.t))return'그곳에는 배치할 수 없습니다';n.tok.splice(int(a.i),1);
+    if(tk.u){if(UT[tk.u].k==='sea'){G.S[a.t].o=x;G.S[a.t].u.push(nu(G,x,tk.u))}else G.T[a.t].u.push(nu(G,x,tk.u));lg(`${a.t}에 ${UT[tk.u].n} 배치`,x)}
+    else{G.T[a.t].f=1;if(tk.fort)G.T[a.t].fort=x;lg(`${a.t}에 무료 공장${tk.fort?' · 마지노 요새':''}`,x)}return}
+  if(k==='up'){const t=a.u;if(!UT[t]||!buildable(x).includes(t))return'강화할 수 없는 유닛';if((n.fp||0)<1)return'중점 포인트가 없습니다';
+    n.fp--;n.up=n.up||{};n.up[t]=(n.up[t]||0)+1;lg(`${UT[t].n} 전투력 강화 → +${n.up[t]} (중점 포인트 -1)`,x);hl('focus',x);fx({k:'focus',x,t:`${UT[t].n} 전투력 +1 (총 +${n.up[t]})`});return}
+  if(k==='focus'){if(n.st!=='on')return'괴뢰국은 중점을 진행할 수 없습니다';if(n.fo)return'진행 중인 중점이 있습니다';const f=FOC[x].find(f=>f[0]===a.id);if(!f)return'없는 중점';
+    if(focusState(G,x,f)!=='open')return'아직 고를 수 없는 중점입니다';n.fo={id:f[0],left:f[2]};lg(`중점 시작: ${f[1]} (${f[2]}턴)`,x);return}
+  if(k==='war'){const t=a.t;if(n.st!=='on')return'괴뢰국은 선전포고할 수 없습니다';if(!G.N[t]||t===x)return'대상이 없습니다';const tn=G.N[t];if(tn.st!=='on'&&tn.st!=='puppet')return'이미 사라진 나라입니다';
+    const T=topOf(G,t);if(T===x)return'내 괴뢰국입니다';if(facOf(G,x)&&facOf(G,x)===facOf(G,T))return'같은 진영입니다';if(G.war[wk(x,T)]!=null)return'이미 선전포고했습니다';
+    if(n.r<WAR_COST)return'자원이 부족합니다 (8)';n.r-=WAR_COST;G.war[wk(x,T)]=G.rd;lg(`${NAT[x].n}이(가) ${NAT[T].n}에 선전포고! 다음 라운드부터 침공 가능`,x);fx({k:'war',x,t:T});return}
+  if(k==='send'){const to=a.to,amt=int(a.amt);if(!G.N[to]||to===x)return'받을 나라가 없습니다';if(!['on','puppet'].includes(G.N[to].st))return'받을 수 없는 나라';
+    if(teamOf(G,x)!==teamOf(G,to))return'중점으로 결속된 동맹끼리만 보낼 수 있습니다';
+    if(amt<1||n.sent+amt>SEND_MAX)return`한 턴에 최대 ${SEND_MAX}까지 보낼 수 있습니다`;if(n.r<amt)return'자원이 부족합니다';
+    n.r-=amt;n.sent+=amt;G.N[to].r+=amt;lg(`${NAT[to].n}에 자원 ${amt} 지원`,x);return}
+  return'알 수 없는 행동';
+}
+
+/* ================= 유틸 ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const int=v=>{v=Math.trunc(Number(v));return Number.isFinite(v)?v:0};
+function rid(){const a=new Uint32Array(2);crypto.getRandomValues(a);return(a[0].toString(36)+a[1].toString(36)).slice(0,8)}
+const STRIP=/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁠-⁯﻿]/g;
+const clean=(s,n)=>typeof s==='string'?s.replace(STRIP,' ').replace(/\s+/g,' ').trim().slice(0,n):'';
+const CODECH='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function genCode(){let s='';const a=new Uint32Array(6);crypto.getRandomValues(a);for(const x of a)s+=CODECH[x%CODECH.length];return s.slice(0,3)+'-'+s.slice(3)}
+/* 한글 입력 상태로 친 코드를 원래 영문 자판 글자로 되돌린다 (예: ㅏ7ㅂ2ㅡㅌ → K7Q2MX) */
+const KJ={'ㄱ':'r','ㄲ':'R','ㄳ':'rt','ㄴ':'s','ㄵ':'sw','ㄶ':'sg','ㄷ':'e','ㄸ':'E','ㄹ':'f','ㄺ':'fr','ㄻ':'fa','ㄼ':'fq','ㄽ':'ft','ㄾ':'fx','ㄿ':'fv','ㅀ':'fg','ㅁ':'a','ㅂ':'q','ㅃ':'Q','ㅄ':'qt','ㅅ':'t','ㅆ':'T','ㅇ':'d','ㅈ':'w','ㅉ':'W','ㅊ':'c','ㅋ':'z','ㅌ':'x','ㅍ':'v','ㅎ':'g',
+ 'ㅏ':'k','ㅐ':'o','ㅑ':'i','ㅒ':'O','ㅓ':'j','ㅔ':'p','ㅕ':'u','ㅖ':'P','ㅗ':'h','ㅘ':'hk','ㅙ':'ho','ㅚ':'hl','ㅛ':'y','ㅜ':'n','ㅝ':'nj','ㅞ':'np','ㅟ':'nl','ㅠ':'b','ㅡ':'m','ㅢ':'ml','ㅣ':'l'};
+const KI='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ',KM='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ',KF=['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+function unHangul(s){let o='';for(const ch of s){const c=ch.charCodeAt(0);
+  if(c>=0xAC00&&c<=0xD7A3){const v=c-0xAC00;o+=KJ[KI[Math.floor(v/588)]]+KJ[KM[Math.floor(v%588/28)]]+(KF[v%28]?KJ[KF[v%28]]:'')}
+  else o+=KJ[ch]||ch}return o}
+function normCode(s){s=unHangul(String(s||'')).normalize('NFKC').toUpperCase().replace(/[^A-Z0-9]/g,'');return s.length===6?s.slice(0,3)+'-'+s.slice(3):null}
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3400)}
+
+/* ================= 효과음 ================= */
+let AC=null,soundOn=true;try{soundOn=localStorage.getItem('eu-sound')!=='0'}catch(e){}
+function actx(){if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C()}if(AC.state==='suspended')AC.resume();return AC}
+function tone(f,d,type,vol,when,slide){const a=actx();if(!a)return;const t=a.currentTime+(when||0);const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);
+  g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.03)}
+const SFX={click:()=>tone(880,.04,'square',.022),
+  boom:()=>{tone(140,.35,'sawtooth',.09,0,45);tone(90,.5,'triangle',.1,.05,40)},
+  cap:()=>{tone(523,.12,'triangle',.07);tone(659,.12,'triangle',.07,.12);tone(784,.22,'triangle',.07,.24)},
+  turn:()=>{tone(392,.14,'sine',.06);tone(587,.22,'sine',.06,.13)},
+  war:()=>{for(let i=0;i<3;i++)tone(300,.2,'sawtooth',.05,i*.25,200)},
+  focus:()=>{/* 대장간 망치질: 비조화 배음의 금속성 타격 세 번 (칭-칭-칭) */
+    [[0,1],[.3,1.03],[.6,.985]].forEach(([w,k])=>{const f=1180*k;
+      [[1,.1,.55],[2.76,.06,.42],[5.4,.04,.3],[8.93,.025,.2],[13.3,.012,.12]].forEach(([r,v,d])=>tone(f*r,d,'sine',v,w));
+      tone(4200,.025,'square',.03,w);tone(160,.06,'triangle',.06,w)})},
+  shuffle:()=>{const a=actx();if(!a)return;for(let i=0;i<38;i++){const t=i*.055+Math.random()*.02;const src=a.createBufferSource();src.buffer=noiseBuf();const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=2600+Math.random()*1800;f.Q.value=1.2;const g=a.createGain();
+      const t0=a.currentTime+t;g.gain.setValueAtTime(.16,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+.035);src.connect(f);f.connect(g);g.connect(a.destination);src.start(t0,Math.random()*.4);src.stop(t0+.05)}
+    tone(140,.12,'triangle',.07,1.0);tone(140,.12,'triangle',.07,2.1)},
+  spread:()=>{for(let i=0;i<5;i++)tone(900+i*60,.05,'triangle',.04,i*.07);tone(110,.2,'triangle',.08,.05)},
+  flip:()=>{const a=actx();if(!a)return;const src=a.createBufferSource();src.buffer=noiseBuf();const f=a.createBiquadFilter();f.type='bandpass';f.Q.value=2;const g=a.createGain();const t0=a.currentTime;
+      f.frequency.setValueAtTime(800,t0);f.frequency.exponentialRampToValueAtTime(5000,t0+.22);g.gain.setValueAtTime(.18,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+.25);src.connect(f);f.connect(g);g.connect(a.destination);src.start(t0);src.stop(t0+.3);
+      tone(523,.18,'triangle',.07,.35);tone(659,.18,'triangle',.07,.47);tone(784,.18,'triangle',.07,.59);tone(1047,.45,'triangle',.08,.71)},
+  nuke:()=>{const a=actx();if(!a)return;const src=a.createBufferSource();src.buffer=noiseBuf();src.loop=true;const f=a.createBiquadFilter();f.type='lowpass';const g=a.createGain();const t0=a.currentTime;
+      f.frequency.setValueAtTime(900,t0);f.frequency.exponentialRampToValueAtTime(90,t0+3.5);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(.5,t0+.08);g.gain.exponentialRampToValueAtTime(.0001,t0+4.2);
+      src.connect(f);f.connect(g);g.connect(a.destination);src.start(t0);src.stop(t0+4.3);tone(70,3.5,'sine',.3,0,24);tone(140,1.2,'sawtooth',.06,0,40)},
+  jet:()=>{const a=actx();if(!a)return;const src=a.createBufferSource();src.buffer=noiseBuf();src.loop=true;const f=a.createBiquadFilter();f.type='bandpass';f.Q.value=3;const g=a.createGain();const t0=a.currentTime;
+      f.frequency.setValueAtTime(600,t0);f.frequency.exponentialRampToValueAtTime(3200,t0+.6);f.frequency.exponentialRampToValueAtTime(500,t0+1.3);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(.12,t0+.5);g.gain.exponentialRampToValueAtTime(.0001,t0+1.4);
+      src.connect(f);f.connect(g);g.connect(a.destination);src.start(t0);src.stop(t0+1.5)},
+  notify:()=>{tone(660,.1,'sine',.05);tone(990,.16,'sine',.05,.1)},
+  bad:()=>tone(200,.25,'sawtooth',.05,0,110),
+  beep:()=>tone(1320,.08,'square',.05),
+  end:()=>{tone(262,.3,'triangle',.1);tone(330,.3,'triangle',.1,.25);tone(392,.6,'triangle',.1,.5)}};
+let NBUF=null;function noiseBuf(){const a=actx();if(!NBUF&&a){const n=a.sampleRate;NBUF=a.createBuffer(1,n,n);const d=NBUF.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1}return NBUF}
+function sfx(n){if(!soundOn)return;try{SFX[n]&&SFX[n]()}catch(e){}}
+function sndLabel(){const b=document.getElementById('snd');if(b){b.textContent=soundOn?'♪ 소리 켜짐':'소리 꺼짐';b.setAttribute('aria-pressed',soundOn?'true':'false')}}
+/* ---- 배경음악: 파일 없이 Web Audio로 합성하는 군악풍 긴장 테마 (D단조, 104bpm) ---- */
+const BGM={on:false,timer:null,next:0,step:0,out:null,noise:null};
+const mf=m=>440*Math.pow(2,(m-69)/12);
+const PROG=[[38,0],[38,0],[34,1],[33,1],[38,0],[43,0],[34,1],[33,1]]; // [근음 MIDI, 장조?]
+function bgmVoice(type,f,t,dur,vol,cut,slide){const a=AC;const o=a.createOscillator(),g=a.createGain(),fl=a.createBiquadFilter();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  fl.type='lowpass';fl.frequency.setValueAtTime(cut||2000,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(fl);fl.connect(g);g.connect(BGM.out);o.start(t);o.stop(t+dur+.05)}
+function bgmPad(f,t,dur,vol){const a=AC;const g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=900;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+dur*.35);g.gain.linearRampToValueAtTime(.0001,t+dur);
+  for(const d of[-6,6]){const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=d;o.connect(fl);o.start(t);o.stop(t+dur+.05)}fl.connect(g);g.connect(BGM.out)}
+function bgmNoise(t,dur,vol,freq){const a=AC;const src=a.createBufferSource();src.buffer=BGM.noise;const fl=a.createBiquadFilter();fl.type='bandpass';fl.frequency.value=freq||1800;fl.Q.value=.9;const g=a.createGain();
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(fl);fl.connect(g);g.connect(BGM.out);src.start(t,Math.random()*.5);src.stop(t+dur+.02)}
+function bgmSched(){const a=AC;if(!a||!BGM.on)return;const spb=60/104/4;const hot=!!(V&&V.ph==='play'&&Object.keys(V.war||{}).length);const inGame=!!(V&&V.ph==='play');
+  while(BGM.next<a.currentTime+.35){const t=BGM.next,st=BGM.step%16,bar=Math.floor(BGM.step/16)%8;const[root,maj]=PROG[bar];const third=maj?4:3;
+    if(st===0){bgmPad(mf(root+24),t,spb*16,.022);bgmPad(mf(root+24+third),t,spb*16,.016);bgmPad(mf(root+31),t,spb*16,.016)}
+    if(st%2===0){const pat=[0,12,0,7,0,12,third,7];bgmVoice('sawtooth',mf(root+12+pat[st/2]),t,spb*1.6,.05,650)}
+    if(st===0||st===8)bgmVoice('sine',mf(root)*2.2,t,.6,.32,400,mf(root));
+    if((bar===3||bar===7)&&(st===12||st===14))bgmVoice('sine',mf(root+7)*2,t,.35,.22,400,mf(root+7));
+    if(inGame){if(st===4||st===12)bgmNoise(t,.16,.14);if(st===14&&bar%2)bgmNoise(t,.08,.07);
+      if(bar===7&&st>=8)bgmNoise(t,.07,.04+.012*(st-8));
+      if(hot&&st%2===1)bgmNoise(t,.03,.025,6500)}
+    if(st===0&&bar%4===0){for(const iv of[12,12+third,19])bgmVoice('sawtooth',mf(root+iv+12),t,.5,.03,1400)}
+    if(bar>=4&&st%4===2&&inGame)bgmVoice('triangle',mf(root+36+[0,third,7,third][(st>>2)%4]),t,spb*1.8,.018,3000);
+    BGM.next+=spb;BGM.step++}}
+function bgmStart(){if(!soundOn||BGM.on)return;const a=actx();if(!a)return;
+  if(!BGM.out){BGM.out=a.createGain();BGM.out.gain.value=0;const comp=a.createDynamicsCompressor();BGM.out.connect(comp);comp.connect(a.destination);
+    const n=a.sampleRate;BGM.noise=a.createBuffer(1,n,n);const d=BGM.noise.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1}
+  BGM.on=true;BGM.out.gain.cancelScheduledValues(a.currentTime);BGM.out.gain.setTargetAtTime(.55,a.currentTime,.6);BGM.next=a.currentTime+.08;BGM.timer=setInterval(bgmSched,100);bgmSched()}
+function bgmStop(){if(!BGM.on)return;BGM.on=false;clearInterval(BGM.timer);if(AC&&BGM.out){BGM.out.gain.cancelScheduledValues(AC.currentTime);BGM.out.gain.setTargetAtTime(0,AC.currentTime,.15)}}
+document.addEventListener('pointerdown',()=>{if(soundOn&&!BGM.on&&!document.hidden)bgmStart()},true);
+document.addEventListener('keydown',()=>{if(soundOn&&!BGM.on&&!document.hidden)bgmStart()},true);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)bgmStop();else if(soundOn&&AC)bgmStart()});
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b||b.disabled)return;
+  if(b.id==='snd'){soundOn=!soundOn;try{localStorage.setItem('eu-sound',soundOn?'1':'0')}catch(x){}sndLabel();if(soundOn){sfx('turn');bgmStart()}else bgmStop();return}sfx('click')},true);
+
+/* ================= 네트워크 (PeerJS · 로그인 불필요) ================= */
+const PFX='eu39-';
+let mode='entry',me={nick:'',code:''},myPeer=null,peer=null,hostConn=null,conns=new Map(),invites=[],myPres={},myPresAt=0,gid='',V=null,vStr='',lastPub='',off=0,chatLog=[];
+const idOf=code=>PFX+code.replace('-','').toLowerCase();
+function setConn(t){$('#conn').textContent=t}
+function safeSend(conn,msg){try{if(conn&&conn.open)conn.send(msg)}catch(e){}}
+function boot(){sndLabel();render();setInterval(tick,500);
+  if(typeof Peer==='undefined')setConn('○ 통신 모듈을 불러오지 못함');else setConn('○ 이름을 입력하면 연결됩니다');
+  window.addEventListener('beforeunload',()=>{try{peer&&peer.destroy()}catch(e){}})}
+function startPeer(){return new Promise(res=>{
+  if(typeof Peer==='undefined'){toast('통신 모듈을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요');return res(false)}
+  const code=genCode();const p=new Peer(idOf(code),{debug:0});let done=false;
+  p.on('open',id=>{if(done)return;done=true;peer=p;me.code=code;myPeer=id;setConn('● 연결됨');res(true)});
+  p.on('error',err=>{
+    if(!done){done=true;try{p.destroy()}catch(e){}if(err.type==='unavailable-id')startPeer().then(res);else{toast('통신 서버에 연결하지 못했습니다 ('+err.type+')');res(false)}return}
+    if(err.type==='peer-unavailable'){const id=(String(err.message).match(/eu39-[a-z0-9]+/)||[])[0];if(id)markInvite(id,'만료','bad');toast('만료되었거나 없는 코드입니다. 상대가 페이지를 새로 열면 코드가 바뀝니다.');return}
+    setConn('○ 회선 오류 ('+err.type+')')});
+  p.on('disconnected',()=>{setConn('○ 신호 서버 끊김 · 재연결 중');setTimeout(()=>{try{if(!p.destroyed)p.reconnect()}catch(e){}},1500)});
+  p.on('open',()=>setConn('● 연결됨'));
+  p.on('connection',onIncoming);
+})}
+async function enterLobby(nick){me.nick=nick;try{localStorage.setItem('eu-nick',nick)}catch(e){}
+  setConn('○ 연결 중');const ok=peer?true:await startPeer();if(!ok)return;mode='lobby';render()}
+function onIncoming(conn){
+  const md=conn.metadata||{};
+  if(mode!=='lobby'||md.t!=='invite'){conn.on('open',()=>{safeSend(conn,{t:'busy'});setTimeout(()=>{try{conn.close()}catch(e){}},600)});return}
+  conn.on('open',()=>{if(mode!=='lobby'){safeSend(conn,{t:'busy'});return}
+    hostConn=conn;gid=clean(md.g,20);mode='guest';V=null;vStr='';chatLog=[];sel=null;tgt=null;
+    safeSend(conn,{t:'p',patch:{n:me.nick,w:null}});toast((clean(md.n,12)||'호스트')+'님의 작전실에 합류했습니다');render()});
+  conn.on('data',d=>{if(hostConn===conn)onHostData(d)});
+  conn.on('close',()=>{if(hostConn===conn){hostConn=null;toast('호스트와 연결이 끊겼습니다');leaveRoom(true)}});
+}
+function onHostData(d){if(!d||typeof d!=='object')return;
+  if(d.t==='st'&&d.st&&typeof d.st==='object'){off=Date.now()-int(d.st.hn);if(!(d.st.nk||{})[myPeer]&&hostConn&&Date.now()-(onHostData.ns||0)>1500){onHostData.ns=Date.now();safeSend(hostConn,{t:'p',patch:{n:me.nick}})}setV(d.st)}
+  else if(d.t==='err'){toast(clean(d.m,80));sfx('bad')}
+  else if(d.t==='chat'){chatLog.push({w:clean(d.w,24)||'?',m:clean(d.m,140)});chatLog=chatLog.slice(-80);renderChat();sfx('click')}}
+function createRoom(rand){if(!peer)return toast('아직 연결되지 않았습니다');gid=rid();mode='host';newGame.rand=!!rand;G=newGame(null);chatLog=[];lastPub='';conns=new Map();invites=[];
+  myPres={n:me.nick,w:null};myPresAt=Date.now();sel=null;tgt=null;hostTick()}
+function gamePeers(){const l=[{peer:myPeer,sameTab:true,presence:myPres,updatedAt:myPresAt}];for(const[id,c]of conns)l.push({peer:id,sameTab:false,presence:c.pres,updatedAt:c.at});return l}
+function markInvite(id,st,k){const it=invites.find(x=>x.id===id);if(it){it.st=st;it.k=k}renderInv()}
+function hostInvite(){const inp=$('#invIn');const code=normCode(inp.value);
+  if(!code){const got=unHangul(String(inp.value||'')).normalize('NFKC').toUpperCase().replace(/[^A-Z0-9]/g,'');toast(got.length?`코드를 ${got.length}자리로 읽었습니다(${got}). 초대 코드는 영문·숫자 6자리입니다 (예: K7Q-2MX)`:'초대 코드를 입력하세요 (예: K7Q-2MX)');return}
+  if(code===me.code){toast('내 코드입니다. 다른 사람의 코드를 입력하세요');return}
+  const id=idOf(code);if(conns.has(id)){toast('이미 합류한 사람입니다');return}
+  invites=invites.filter(x=>x.id!==id);invites.push({code,id,st:'연결 중',k:''});invites=invites.slice(-30);inp.value='';renderInv();
+  const conn=peer.connect(id,{metadata:{t:'invite',n:me.nick,g:gid},reliable:true});
+  conn.on('open',()=>{if(mode!=='host'){conn.close();return}conns.set(id,{conn,pres:{},at:Date.now()});markInvite(id,'합류함','ok');lastPub='';hostTick()});
+  conn.on('data',d=>onGuestData(id,conn,d));
+  conn.on('close',()=>{if(conns.get(id)?.conn===conn){conns.delete(id);markInvite(id,'나감','');hostTick()}});
+  setTimeout(()=>{const it=invites.find(x=>x.id===id);if(it&&it.st==='연결 중')markInvite(id,'응답 없음','bad')},12000)}
+function onGuestData(id,conn,d){if(!d||typeof d!=='object')return;
+  if(d.t==='busy'){markInvite(id,'다른 방에 있음','');try{conn.close()}catch(e){}return}
+  const c=conns.get(id);if(!c||c.conn!==conn)return;
+  if(d.t==='p'&&d.patch&&typeof d.patch==='object'){for(const k of['n','w'])if(k in d.patch)c.pres[k]=d.patch[k];c.at=Date.now();hostTick()}
+  else if(d.t==='act'&&d.a&&typeof d.a==='object'){const e=hostAct(id,d.a);if(e)safeSend(conn,{t:'err',m:e})}
+  else if(d.t==='chat'){const m=clean(d.m,140);if(m)hostChatIn(id,clean(c.pres.n,12)||'?',m)}}
+function chatTag(pid,nick){if(!G)return nick;const ns=Object.keys(G.seats).filter(x=>G.seats[x]===pid&&(G.ph==='lobby'||G.N[x]));return ns.length?`${nick} · ${ns.map(x=>NAT[x].n).join('/')}`:`${nick} · 관전`}
+function hostChatIn(fromId,nick,m){const w=chatTag(fromId||myPeer,nick);if(fromId){chatLog.push({w,m});chatLog=chatLog.slice(-80);renderChat()}
+  for(const[oid,o]of conns)if(oid!==fromId)safeSend(o.conn,{t:'chat',w,m})}
+function leaveRoom(silent){
+  if(mode==='host')for(const c of conns.values()){try{c.conn.close()}catch(e){}}
+  if(hostConn){const h=hostConn;hostConn=null;try{h.close()}catch(e){}}
+  conns=new Map();invites=[];G=null;V=null;vStr='';mode='lobby';lastPub='';sel=null;tgt=null;
+  if(!silent)toast('작전실에서 나왔습니다');render()}
+function setPres(patch){if(mode==='host'){Object.assign(myPres,patch);myPresAt=Date.now();hostTick()}else if(hostConn)safeSend(hostConn,{t:'p',patch})}
+function sendAct(a){if(mode==='host'){const e=hostAct(myPeer,a);if(e){toast(e);sfx('bad')}}else if(hostConn)safeSend(hostConn,{t:'act',a})}
+function sendChat(){const inp=$('#chatIn');if(!inp)return;const m=clean(inp.value,140);if(!m)return;inp.value='';
+  chatLog.push({w:me.nick+' (나)',m});chatLog=chatLog.slice(-80);renderChat();
+  if(mode==='host')hostChatIn(null,me.nick,m);else safeSend(hostConn,{t:'chat',m})}
+/* 호스트: 자리 배정, 행동 처리, 상태 배포 */
+function canProxy(x){return G&&G.N[x]&&(!G.seats[x]||!G.on[x])}
+function hostAct(pid,a){
+  if(!G)return'게임이 없습니다';
+  if(G.ph==='lobby'){
+    if(a.k==='seat'&&pid===myPeer){const x=a.x;if(!NAT[x])return;if(G.seats[x]===myPeer)G.seats[x]=null;else if(!G.seats[x]||!G.on[x])G.seats[x]=myPeer;else return'다른 사람이 맡은 나라입니다';hostTick();return}
+    if(a.k==='opt'&&pid===myPeer){if(a.o==='tt')G.opts.tt=[0,90,180,300].includes(int(a.v))?int(a.v):0;if(a.o==='lim')G.opts.lim=[0,15,25,40].includes(int(a.v))?int(a.v):0;if(a.o==='neu')G.opts.neu=int(a.v)?1:0;if(a.o==='win')G.opts.win=a.v==='players'?'players':'all';if(a.o==='fog')G.opts.fog=int(a.v)?1:0;hostTick();return}
+    return}
+  if(G.ph==='draw'){if(a.k==='draw'){const e=drawCard(pid,a.i);hostTick();return e}return}
+  if(G.ph!=='play')return'게임이 진행 중이 아닙니다';
+  if(a.k==='cap'){if(!G.pend)return;const by=G.pend.by;if(G.seats[by]!==pid&&!(pid===myPeer&&canProxy(by)))return'항복 조건은 점령국이 정합니다';doCap(a.m==='annex'?'annex':'puppet');hostTick();return}
+  if(['trade','tacc','tdec','tcan'].includes(a.k)){const e=tradeAct(pid,a);hostTick();return e}
+  if(a.k==='auto'){if(pid!==myPeer)return;if(G.pend){doCap('puppet')}else autoTurn(G.cur);hostTick();return}
+  const x=G.cur;if(G.seats[x]!==pid&&!(pid===myPeer&&canProxy(x)))return'지금은 '+NAT[x].n+'의 차례입니다';
+  if(G.pend)return'먼저 항복 조건을 정하세요';
+  let e;try{e=act(x,a)}catch(err){console.error(err);e='처리 중 오류가 났습니다'}
+  hostTick();return e}
+function hostTick(){
+  if(mode!=='host'||!G)return;
+  const ps=[...gamePeers()].sort((a,b)=>a.updatedAt-b.updatedAt);const by=new Map(ps.map(p=>[p.peer,p]));
+  ps.forEach(p=>{const n=clean(p.presence.n,12);if(n)G.nk[p.peer]=n});
+  const seated=Object.values(G.seats);for(const k in G.nk)if(!by.has(k)&&!seated.includes(k))delete G.nk[k];
+  const seatsOf=pid=>ORDER.filter(x=>G.seats[x]===pid);
+  const free=x=>!G.seats[x]||!by.has(G.seats[x]);
+  for(const p of ps){if(p.sameTab)continue;const w=p.presence.w;const mine=seatsOf(p.peer);
+    if(G.ph==='lobby'){if(!NAT[w]){if(w===''||w==='watch')mine.forEach(x=>G.seats[x]=null);continue}
+      if(mine.includes(w))continue;if(free(w)){mine.forEach(x=>G.seats[x]=null);G.seats[w]=p.peer}}
+    else if(NAT[w]&&G.N[w]&&!mine.includes(w)&&free(w))G.seats[w]=p.peer}
+  if(G.ph==='lobby')for(const x of ORDER)if(G.seats[x]&&!by.has(G.seats[x]))G.seats[x]=null;
+  G.on={};for(const x of ORDER)G.on[x]=!!(G.seats[x]&&by.has(G.seats[x]));
+  if(G.rand&&G.ph==='lobby')G.part=ps.filter(p=>p.presence.w!=='watch').map(p=>p.peer).slice(0,5);
+  if(G.rand&&G.ph==='draw')G.part=G.part.filter(pid=>by.has(pid)||G.cards.some(c=>c.by===pid));
+  const inGame=G.rand&&(G.ph==='lobby'||G.ph==='draw')?G.part:seated;
+  G.wt=ps.filter(p=>!inGame.includes(p.peer)).map(p=>clean(p.presence.n,12)||'?').slice(0,40);
+  publish();
+}
+let hostDeck=[];
+function shuffleArr(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function drawCard(pid,i){if(G.ph!=='draw')return;if(Date.now()-G.drawAt<SHUF_MS)return'카드를 섞는 중입니다';if(!G.part.includes(pid))return'관전자는 카드를 뽑을 수 없습니다';
+  if(G.cards.some(c=>c.by===pid))return'이미 나라를 뽑았습니다';const c=G.cards[int(i)];if(!c||c.by)return'이미 뽑힌 카드입니다';
+  c.by=pid;c.x=hostDeck[int(i)];G.seats[c.x]=pid;
+  const left=G.part.filter(q=>!G.cards.some(c=>c.by===q));if(!left.length)finishDraw()}
+function finishDraw(){G.drawDone=Date.now();G.cards.forEach((c,i)=>{if(!c.by){c.x=hostDeck[i];c.v=1}})}
+function drawTick(){if(!G||G.ph!=='draw')return;const now=Date.now();
+  if(!G.drawDone&&now-G.drawAt>SHUF_MS&&!G.part.some(q=>!G.cards.some(c=>c.by===q))){finishDraw();hostTick()}
+  if(!G.drawDone&&now-G.drawAt>SHUF_MS+40000){for(const q of G.part)if(!G.cards.some(c=>c.by===q)){const i=G.cards.findIndex(c=>!c.by);if(i>=0)drawCard(q,i)}hostTick()}
+  if(G.drawDone&&now-G.drawDone>3200){if(!ORDER.some(x=>G.seats[x])){G.ph='lobby';G.cards=[];hostTick();return}setupBoard();sel=null;tgt=null;hostTick()}}
+function hostStart(){
+  if(G.rand){if(!G.part.length){toast('참가자가 한 명 이상 있어야 합니다');return}G.ph='draw';G.seats={DE:null,IT:null,SU:null,GB:null,FR:null};hostDeck=shuffleArr(ORDER);
+    G.cards=ORDER.map(()=>({by:null,x:null}));G.drawAt=Date.now();G.drawDone=0;hostTick();return}
+  if(!ORDER.some(x=>G.seats[x])){toast('적어도 한 나라는 맡아야 시작할 수 있습니다');return}setupBoard();sel=null;tgt=null;hostTick()}
+function hostRestart(){G=newGame(G);hostDeck=[];hostTick()}
+function viewerNats(pid){if(!G||!G.N)return[];const m=ORDER.filter(x=>G.seats[x]===pid&&G.N[x]);
+  if(pid===myPeer&&G.ph==='play'&&G.cur&&canProxy(G.cur)&&!m.includes(G.cur))m.push(G.cur);return m}
+function publish(){const s=JSON.stringify(G);
+  if(s!==lastPub){lastPub=s;const hn=Date.now();
+    for(const[pid,c]of conns){const ms=JSON.stringify(maskView(G,viewerNats(pid)));if(ms!==c.lastV){c.lastV=ms;safeSend(c.conn,{t:'st',st:Object.assign(JSON.parse(ms),{hn})})}}}
+  off=0;setV(JSON.parse(JSON.stringify(maskView(G,viewerNats(myPeer)))))}
+let lastTurnKey='',lastHl=0,lastBeep=-1,seenTr=new Set(),seenTrInit=0;
+function setV(v){const s=JSON.stringify(Object.assign({},v,{hn:0}));if(s===vStr)return false;vStr=s;const prev=V;V=v;
+  if(prev&&v.ph==='end'&&prev.ph!=='end')sfx('end');
+  if(v.ph==='play'){const tk=v.gen+'.'+v.rd+'.'+v.cur;if(tk!==lastTurnKey){const first=!lastTurnKey;lastTurnKey=tk;if(myCtl(v.cur)){sfx('turn');tgt=null}if(v.N[v.cur])pendBanner=[`${v.rd}라운드 · ${NAT[v.cur].n}의 차례${myCtl(v.cur)?' (나)':''}`,'turn '+v.cur]}
+    const h=(v.hl||[]).slice(-1)[0];if(h&&h.n!==lastHl){if(lastHl&&h.k!=='boom'&&h.k!=='war')sfx(h.k);lastHl=h.n}
+    queueFx(v);const inc=(v.trades||[]).filter(o=>v.seats[o.t]===myPeer).map(o=>o.id);const nw=inc.filter(i=>!seenTr.has(i));if(nw.length&&seenTrInit){toast('새 거래 제안이 도착했습니다 · 내 나라 > 거래');sfx('notify')}inc.forEach(i=>seenTr.add(i));seenTrInit=1}
+  render();return true}
+function tick(){
+  if(mode==='host'&&G&&G.ph==='draw')drawTick();
+  if(mode==='host'&&G&&G.ph==='play'){
+    if(!G.pend&&G.N[G.cur]&&!G.seats[G.cur]){autoTurn(G.cur);hostTick()}
+    else if(G.opts.tt&&Date.now()-G.te>G.opts.tt*1000){if(G.pend)doCap('puppet');else{lg('시간 초과 — 차례를 넘깁니다',G.cur);nextTurn()}hostTick()}}
+  updTimer()}
+function timeLeft(){if(!V||V.ph!=='play'||!V.opts.tt)return null;return Math.max(0,Math.ceil((V.te+V.opts.tt*1000-(Date.now()-off))/1000))}
+function updTimer(){const left=timeLeft();const el=document.getElementById('tmr');if(el)el.textContent=left===null?'':`남은 시간 ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;
+  const urgent=left!==null&&left<=10&&V&&myCtl(V.cur);const h=$('#hurry');if(h)h.hidden=!urgent;
+  if(urgent&&left!==lastBeep&&left>0){lastBeep=left;sfx('beep')}if(!urgent)lastBeep=-1}
+
+/* ================= 화면 ================= */
+let sel=null,cnt=0,tgt=null,tab='act',ntab='focus';
+function nickOf(pid){const nk=V&&V.nk||{};return nk[pid]||'?'}
+function mySeats(){return V?ORDER.filter(x=>V.seats[x]===myPeer):[]}
+function myCtl(x){if(!V||!x)return false;if(V.seats[x]===myPeer)return true;return mode==='host'&&V.N&&V.N[x]&&(!V.seats[x]||!V.on[x])}
+function myTurn(){return V&&V.ph==='play'&&!V.pend&&myCtl(V.cur)}
+function myNat(){if(!V)return null;if(V.ph==='play'&&myCtl(V.cur))return V.cur;const s=mySeats().filter(x=>V.N&&V.N[x]);return s[0]||null}
+function wantSeat(x){if(mode==='host')sendAct({k:'seat',x});else setPres({w:x})}
+function render(){
+  const keep={};document.querySelectorAll('#app input[id],#app select[id]').forEach(e=>{keep[e.id]=e.value});
+  const fid=document.activeElement?.id;const scr={};['logBox','chatBox','side'].forEach(id=>{const e=document.getElementById(id);if(e)scr[id]=[e.scrollTop,e.scrollHeight-e.scrollTop-e.clientHeight<30]});
+  _render();
+  for(const id in keep){const e=document.getElementById(id);if(e)e.value=keep[id]}
+  if(fid){const f=document.getElementById(fid);if(f&&f.focus)f.focus()}
+  for(const id of['logBox','chatBox']){const e=document.getElementById(id);if(e)e.scrollTop=(!scr[id]||scr[id][1])?e.scrollHeight:scr[id][0]}
+  updTimer()}
+function _render(){const app=$('#app');
+  if(mode==='entry')return renderEntry(app);
+  if(mode==='lobby')return renderLobby(app);
+  if(!V){app.innerHTML=`<section class="sheet"><h2>작전실 연결 중</h2><p class="mute">호스트의 지도를 받는 중입니다.</p><button class="ghost" onclick="leaveRoom()">나가기</button></section>`;return}
+  if(V.ph==='lobby')return renderRoom(app);
+  if(V.ph==='draw')return renderDraw(app);
+  renderGame(app)}
+function renderEntry(app){let saved='';try{saved=localStorage.getItem('eu-nick')||''}catch(e){}
+  app.innerHTML=`<section class="sheet" style="max-width:560px"><span class="lab">참가 등록</span><h2>이름을 입력하세요</h2>
+  <form id="nickF" class="row"><input id="nickIn" maxlength="12" placeholder="예: 몽고메리" value="${esc(saved)}" style="flex:1 1 200px" aria-label="이름"><button type="submit">초대 코드 받기</button></form>
+  <p class="note">로그인 없이 링크만 있으면 참여할 수 있습니다. 코드는 이 창이 열려 있는 동안만 유효하고, 새로고침하면 새 코드가 나옵니다.</p></section>
+  ${rulesSheet()}`;
+  $('#nickF').onsubmit=e=>{e.preventDefault();const n=clean($('#nickIn').value,12);if(!n){toast('이름을 한 글자 이상 입력하세요');return}enterLobby(n)}}
+function renderLobby(app){
+  app.innerHTML=`<div class="grid2"><section class="sheet"><span class="lab">${esc(me.nick)}님의 초대 코드</span>
+  <div class="row"><span class="code" id="myCode">${esc(me.code)}</span><button class="ghost sm" id="cpy">복사</button></div>
+  <p class="note">호스트에게 이 코드를 알려 주세요. 호스트가 입력하면 자동으로 작전실에 들어갑니다. 관전도 같은 방법입니다.</p></section>
+  <section class="sheet"><span class="lab">호스트</span><h2>작전실 만들기</h2><p class="mute">방을 만든 다음 다른 사람들의 코드를 입력하세요.</p>
+  <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
+   <button class="ghost roomk" id="mk"><b>지정방</b><span>각자 원하는 나라를 골라서 시작합니다. 혼자 여러 나라를 맡아 테스트할 수도 있습니다.</span></button>
+   <button class="red roomk" id="mkR"><b>랜덤방</b><span>시작하면 국가 카드를 섞고, 각자 카드를 한 장씩 뽑아 나라가 정해집니다.</span></button></div></section></div>${rulesSheet()}`;
+  $('#mk').onclick=()=>createRoom(false);$('#mkR').onclick=()=>createRoom(true);
+  $('#cpy').onclick=()=>{navigator.clipboard?.writeText(me.code).then(()=>toast('코드를 복사했습니다'),()=>toast('코드를 길게 눌러 복사하세요'))}}
+function renderInv(){const il=$('#invList');if(!il)return;
+  il.innerHTML=invites.length?invites.map(x=>`<div class="row"><span class="mono">${esc(x.code)}</span><span class="pill ${x.k}">${esc(x.st)}</span></div>`).join(''):'<span class="note">아직 보낸 초대가 없습니다.</span>'}
+function hostPanel(){if(mode!=='host')return'';return`<section class="sheet"><span class="lab">호스트 · 초대</span>
+  <form id="invF" class="row"><input id="invIn" maxlength="24" placeholder="ABC-123" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" lang="en" class="mono" style="flex:1 1 140px;text-transform:uppercase" aria-label="초대 코드"><button type="submit">초대</button></form>
+  <div id="invList" class="col" style="gap:4px;margin-top:8px"></div><p class="note">관전자도 같은 방법으로 초대합니다(인원 제한 없음). 게임 도중 연결이 끊긴 나라는 새로 들어온 사람이 이어받을 수 있습니다.</p></section>`}
+function bindHost(){const f=$('#invF');if(f)f.onsubmit=e=>{e.preventDefault();hostInvite()};renderInv()}
+const OPT_TXT={fog:{1:'켬 (적 병력은 인접·정찰한 곳만 보임)',0:'끔'},tt:{0:'없음',90:'1분 30초',180:'3분',300:'5분'},lim:{0:'없음',15:'15라운드',25:'25라운드',40:'40라운드'},neu:{1:'켬 (10라운드부터 진격)',0:'끔 (중립국은 가만히 있음)'},win:{all:'유럽 전역 장악 (중립국 포함)',players:'다른 플레이어만 멸망시키면 승리'}};
+function optSel(id,o,list){return`<select id="${id}" onchange="sendAct({k:'opt',o:'${o}',v:this.value})">${list.map(v=>`<option value="${v}" ${String(V.opts[o]??(o==='neu'||o==='fog'?1:o==='win'?'all':0))===String(v)?'selected':''}>${OPT_TXT[o][v]}</option>`).join('')}</select>`}
+function optControls(){return`<div class="optg">
+  <label>한 차례 제한 시간 ${optSel('optTT','tt',[0,90,180,300])}</label>
+  <label>라운드 제한 ${optSel('optLim','lim',[0,15,25,40])}</label>
+  <label>중립국 개입 ${optSel('optNeu','neu',[1,0])}</label>
+  <label>승리 조건 ${optSel('optWin','win',['all','players'])}</label>
+  <label>전장의 안개 ${optSel('optFog','fog',[1,0])}</label></div>
+  <p class="note">라운드 제한이 있으면 마지막 라운드가 끝날 때 영토가 가장 많은 진영이 이깁니다. ‘다른 플레이어만 멸망’이면 중립국이 남아 있어도, 살아남은 플레이어 나라가 모두 한 진영(괴뢰국 포함)이 되는 순간 승리합니다. 이때 적어도 한 나라는 무너져야 합니다.</p>`}
+function optSummary(){const o=V.opts;return`<p class="note">설정 · 제한 시간 ${OPT_TXT.tt[o.tt||0]} · 라운드 제한 ${OPT_TXT.lim[o.lim||0]} · 중립국 개입 ${OPT_TXT.neu[o.neu===0?0:1]} · 승리 ${OPT_TXT.win[o.win==='players'?'players':'all']} · 안개 ${o.fog===0?'끔':'켬'}</p>`}
+function renderRandRoom(app){const isH=mode==='host';const part=V.part||[];const me_in=part.includes(myPeer);
+  app.innerHTML=`<div class="grid2" style="grid-template-columns:minmax(0,2fr) minmax(280px,1fr)"><div>
+   <section class="sheet"><span class="lab">랜덤방</span><h2>운명의 카드를 기다리는 중</h2>
+   <p class="mute">시작하면 다섯 나라의 카드를 섞습니다. 참가자는 카드를 한 장씩 골라 뒤집고, 거기 적힌 나라를 이끌게 됩니다. 아무도 뽑지 않은 나라의 땅은 지도에서 사라집니다. 참가자는 최대 5명이고 나머지는 관전합니다.</p>
+   <div class="col" style="gap:6px">${part.map((pid,i)=>`<div class="unit"><span><span class="dot ${pid?'on':''}"></span> ${i+1}. ${esc(nickOf(pid))}${pid===myPeer?' (나)':''}</span><span class="pill ok">참가</span></div>`).join('')||'<span class="note">아직 참가자가 없습니다.</span>'}</div>
+   <div class="row" style="margin-top:10px">${me_in?`<button class="ghost sm" onclick="setPres({w:'watch'})">관전으로 바꾸기</button>`:`<button class="sm" onclick="setPres({w:'play'})">참가하기</button>`}</div></section>
+   <section class="sheet"><span class="lab">카드에 들어 있는 나라</span><div class="row">${ORDER.map(x=>`<span class="oc" style="--c:${MAPC[x]}"><i></i>${NAT[x].n}</span>`).join('')}</div></section>
+   ${isH?`<section class="sheet"><span class="lab">설정</span>${optControls()}
+     <div class="row" style="margin-top:8px"><button class="red" onclick="hostStart()">카드 섞고 시작</button><span class="note">참가자 ${part.length}명</span></div></section>`
+    :`<section class="sheet"><p class="mute">호스트가 시작하면 카드 추첨이 열립니다.</p>${optSummary()}</section>`}
+  </div><div>${hostPanel()}${peopleSheet()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button></div></div>`;
+  bindHost();bindChat()}
+/* 카드 추첨: 무대는 한 번만 만들고 카드 상태만 바꾼다 (애니메이션이 끊기지 않게) */
+let drawBuilt='',flipSeen={};
+function cardFront(x){const sp=UT[NAT[x].sp];return`<div class="cfx" style="--c:${MAPC[x]}"><span class="cfl">${NAT[x].fac?FACN[NAT[x].fac]:'무소속'}</span><b>${NAT[x].n}</b><span class="cstar"><svg viewBox="-8 -8 16 16" width="34" height="34"><path d="${STAR}" fill="#FFD34D" stroke="#5a3d00" stroke-width=".8"/></svg></span><span class="csp">${sp.n}</span><span class="ccap">수도 ${NAT[x].cap}</span></div>`}
+function renderDraw(app){const key=V.gen+'.'+V.drawAt;const isP=(V.part||[]).includes(myPeer);
+  if(drawBuilt!==key||!document.getElementById('stage')){drawBuilt=key;flipSeen={};
+    app.innerHTML=`<section class="sheet drawsheet"><span class="lab">랜덤방 · 국가 추첨</span><h2 id="drawMsg"></h2>
+     <div id="stage" class="stage">${ORDER.map((_,i)=>`<button class="card stack" id="cd${i}" style="--i:${i-2};--a:${Math.abs(i-2)};--k:${i}" onclick="pickCard(${i})" aria-label="카드 ${i+1}"><div class="inner"><div class="back"><div class="bem"><svg viewBox="-8 -8 16 16" width="30" height="30"><path d="${STAR}" fill="#E9C46A"/></svg><span>1939</span></div></div><div class="front" id="cf${i}"></div></div><div class="who" id="cw${i}"></div></button>`).join('')}</div>
+     <p class="note" id="drawNote" style="text-align:center"></p></section><div id="drawSide"></div>`;
+    const el=Date.now()-off-V.drawAt;const left=Math.max(0,SHUF_MS-el);
+    if(left>300)sfx('shuffle');
+    setTimeout(()=>{const cs=document.querySelectorAll('#stage .card');cs.forEach(c=>{c.classList.remove('stack');c.classList.add('gather')});setTimeout(()=>{cs.forEach(c=>c.classList.remove('gather'));sfx('spread');updDraw()},40)},left)}
+  updDraw();
+  $('#drawSide').innerHTML=`${hostPanel()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button>`;bindHost();bindChat()}
+function updDraw(){if(!V||V.ph!=='draw')return;const isP=(V.part||[]).includes(myPeer);const mine=V.cards.findIndex(c=>c.by===myPeer);const ready=Date.now()-off-V.drawAt>=SHUF_MS;
+  V.cards.forEach((c,i)=>{const b=document.getElementById('cd'+i);if(!b)return;
+    if(c.x){if(!b.classList.contains('flip')){document.getElementById('cf'+i).innerHTML=cardFront(c.x);void b.offsetWidth;b.classList.add('flip');if(flipSeen[i]===undefined&&ready){sfx('flip')}flipSeen[i]=1}
+      document.getElementById('cw'+i).innerHTML=c.v?'참전 안 함':`${esc(nickOf(c.by))}${c.by===myPeer?' (나)':''}`;b.classList.toggle('minec',!!c.by&&c.by===myPeer);b.classList.toggle('voidc',!!c.v)}
+    b.classList.toggle('can',ready&&isP&&mine<0&&!c.by);b.disabled=!(ready&&isP&&mine<0&&!c.by)&&!c.x});
+  const left=(V.part||[]).filter(q=>!V.cards.some(c=>c.by===q)).length;
+  $('#drawMsg').textContent=!ready?'카드를 섞는 중…':V.drawDone?'추첨 완료! 곧 전쟁이 시작됩니다':isP&&mine<0?'카드 한 장을 골라 뒤집으세요':mine>=0?`당신의 나라는 ${NAT[V.cards[mine].x].n}입니다`:'참가자들이 카드를 고르는 중입니다';
+  $('#drawNote').textContent=V.drawDone?'':`남은 참가자 ${left}명 · 40초 안에 고르지 않으면 자동으로 뽑힙니다`}
+function pickCard(i){if(!V||V.ph!=='draw')return;sendAct({k:'draw',i})}
+function renderRoom(app){
+  if(V.rand)return renderRandRoom(app);
+  const mine=mySeats();const isH=mode==='host';
+  app.innerHTML=`<div class="grid2" style="grid-template-columns:minmax(0,2fr) minmax(280px,1fr)"><div>
+   <section class="sheet"><span class="lab">나라 선택</span><h2>어느 나라를 이끄시겠습니까?</h2>
+   <p class="mute">아무도 고르지 않은 강대국의 영토는 지도에서 사라집니다(통과·점령 불가). ${isH?'호스트는 여러 나라를 동시에 맡아 혼자 테스트할 수 있습니다.':''}</p>
+   <div class="seats">${ORDER.map(x=>{const p=V.seats[x],on=V.on[x];const m=p===myPeer;const take=!m&&(!p||!on);
+     return`<div class="seat ${m?'mine':''}" style="border-left-color:${NAT[x].c}"><div class="row" style="justify-content:space-between"><b style="font:400 20px var(--f-display)">${NAT[x].n}</b>
+     <span class="note">${NAT[x].fac?FACN[NAT[x].fac]:'무소속'} · 수도 ${NAT[x].cap}</span></div>
+     <div>${p?`<span class="dot ${on?'on':''}"></span> ${esc(nickOf(p))}${m?' (나)':''}`:'<span class="mute">비어 있음</span>'}</div>
+     <ul>${TRAIT[x].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+     ${take?`<button class="ghost sm" onclick="wantSeat('${x}')">이 나라 맡기</button>`:''}${m?`<button class="ghost sm" onclick="${isH?`wantSeat('${x}')`:`wantSeat('')`}">자리 비우기</button>`:''}</div>`}).join('')}</div></section>
+   ${isH?`<section class="sheet"><span class="lab">설정</span>${optControls()}
+     <div class="row" style="margin-top:8px"><button class="red" onclick="hostStart()">전쟁 시작</button><span class="note">${ORDER.filter(x=>V.seats[x]).length}개국 참전</span></div></section>`
+    :`<section class="sheet"><p class="mute">호스트가 시작하면 게임이 열립니다. ${mine.length?'':'나라를 고르지 않으면 관전자로 봅니다.'}</p>${optSummary()}<div class="row"><button class="ghost sm" onclick="wantSeat('watch')">관전만 하기</button></div></section>`}
+  </div><div>${hostPanel()}${peopleSheet()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button></div></div>`;
+  bindHost();bindChat()}
+function peopleSheet(){const w=V.wt||[];return`<section class="sheet"><span class="lab">관전자 ${w.length}명</span><div class="note">${w.length?w.map(esc).join(', '):'없음'}</div></section>`}
+function chatSheet(){return`<section class="sheet"><span class="lab">전체 채팅</span><div class="chat" id="chatBox"></div>
+  <form id="chatF" class="row"><input id="chatIn" maxlength="140" placeholder="메시지" style="flex:1" aria-label="채팅"><button type="submit" class="sm">보내기</button></form></section>`}
+function bindChat(){const f=$('#chatF');if(f)f.onsubmit=e=>{e.preventDefault();sendChat()};renderChat()}
+function renderChat(){const b=$('#chatBox');if(!b)return;b.innerHTML=chatLog.length?chatLog.map(c=>`<div><b>${esc(c.w)}</b> ${esc(c.m)}</div>`).join(''):'<span class="note">아직 대화가 없습니다.</span>';b.scrollTop=b.scrollHeight}
+function rulesSheet(){return`<section class="sheet"><span class="lab">빠른 규칙</span><div class="grid2" style="font-size:14px">
+ <div><b>목표</b><br>내 진영(연합국·추축국·코민테른, 무소속이면 나 혼자)이 유럽의 모든 땅을 차지하면 승리. 중립국도 모두 점령해야 합니다. 방 설정에서 ‘다른 플레이어만 멸망시키면 승리’로 바꿀 수 있습니다.</div>
+ <div><b>전투</b><br>공격자는 파워만큼 피해를 주고, 방어자도 파워만큼 반격합니다. 방어군이 전멸하면 점령(공장 유지), 공격군이 전멸해 출발지가 비면 방어자가 다음 차례에 반격 점령할 수 있습니다.</div>
+ <div><b>병력</b><br>보병 3·파워2·이동2 / 기갑 8·4·3 / 포병 6·4·1 / 함대 8·3·1. 한 땅에 한 종류, 최대 5부대. 한 부대 늘 때마다 파워 +1.</div>
+ <div><b>지형</b><br>평지: 공격 기갑 +2 · 언덕: 이동 -1, 보병 +2 · 산: 이동이 1이 됨, 포병 +2 · 강: 이동 -1, 방어 +1 · 상륙: 제해권 필요, 공격 -2.</div>
+ <div><b>경제</b><br>영토마다 매 턴 자원 1, 공장 +1(공장 10). 선전포고 8, 다음 라운드부터 침공. 중립국은 선포 없이 공격. 자기 땅에서 1자원 = 1 체력 치료(유닛당 턴 1회).</div>
+ <div><b>중립국 진격</b><br>10라운드부터 매 라운드 시작에 중립국 수비대가 맞닿은 플레이어 영토와 군사력을 비교해, 더 강하거나 그 땅이 비어 있으면 쳐들어옵니다. ⚠ 표시가 위험 지역입니다. 방 설정에서 끌 수 있습니다.</div>
+ <div><b>내정</b><br>매 턴 영토 인구 합만큼 자본을 얻습니다. 자본으로 인구 +1(18 → 28 → 42, 최대 3단계), 비상금(자본 5 → 자원 3, 턴당 1회), 첩보(자본 15, 성공률 55%). 인구 2 이상인 적 땅을 점령하면 약탈(인구 -1, 자원 +5). 불가사의 8곳은 주인에게 특수 효과를 줍니다. 부대(육·해군 합산)는 인구 합 × 2까지만 생산할 수 있습니다. 지도의 ☾ 버튼으로 야경을 볼 수 있습니다.</div>
+ <div><b>과학·공군·핵</b><br>연구소(자원 5 + 자본 5)가 매 턴 과학 1. 내 나라 → 공군에서 전투기·공중지원기·폭격기를 생산해 2칸 안까지 출격합니다(제공권 → 타격·폭격). 핵폭탄(자원·자본·과학 각 80)은 어디든 초토화하고 3턴간 오염시키며, 수도에 맞으면 무조건 항복입니다.</div>
+ <div><b>전장의 안개</b><br>적국 병력은 내 편 영토·함대와 맞닿은 곳이나 전투기로 제공권을 잡은 곳(다음 내 차례까지 정찰)만 자세히 보이고, 나머지는 ‘?’로만 표시됩니다. 방 설정에서 끌 수 있습니다.</div>
+ <div><b>거래</b><br>적국을 포함한 모든 강대국과 자원·영토(병력 없는 땅, 수도 제외)를 주고받을 수 있습니다.</div>
+ <div><b>진영</b><br>연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1. 같은 진영끼리 한 턴에 자원 5까지 지원. 수도를 잃으면 결사항전: 다음 자기 차례가 끝날 때까지 되찾지 못하면 괴뢰국이 되거나 병합됩니다.</div></div></section>`}
+
+/* ---- 지도: 한 번 그려 두고 바뀌는 부분만 갱신한다 ---- */
+const MAPC={DE:'#737A83',IT:'#5E9150',SU:'#B5493B',GB:'#C79A3E',FR:'#4F77B8'};
+function shade(hex,k){const n=parseInt(hex.slice(1),16);return`rgb(${Math.round((n>>16)*k)},${Math.round((n>>8&255)*k)},${Math.round((n&255)*k)})`}
+function ownerFill(o){return o==='N'?'var(--neu)':o==='X'?'url(#hatchX)':MAPC[o]}
+function chipFill(o){return o==='N'?'#6A624C':shade(MAPC[o],.6)}
+const ICONS={inf:'<path d="M2 10.5C2 6 4.8 3.5 8 3.5S14 6 14 10.5h1.2v1.8H.8v-1.8z"/>',
+ arm:'<path d="M1 8.5h14v2.6a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2zM4 4.8h6.5v3.4H4zM10.5 5.6h4.9v1.3h-4.9z"/>',
+ art:'<path d="M2.2 10.2 12.6 3.4l1.1 1.7L3.4 11.9z"/><circle cx="5" cy="11.6" r="2.6"/>',
+ sea:'<path d="M.8 8.6h14.4l-2.6 4.4H3.4zM7.1 2.5h1.4v6.1H7.1zM8.5 3.4l4 2.5-4 .6z"/>'};
+const STAR='M0-6.5 1.9-2 6.7-1.9 2.9 1.1 4.2 5.8 0 3.1-4.2 5.8-2.9 1.1-6.7-1.9-1.9-2z';
+let MAPSTATIC=null,mz=1,fxSeen=-1,fxGen=0,pendFx=[],pendBanner=null;
+function decorSVG(){let o='';for(const[k,t0,x,y]of MAP.dc){if(t0==='x')continue;const t=LN[k]?LN[k].tr:t0;
+  if(t==='m')o+=`<path d="M${x-8} ${y+5}L${x-1.5} ${y-6}L${x+5} ${y+5}Z" class="dm"/><path d="M${x-3.8} ${y-2.2}L${x-1.5} ${y-6}L${x+.8} ${y-2.2}" class="ds"/><path d="M${x+1} ${y+5}L${x+5.5} ${y-2}L${x+10} ${y+5}Z" class="dm"/>`;
+  else if(t==='h')o+=`<path d="M${x-8} ${y+3}Q${x-3.5} ${y-5} ${x+1} ${y+3}M${x-1} ${y+3}Q${x+3} ${y-2.5} ${x+7} ${y+3}" class="dh"/>`;
+  else o+=`<path d="M${x-3} ${y+2}l1-3.2M${x} ${y+2}v-4M${x+3} ${y+2}l-1-3.2" class="dp"/>`}return o}
+function mapStatic(){if(MAPSTATIC)return MAPSTATIC;const W=MAP.W,H=MAP.H;
+  const seaD=SEA.map(z=>MAP.sh[z[0]]).join('');
+  const off=Object.keys(MAP.sh).filter(k=>k[0]==='#').map(k=>`<path d="${MAP.sh[k]}" class="off"/>`).join('');
+  const offLbl=Object.keys(MAP.an).filter(k=>k[0]==='#').map(k=>{const[x,y]=MAP.an[k];return`<text x="${x}" y="${y}" class="offl" text-anchor="middle">${k.slice(1)}</text>`}).join('');
+  const lakes=Object.keys(MAP.sh).filter(k=>k[0]==='~').map(k=>`<path d="${MAP.sh[k]}" class="lake"/>`).join('');
+  const grat=MAP.gr.x.map(x=>`<line x1="${x}" y1="0" x2="${x}" y2="${H}"/>`).join('')+MAP.gr.y.map(y=>`<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`).join('');
+  const rv=Object.values(MAP.rv).map(p=>`<polyline points="${p}" class="rv1"/><polyline points="${p}" class="rv2"/>`).join('');
+  const st=MAP.st.map(([a,b,c,d])=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="strait"/>`).join('');
+  const clouds=[[140,.9,70],[420,1.3,110],[260,1.1,150]].map(([y,s,dur],i)=>`<g class="cloud" style="animation-duration:${dur}s;animation-delay:-${dur*i/3}s"><ellipse cx="0" cy="${y}" rx="${160*s}" ry="${46*s}" fill="url(#cl)"/><ellipse cx="${90*s}" cy="${y-18}" rx="${110*s}" ry="${38*s}" fill="url(#cl)"/></g>`).join('');
+  const comp=`<g transform="translate(78,178)" class="compass"><circle r="34" class="c1"/><circle r="27" class="c2"/><path d="M0-40 6-6 0 0-6-6Z" class="cn"/><path d="M0 40 6 6 0 0-6 6Z" class="cs"/><path d="M-40 0-6-6 0 0-6 6ZM40 0 6-6 0 0 6 6Z" class="cs"/><text y="-44" text-anchor="middle">N</text></g>`;
+  const title=`<g transform="translate(18,18)" class="cart"><rect width="232" height="58" rx="4"/><rect x="4" y="4" width="224" height="50" rx="2" class="in"/><text x="116" y="31" text-anchor="middle" class="t1">EUROPA 1939</text><text x="116" y="46" text-anchor="middle" class="t2">유럽 작전 지도 · 참모본부</text></g>`;
+  const syms=Object.entries(ICONS).map(([k,v])=>`<symbol id="ic-${k}" viewBox="0 0 16 16">${v}</symbol>`).join('');
+  MAPSTATIC=`<svg id="gmap" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="유럽 작전 지도">
+  <defs>${syms}
+   <pattern id="wv" width="46" height="22" patternUnits="userSpaceOnUse"><path d="M2 8q5-4 10 0t10 0M25 18q5-4 10 0t10 0" class="wvp"/><animateTransform attributeName="patternTransform" type="translate" from="0 0" to="46 0" dur="9s" repeatCount="indefinite"/></pattern>
+   <pattern id="hatchX" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" style="fill:var(--void)"/><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--voidl)" stroke-width="2.5"/></pattern>
+   <pattern id="hatchO" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--offl)" stroke-width="1"/></pattern>
+   <pattern id="falloutP" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><rect width="10" height="10" fill="rgba(120,210,40,.32)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(150,60,200,.45)" stroke-width="4"/></pattern>
+   <pattern id="fogP" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="rgba(200,205,212,.35)"/><circle cx="15" cy="20" r="14" fill="rgba(255,255,255,.22)"/><circle cx="45" cy="45" r="18" fill="rgba(255,255,255,.18)"/><animateTransform attributeName="patternTransform" type="translate" from="0 0" to="60 0" dur="30s" repeatCount="indefinite"/></pattern>
+   <radialGradient id="mush"><stop offset="0" stop-color="#FFF1B8"/><stop offset=".35" stop-color="#FFB347"/><stop offset=".7" stop-color="#C2552B"/><stop offset="1" stop-color="#4E3A33"/></radialGradient>
+   <radialGradient id="nl"><stop offset="0" stop-color="#FFF6CF" stop-opacity="1"/><stop offset=".25" stop-color="#FFD36B" stop-opacity=".9"/><stop offset=".6" stop-color="#FF9F3A" stop-opacity=".35"/><stop offset="1" stop-color="#FF8A2B" stop-opacity="0"/></radialGradient>
+   ${Object.entries(WICON).map(([k,v])=>`<symbol id="w-${k}" viewBox="0 0 16 16">${v}</symbol>`).join('')}
+   <radialGradient id="cl"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+   <radialGradient id="vg" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+   <linearGradient id="oc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ocean2)"/><stop offset="1" style="stop-color:var(--ocean)"/></linearGradient>
+   <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .35  0 0 0 0 .28  0 0 0 0 .18  0 0 0 .5 0"/></filter>
+   <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="#000" flood-opacity=".45"/></filter>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#oc)"/>
+  <g class="grat">${grat}</g>
+  <g id="gSea">${SEA.map((z,i)=>`<path id="sp${i}" data-s="${i}" class="szp" d="${MAP.sh[z[0]]}"/>`).join('')}</g>
+  <path d="${seaD}" fill="url(#wv)" pointer-events="none"/>
+  <path d="${MAP.ld}" class="shore1"/><path d="${MAP.ld}" class="shore2"/>
+  ${off}<g pointer-events="none">${Object.keys(MAP.sh).filter(k=>k[0]==='#').map(k=>`<path d="${MAP.sh[k]}" fill="url(#hatchO)"/>`).join('')}</g>
+  <g id="gTer">${LAND.map((a,i)=>`<path id="tp${i}" data-t="${i}" class="ter" d="${MAP.sh[a[0]]}"/>`).join('')}</g>
+  ${lakes}
+  <g class="decor" pointer-events="none">${decorSVG()}</g>
+  <g pointer-events="none">${rv}${st}</g>
+  <g pointer-events="none" class="offlbl">${offLbl}</g>
+  <rect id="nightShade" width="${W}" height="${H}" class="nshade" pointer-events="none"/>
+  <g id="gNight" pointer-events="none"></g>
+  <g id="gHl" pointer-events="none"></g>
+  <g id="gWon" pointer-events="none"></g>
+  <g id="gStat" pointer-events="none"></g>
+  <g id="gLbl" pointer-events="none"></g>
+  <g pointer-events="none" class="clouds">${clouds}</g>
+  <g id="gFx" pointer-events="none"></g>
+  <rect width="${W}" height="${H}" filter="url(#grain)" pointer-events="none" class="grainr"/>
+  <rect width="${W}" height="${H}" fill="url(#vg)" pointer-events="none"/>
+  <g pointer-events="none">${title}${comp}</g>
+  </svg>`;return MAPSTATIC}
+function fogChip(o,y){return`<g transform="translate(-17,${y})" filter="url(#sh)" class="fogc"><rect width="34" height="18" rx="9" fill="${o&&o!=='N'&&MAPC[o]?chipFill(o):'#555'}" class="chip" stroke-dasharray="3 2"/><text x="17" y="13" text-anchor="middle" class="cn">?</text></g>`}
+function chipRow(us,o,y){if(!us.length)return'';const g=[];for(const u of us){let e=g.find(e=>e.t===u.t);if(!e){e={t:u.t,n:0,dmg:0};g.push(e)}e.n++;
+    const mh=o==='N'?UT[u.t].p:maxHp(V,o,u.t);if(u.hp<mh)e.dmg=1}
+  const w=34,gap=3;let x=-(g.length*w+(g.length-1)*gap)/2;let s='';const fill=chipFill(o);
+  for(const e of g){const u=UT[e.t];const cat=u.k==='inf'||u.k==='arm'||u.k==='art'?u.k:'sea';
+    s+=`<g transform="translate(${x},${y})" filter="url(#sh)"><rect width="${w}" height="18" rx="9" fill="${fill}" class="chip"/><use href="#ic-${cat}" x="4" y="2.5" width="13" height="13" fill="#fff"/><text x="25" y="13" text-anchor="middle" class="cn">${e.n}</text>${u.only?`<path d="${STAR}" transform="translate(${w-2},1) scale(.55)" fill="#FFD34D" stroke="#5a3d00" stroke-width="1"/>`:''}${e.dmg?`<circle cx="3" cy="3" r="3" fill="#FF5A4A" stroke="#fff" stroke-width=".8"/>`:''}</g>`;x+=w+gap}
+  return s}
+function labelsSVG(){const s=V;let out='';
+  for(const a of LAND){const nm=a[0],T=s.T[nm],o=T.o;const[x,y,r]=MAP.an[nm];const small=r<18;const fs=small?10:11.5;const nw=a[1].length*fs*.95;
+    const isCap=o!=='X'&&Object.keys(NAT).some(k=>NAT[k].cap===nm&&s.N[k]);
+    const hu=T.u.length||T.hid;
+    let g=`<g transform="translate(${x},${y})"><text class="nm ${o==='N'?'lt':''} ${o==='X'?'dim':''}" y="${hu?-5:4}" text-anchor="middle" font-size="${fs}">${a[1]}</text>`;
+    if(isCap)g+=`<path d="${STAR}" transform="translate(${-nw/2-8},${hu?-9:0})" class="capstar"/>`;
+    if(T.f&&o!=='X'){const fx=nw/2+9,fy=T.u.length?-10:-1;g+=`<g transform="translate(${fx+2},${fy}) scale(1.45)"><path d="M-5 4V-1l3 2V-1l3 2V-5h3v9z" class="fac"/><g class="smoke"><circle cx="2.5" cy="-7" r="2"/><circle cx="2.5" cy="-7" r="2" style="animation-delay:1s"/><circle cx="2.5" cy="-7" r="2" style="animation-delay:2s"/></g></g>`}
+    if(T.fort)g+=`<text y="${T.u.length?-17:-9}" text-anchor="middle" class="fort">요새</text>`;
+    if(s.ph==='play'&&neutralThreat(s,nm))g+=`<g transform="translate(${-nw/2-8},${T.u.length?10:12})" class="warn"><path d="M0-7 7 5H-7z"/><text y="3.5" text-anchor="middle">!</text></g>`;
+    g+=T.hid?fogChip(o,4):chipRow(T.u,o,4);out+=g+'</g>'}
+  for(const z of SEA){const nm=z[0],S=s.S[nm];const[x,y]=MAP.an[nm];
+    out+=`<g transform="translate(${x},${y})"><text class="snm" y="${S.u.length||S.hid?-6:4}" text-anchor="middle">${nm}</text>${S.hid?fogChip(S.o,2):S.u.length?`<g class="bob">${chipRow(S.u,S.o,2)}</g>`:''}</g>`}
+  return out}
+function curve(a,b,bend){const[x1,y1]=a,[x2,y2]=b;const mx=(x1+x2)/2,my=(y1+y2)/2;const dx=x2-x1,dy=y2-y1;const L=Math.hypot(dx,dy)||1;const cx=mx-dy/L*L*bend,cy=my+dx/L*L*bend;
+  const len=L*1.08;const tx=x2-cx,ty=y2-cy,tl=Math.hypot(tx,ty)||1;return{d:`M${x1} ${y1}Q${cx} ${cy} ${x2} ${y2}`,len,ux:tx/tl,uy:ty/tl}}
+function anc(k){const a=MAP.an[k];return a?[a[0],a[1]]:null}
+/* ---- 야경과 불가사의 표시 ---- */
+const WICON={
+ bigben:'<path d="M7 0h2l.6 3H10v13H6V3h.4z"/><circle cx="8" cy="6" r="1.7" fill="#2B2414"/>',
+ eiffel:'<path d="M7.4 0h1.2l.9 5.5h-3zM6.2 6.5h3.6L12.5 16H10L8 11.5 6 16H3.5z"/>',
+ colosseum:'<path d="M1 4h14v11H1z"/><path d="M2.8 7.5h2v4h-2zM7 7.5h2v4H7zM11.2 7.5h2v4h-2z" fill="#2B2414"/>',
+ kremlin:'<path d="M7.4 0h1.2v1.6H7.4zM8 1.6c2.2 1.9 3.3 3.2 3.3 5.2H4.7c0-2 1.1-3.3 3.3-5.2zM5.2 7.6h5.6V16H5.2z"/>',
+ brandenburg:'<path d="M5 1h6v2H5zM1 3.5h14v2H1zM1.8 6h2.2v10H1.8zM5.5 6H7v10H5.5zM9 6h1.5v10H9zM12 6h2.2v10H12z"/>',
+ warsaw:'<path d="M2 7h12v9H2zM2 3.5h2.4V7H2zM6 1.5h4V7H6zM11.6 3.5H14V7h-2.4z"/><path d="M7 11h2v5H7z" fill="#2B2414"/>',
+ belem:'<path d="M6 0h4v2H6zM4.5 2h7v2.2h-7zM5 4.2h6V16H5z"/><path d="M7 7h2v3H7z" fill="#2B2414"/>',
+ parthenon:'<path d="M8 .5 15.5 5H.5zM1.5 5.6h13V7h-13zM2.5 7.6H4V13H2.5zM5.6 7.6h1.5V13H5.6zM8.9 7.6h1.5V13H8.9zM12 7.6h1.5V13H12zM.5 13.5h15V15H.5z"/>'};
+let night=false;try{night=localStorage.getItem('eu-night')==='1'}catch(e){}
+let nightStr='',wonStr='';
+/* 야경: 고리 대신 불규칙하게 번져 나가는 도시 불빛. 영토 이름으로 시드를 정해 모양이 매번 같고, 단계가 오를수록 더 넓게 퍼진다 */
+function seedRng(str){let h=2166136261;for(const c of str)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+const SPRAWL={2:{R:12,dots:9,hubs:1},3:{R:22,dots:22,hubs:3},4:{R:34,dots:40,hubs:5}};
+function citySVG(name,p){const rnd=seedRng(name);const cfg=SPRAWL[p];
+  const harm=[0,1,2,3].map(()=>[rnd()*.32,rnd()*Math.PI*2]);
+  const Rf=th=>cfg.R*(1+harm.reduce((a,[amp,ph],k)=>a+amp*Math.sin((k+2)*th+ph),0));
+  // 번진 모양의 빛 덩어리 (불규칙 다각형을 곡선으로)
+  const N=14,pts=[];for(let k=0;k<N;k++){const th=k/N*Math.PI*2;const r=Rf(th);pts.push([Math.cos(th)*r,Math.sin(th)*r])}
+  let d='';for(let k=0;k<N;k++){const a=pts[k],b=pts[(k+1)%N];const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;d+=(k?'Q':'M'+((pts[N-1][0]+a[0])/2).toFixed(1)+','+((pts[N-1][1]+a[1])/2).toFixed(1)+'Q')+a[0].toFixed(1)+','+a[1].toFixed(1)+' '+mx.toFixed(1)+','+my.toFixed(1)}
+  // 위성 도시(허브)와 그 사이 길
+  const hubs=[[0,0]];for(let k=0;k<cfg.hubs-1;k++){const th=rnd()*Math.PI*2;const r=Rf(th)*(.45+rnd()*.4);hubs.push([Math.cos(th)*r,Math.sin(th)*r])}
+  let roads='';if(p>=3)for(let k=1;k<hubs.length;k++){const[h1,h2]=hubs[k];const cx=h1*.5+(rnd()-.5)*8,cy=h2*.5+(rnd()-.5)*8;roads+=`<path d="M0,0Q${cx.toFixed(1)},${cy.toFixed(1)} ${h1.toFixed(1)},${h2.toFixed(1)}" class="road"/>`}
+  let dots='';for(let k=0;k<cfg.dots;k++){const h=hubs[k%hubs.length];const th=rnd()*Math.PI*2;const rr=Math.pow(rnd(),1.6)*Rf(th)*(k%hubs.length?.45:.8);
+    const x=h[0]+Math.cos(th)*rr,y=h[1]+Math.sin(th)*rr;const dist=Math.hypot(x,y);const sz=(k<hubs.length?1.9:.7+rnd()*1.1).toFixed(2);
+    dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${sz}" class="ld" style="animation-delay:${(dist/cfg.R*.9).toFixed(2)}s,${(1+rnd()*3).toFixed(2)}s"/>`}
+  return`<g class="sprawl" style="animation-duration:${(6+rnd()*4).toFixed(1)}s"><path d="${d}Z" class="blob"/></g>${roads}${dots}`}
+function nightSVG(s){let o='';
+  for(const a of LAND){const T=s.T[a[0]];if(!s.N[T.o])continue;      // 플레이어 영토만
+    const p=popOf(T);if(p<2)continue;                                 // 0단계는 표시 안 함
+    const[x,y]=MAP.an[a[0]];o+=`<g transform="translate(${x},${y})" class="city lv${p-1}">${citySVG(a[0],p)}</g>`}
+  return o}
+let statStr='';
+function myViewNats(){if(!V||!V.N)return[];const m=ORDER.filter(x=>V.seats[x]===myPeer&&V.N[x]);if(mode==='host'&&V.ph==='play'&&V.cur&&myCtl(V.cur)&&!m.includes(V.cur))m.push(V.cur);return m}
+function statSVG(s){let o='';
+  if(fogOn(s)){const M=myViewNats();if(M.length){const{vis,team}=visSet(s,M);for(const a of LAND){const T=s.T[a[0]];if(T.o==='X'||T.o==='N'||team.has(T.o)||vis.has(a[0]))continue;o+=`<path d="${MAP.sh[a[0]]}" class="fogz"/>`}}}
+  for(const a of LAND){const T=s.T[a[0]];if(T.o==='X')continue;const[x,y]=MAP.an[a[0]];
+    if(T.fallout>0)o+=`<path d="${MAP.sh[a[0]]}" class="fall"/><g transform="translate(${x},${y+30})" class="fallt"><circle r="10"/><text y="4.5" text-anchor="middle">☢</text><text x="14" y="4" class="n">${T.fallout}</text></g>`;
+    if(T.lab)o+=`<g transform="translate(${x+30},${y-28})" class="labi"><circle r="9"/><text y="4.5" text-anchor="middle">🧪</text></g>`}
+  for(const e of s.sup||[]){const a=anc(e.t);if(!a)continue;o+=`<g transform="translate(${a[0]},${a[1]})" class="supm"><circle r="24" style="stroke:${MAPC[e.x]}"/><text x="-30" y="-16" style="fill:${MAPC[e.x]}">✈</text></g>`}
+  return o}
+function wonderSVG(s){let o='';for(const a of LAND){const T=s.T[a[0]];if(!T.wonder||T.o==='X')continue;const[x,y]=MAP.an[a[0]];
+  o+=`<g transform="translate(${x},${y-30})" class="won"><circle r="10.5"/><use href="#w-${T.wonder}" x="-6.5" y="-7" width="13" height="13"/></g>`}return o}
+function toggleNight(){night=!night;try{localStorage.setItem('eu-night',night?'1':'0')}catch(e){}applyNight();sfx('click')}
+function applyNight(){const b=document.querySelector('.mapbox');if(b)b.classList.toggle('night',night);const btn=document.getElementById('nightBtn');if(btn){btn.textContent=night?'☀':'☾';btn.setAttribute('aria-label',night?'낮으로 보기':'야경 보기');btn.title=night?'낮으로 보기':'야경 켜기'}}
+function updateMap(opts){const s=V;if(!document.getElementById('gmap'))return;
+  {const st=statSVG(s);if(st!==statStr){statStr=st;document.getElementById('gStat').innerHTML=st}const n=nightSVG(s);if(n!==nightStr){nightStr=n;document.getElementById('gNight').innerHTML=n}const w=wonderSVG(s);if(w!==wonStr){wonStr=w;document.getElementById('gWon').innerHTML=w}}
+  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=ownerFill(o);p.classList.toggle('now',s.ph==='play'&&o===s.cur);p.classList.toggle('void',o==='X')});
+  SEA.forEach((z,i)=>{const p=document.getElementById('sp'+i);if(!p)return;const S=s.S[z[0]];p.style.stroke=S.o?MAPC[S.o]:'';p.classList.toggle('ctl',!!S.o)});
+  let h='';const nm=selName();
+  if(nm&&MAP.sh[nm])h+=`<path class="hl-sel" d="${MAP.sh[nm]}"/>`;
+  if(opts){const from=anc(nm);for(const k in opts){const o=opts[k];const atk=o.k==='atk'||o.k==='aatk'||o.k==='vul';h+=`<path class="${atk?'hl-atk':'hl-mv'}" d="${MAP.sh[k]}"/>`;
+    if((o.k==='amv'||o.k==='aatk')&&from){const c=curve(from,anc(k),.18);h+=`<path d="${c.d}" class="amph ${atk?'a':''}"/>`}}}
+  if(airMode&&myTurn()){for(const t of airTargets(s,s.cur,airMode.sk))h+=`<path class="hl-air" d="${MAP.sh[t]}"/>`}
+  if(nukeMode&&myTurn()){for(const a of LAND){if(s.T[a[0]].o!=='X')h+=`<path class="hl-nuke" d="${MAP.sh[a[0]]}"/>`}}
+  if(tgt&&MAP.an[tgt]){const[x,y]=MAP.an[tgt];h+=`<g transform="translate(${x},${y})" class="xhair"><circle r="17"/><path d="M-24 0h11M13 0h11M0-24v11M0 13v11"/></g>`}
+  document.getElementById('gHl').innerHTML=h;document.getElementById('gLbl').innerHTML=labelsSVG();
+  const svg=document.getElementById('gmap');svg.style.width=(100*mz)+'%';svg.style.minWidth=(760*mz)+'px';
+  flushFx()}
+function queueFx(v){if(!Array.isArray(v.fx))return;if(v.gen!==fxGen){fxGen=v.gen;fxSeen=-1}
+  const mx=v.fx.reduce((a,f)=>Math.max(a,f.n),0);if(fxSeen<0){fxSeen=mx;return}
+  for(const f of v.fx)if(f.n>fxSeen)pendFx.push(f);fxSeen=Math.max(fxSeen,mx)}
+function flushFx(){const L=document.getElementById('gFx');if(!L){pendFx=[];return}
+  if(pendBanner){showBanner(pendBanner[0],pendBanner[1]);pendBanner=null}
+  const list=pendFx.slice(-6);pendFx=[];list.forEach((f,i)=>setTimeout(()=>playFx(f),i*260))}
+function fxAdd(svg,ms){const L=document.getElementById('gFx');if(!L)return;L.insertAdjacentHTML('beforeend',svg);const el=L.lastElementChild;setTimeout(()=>{try{el.remove()}catch(e){}},ms||2600)}
+function playFx(f){const col=MAPC[f.x]||'#8A7F5C';
+  if(f.k==='neu'){showBanner(`중립국 진격! (${f.m}곳)`,'war');sfx('war');return}
+  if(f.k==='trade'){showBanner(`거래 성사 · ${NAT[f.x].n} ↔ ${NAT[f.y].n}`,'focus');sfx('cap');return}
+  if(f.k==='atk'||f.k==='mv'){const a=anc(f.f),b=anc(f.t);if(!a||!b)return;const c=curve(a,b,f.k==='atk'?.2:.14);const[bx,by]=b;
+    const hx=bx-c.ux*2,hy=by-c.uy*2,px=-c.uy,py=c.ux;const head=`M${hx+c.ux*6} ${hy+c.uy*6}L${hx-c.ux*9+px*8} ${hy-c.uy*9+py*8}L${hx-c.ux*9-px*8} ${hy-c.uy*9-py*8}Z`;
+    let g=`<g class="fxg"><path d="${c.d}" class="fx-arr" style="stroke:${shade(col,.55)};stroke-width:${f.k==='atk'?9:7};--len:${c.len};stroke-dasharray:${c.len}"/><path d="${c.d}" class="fx-arr" style="stroke:${col};stroke-width:${f.k==='atk'?5:3.5};--len:${c.len};stroke-dasharray:${c.len}"/><path d="${head}" class="fx-head" style="fill:${col}"/>`;
+    if(f.k==='atk'){g+=`<g transform="translate(${bx},${by})"><circle r="16" class="fx-b1"/><circle r="10" class="fx-b2"/><circle r="22" class="fx-ring"/>${[0,1,2,3,4,5,6,7].map(i=>{const an=i*Math.PI/4+.3;return`<line x1="${Math.cos(an)*8}" y1="${Math.sin(an)*8}" x2="${Math.cos(an)*24}" y2="${Math.sin(an)*24}" class="fx-sp"/>`}).join('')}</g>`;
+      g+=`<text x="${bx+14}" y="${by-8}" class="fx-dmg">-${f.a}</text><text x="${a[0]-14}" y="${a[1]-8}" class="fx-dmg d2" text-anchor="end">-${f.d}</text>`;
+      if(f.c)g+=`<text x="${bx}" y="${by+36}" text-anchor="middle" class="fx-cap" style="fill:${col}">점령!</text>`}
+    fxAdd(g+'</g>',2600);if(f.k==='atk'){setTimeout(()=>{sfx('boom');const w=document.querySelector('.mapbox');if(w){w.classList.remove('shake');void w.offsetWidth;w.classList.add('shake')}},420)}
+    if(f.c)setTimeout(()=>ripple(f.t,col),700);return}
+  if(f.k==='cap'){ripple(f.t,col);return}
+  if(f.k==='ls'){showBanner(f.ok?`수도 탈환! ${NAT[f.x].n} 결사항전 성공`:`결사항전! ${NAT[f.x].n}의 수도 ${f.t} 함락`,f.ok?'focus':'war');sfx(f.ok?'cap':'war');if(!f.ok)ripple(f.t,'#B42A1F');return}
+  if(f.k==='spy'){showBanner(f.m==='fail'?`🚨 스파이 체포 · ${NAT[f.x].n} 요원이 ${NAT[f.y].n}에서 붙잡힘`:`🕵 첩보 · ${NAT[f.x].n} → ${NAT[f.y].n} · ${f.m==='cash'?'자본 '+f.a+' 탈취':f.m==='fac'?f.t+' 공장 파괴':f.t+' 인구 -1'}`,'focus');sfx('notify');if(f.t){const a=anc(f.t);if(a)fxAdd(`<g transform="translate(${a[0]},${a[1]})"><circle r="9" class="fx-bld" style="stroke:#2B2B2B"/><text y="-22" text-anchor="middle" class="fx-plus" style="fill:#2B2B2B">🕵 ${f.m==='fac'?'공장 파괴':'인구 -1'}</text></g>`,2200)}return}
+  if(f.k==='nuke'){nukeFx(f);return}
+  if(f.k==='air'){airFx(f);return}
+  if(f.k==='pop'){const a=anc(f.t);if(!a)return;fxAdd(`<g transform="translate(${a[0]},${a[1]})"><circle r="8" class="fx-bld" style="stroke:#FFD36B"/><circle r="8" class="fx-bld" style="stroke:#FFD36B;animation-delay:.25s"/><text y="-22" text-anchor="middle" class="fx-plus" style="fill:#C98A10">인구 ${'●'.repeat(f.p)}</text></g>`,1900);sfx('focus');return}
+  if(f.k==='loot'){const a=anc(f.t);if(!a)return;fxAdd(`<g transform="translate(${a[0]},${a[1]})"><text y="-34" text-anchor="middle" class="fx-plus" style="fill:#B42A1F;animation-delay:.9s">약탈! +${LOOT_RES}</text></g>`,2800);return}
+  if(f.k==='build'){const a=anc(f.t);if(!a)return;fxAdd(`<g transform="translate(${a[0]},${a[1]})"><circle r="6" class="fx-bld" style="stroke:${col}"/><text y="-18" text-anchor="middle" class="fx-plus" style="fill:${col}">+${esc(f.u)}</text></g>`,1800);return}
+  if(f.k==='war'){showBanner(`⚔ ${NAT[f.x].n} → ${NAT[f.t].n} 선전포고`,'war');sfx('war');return}
+  if(f.k==='focus'){showBanner(`${NAT[f.x].n} · ${f.t}`,'focus');return}}
+function nukeFx(f){const a=anc(f.t);if(!a)return;const[x,y]=a;showBanner(`☢ 핵 공격 · ${NAT[f.x].n} → ${f.t}`,'war');sfx('nuke');
+  const w=document.querySelector('.mapbox');if(w){w.classList.remove('shake','bigshake');void w.offsetWidth;w.classList.add('bigshake')}
+  fxAdd(`<g><rect width="${MAP.W}" height="${MAP.H}" class="nk-flash"/><g transform="translate(${x},${y})">
+   <circle r="12" class="nk-wave"/><circle r="12" class="nk-wave" style="animation-delay:.25s"/>
+   <circle r="16" class="nk-fire"/>
+   <g transform="scale(1.7)"><g class="nk-rise"><path d="M-7 0C-5-20-6-40-4-58h8c2 18 1 38 3 58z" class="nk-stem"/><ellipse cx="0" cy="-34" rx="20" ry="5" class="nk-skirt"/>
+    <g class="nk-cap"><circle cx="0" cy="-66" r="20"/><circle cx="-18" cy="-60" r="15"/><circle cx="18" cy="-60" r="15"/><circle cx="-9" cy="-78" r="14"/><circle cx="10" cy="-79" r="14"/><circle cx="0" cy="-58" r="13" class="hot"/></g></g></g>
+   <text y="34" text-anchor="middle" class="fx-cap" style="fill:#7CFF4F;animation-delay:1.4s">☢</text></g></g>`,6200)}
+function airFx(f){const b=anc(f.t),a0=anc(f.f)||b;if(!b)return;const col=MAPC[f.x]||'#888';sfx('jet');
+  const ang=Math.atan2(b[1]-a0[1],b[0]-a0[0])*180/Math.PI;const dx=b[0]-a0[0],dy=b[1]-a0[1];
+  const plane=c=>`<path d="M10 0 2-2-3-9H-6l2 7-7 1-3-4h-2l1.5 5-1.5 5h2l3-4 7 1-2 7h3l5-7z" style="fill:${c}" stroke="#fff" stroke-width=".8"/>`;
+  let g=`<g class="fxg2"><g style="--dx:${dx}px;--dy:${dy}px" class="fly"><g transform="translate(${a0[0]},${a0[1]}) rotate(${ang})">${plane(col)}</g></g>`;
+  if(f.m==='int'){g+=`<g transform="translate(${b[0]+30},${b[1]-30}) rotate(${ang+180})" class="popin">${plane(MAPC[f.y]||'#888')}</g><text x="${b[0]}" y="${b[1]-30}" text-anchor="middle" class="fx-cap" style="fill:#5BC0FF;animation-delay:.7s">요격!</text>`}
+  if(f.m==='sup')g+=`<circle cx="${b[0]}" cy="${b[1]}" r="26" class="fx-sup" style="stroke:${col}"/><text x="${b[0]}" y="${b[1]-34}" text-anchor="middle" class="fx-plus" style="fill:#2E8FD0;animation-delay:.8s">제공권 확보</text>`;
+  if(f.m==='hit'||f.m==='bomb'){for(let i=0;i<(f.m==='bomb'?5:3);i++){const ox=(i-1)*9+(i%2?4:-4),oy=(i%2?6:-5);g+=`<g transform="translate(${b[0]+ox},${b[1]+oy})"><circle r="9" class="fx-b1" style="animation-delay:${.75+i*.12}s"/><circle r="5" class="fx-b2" style="animation-delay:${.75+i*.12}s"/></g>`}
+    g+=`<text x="${b[0]+14}" y="${b[1]-12}" class="fx-dmg" style="animation-delay:1.1s">${f.m==='bomb'?'폭격':'-'+f.d}</text>`;setTimeout(()=>sfx('boom'),800)}
+  fxAdd(g+'</g>',2800)}
+function ripple(t,col){const a=anc(t);if(!a)return;fxAdd(`<g transform="translate(${a[0]},${a[1]})">${[0,1,2].map(i=>`<circle r="10" class="fx-rip" style="stroke:${col};animation-delay:${i*.22}s"/>`).join('')}<g class="fx-flag"><path d="M0 0V-26" stroke="#3a2a10" stroke-width="2"/><path d="M0-26h15l-4 5 4 5H0z" style="fill:${col}" stroke="#fff" stroke-width="1"/></g></g>`,2400)}
+function showBanner(text,kind){const b=document.getElementById('banner');if(!b)return;b.innerHTML=`<div class="bn ${kind||''}">${esc(text)}</div>`;clearTimeout(showBanner.t);showBanner.t=setTimeout(()=>{b.innerHTML=''},2600)}
+function zoom(d){mz=Math.max(1,Math.min(2.2,+(mz+d).toFixed(2)));const w=document.querySelector('.mapwrap');const svg=document.getElementById('gmap');if(!svg||!w)return;
+  const cx=(w.scrollLeft+w.clientWidth/2)/w.scrollWidth,cy=(w.scrollTop+w.clientHeight/2)/w.scrollHeight;svg.style.width=(100*mz)+'%';svg.style.minWidth=(760*mz)+'px';
+  w.scrollLeft=cx*w.scrollWidth-w.clientWidth/2;w.scrollTop=cy*w.scrollHeight-w.clientHeight/2}
+let drag=null,dragMoved=false;
+function bindMap(){const w=document.querySelector('.mapwrap');const svg=document.getElementById('gmap');if(!w||!svg)return;
+  svg.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return}const t=e.target.closest&&e.target.closest('[data-t],[data-s]');if(!t)return;if(t.dataset.t!=null)clkL(+t.dataset.t);else clkS(+t.dataset.s)});
+  w.addEventListener('mousedown',e=>{if(e.button!==0)return;drag={w,x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop};dragMoved=false});
+  w.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();zoom(e.deltaY<0?.2:-.2)},{passive:false})}
+window.addEventListener('mousemove',e=>{if(!drag)return;const w=drag.w;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!dragMoved&&Math.hypot(dx,dy)<6)return;dragMoved=true;w.classList.add('drag');w.scrollLeft=drag.l-dx;w.scrollTop=drag.t-dy});
+window.addEventListener('mouseup',()=>{if(drag){drag.w.classList.remove('drag');drag=null;setTimeout(()=>{dragMoved=false},0)}});
+
+function selName(){return sel?sel.slice(2):null}
+let airMode=null,nukeMode=false,nukeTgt=null;
+function airClick(nm){if(!myTurn()){airMode=null;nukeMode=false;return false}
+  if(nukeMode){if(V.T[nm]&&V.T[nm].o!=='X'){nukeTgt=nm;render();return true}return false}
+  if(airMode){if(airTargets(V,V.cur,airMode.sk).includes(nm)){if(airMode.sk==='strat'){airMode.t=nm;tab='nat';ntab='air';render();return true}
+      sendAct({k:'sortie',i:airMode.i,sk:airMode.sk,t:nm});airMode=null;render();return true}}
+  return false}
+function curOpts(){if(airMode||nukeMode)return null;if(!myTurn()||!sel)return null;const nm=selName();const x=V.cur;
+  if(sel[0]==='L'){const T=V.T[nm];if(T.o!==x)return null;const n=effCnt(T.u,pickMv);return landOpts(V,x,nm,n)}
+  const S=V.S[nm];if(S.o!==x)return null;return seaOpts(V,x,nm,effCnt(S.u,pickMv))}
+function eligible(us){return us.filter(u=>u.mv>0).length}
+function effCnt(us){const e=eligible(us);if(!e)return 1;return cnt>0?Math.min(cnt,e):e}
+function clkL(i){if(!V||V.ph==='lobby')return;const nm=LAND[i][0];if(airClick(nm))return;const o=curOpts();
+  if(o&&o[nm]&&sel[0]==='L'){const k=o[nm].k;if(k==='mv'||k==='amv'||k==='vul'){const f=selName();const n=effCnt(V.T[f].u);sendAct({k:'go',f,to:nm,n});if(n>=eligible(V.T[f].u))sel='L:'+nm;cnt=0;tgt=null;render();return}
+    tgt=nm;render();return}
+  if(sel==='L:'+nm){sel=null;tgt=null;render();return}
+  sel='L:'+nm;tgt=null;cnt=0;tab='act';render()}
+function clkS(i){const nm=SEA[i][0];if(airClick(nm))return;const o=curOpts();
+  if(o&&o[nm]&&sel[0]==='S'){const f=selName();const n=effCnt(V.S[f].u);if(o[nm].k==='mv'){sendAct({k:'go',f,to:nm,n});if(n>=eligible(V.S[f].u))sel='S:'+nm;cnt=0;render();return}tgt=nm;render();return}
+  if(sel==='S:'+nm){sel=null;tgt=null;render();return}sel='S:'+nm;tgt=null;cnt=0;tab='act';render()}
+function doAttack(){const f=selName();if(!tgt)return;const us=sel[0]==='L'?V.T[f].u:V.S[f].u;sendAct({k:'go',f,to:tgt,n:effCnt(us)});tgt=null;cnt=0}
+function setCnt(n){cnt=n;tgt=null;render()}
+
+/* ---- 게임 화면 ---- */
+function renderGame(app){
+  const s=V;const x=s.cur;const mn=myNat();const opts=curOpts();const myT=myTurn();
+  if(!document.getElementById('gmap')){app.innerHTML=`<div id="gbar"></div><div class="game"><div><div class="mapbox"><div class="mapwrap">${mapStatic()}</div><div id="banner"></div>
+    <div class="ztools"><button class="ghost sm" id="nightBtn" onclick="toggleNight()" aria-label="야경 보기">☾</button><button class="ghost sm" onclick="zoom(.3)" aria-label="확대">＋</button><button class="ghost sm" onclick="zoom(-.3)" aria-label="축소">－</button></div></div>
+    <p class="note">내 영토를 누르면 갈 수 있는 곳은 <b style="color:var(--ok)">초록</b>, 칠 수 있는 곳은 <b style="color:var(--hot)">빨강</b>으로 깜빡입니다. 바다를 건너는 상륙은 점선 호로 이어집니다. 파란 선 = 강(건너면 이동 -1, 방어 +1), 산 모양 = 산, 물결 = 언덕, ★ = 수도, 굴뚝 = 공장. 부대 칩의 숫자는 부대 수, 금색 별은 특수 유닛, 빨간 점은 부상입니다. 지도는 끌어서 옮기고 ＋/－ 로 확대합니다.</p></div>
+    <div id="side"></div></div><div id="gmodal"></div>`;bindMap();nightStr='';wonStr='';statStr='';applyNight()}
+  const turnTxt=s.ph==='end'?'종전':`${s.rd}라운드 · <span class="flag" style="background:${MAPC[x]}"></span>${NAT[x].n} 차례 <span class="note">${s.seats[x]?esc(nickOf(s.seats[x]))+(s.on[x]?'':' (연결 끊김)'):'(자동)'}</span>`;
+  const strip=ORDER.filter(y=>s.N[y]).map(y=>{const n=s.N[y];const out=n.st==='annexed'||n.st==='dead';return`<span class="oc ${y===x&&s.ph==='play'?'now':''} ${out?'out':''}" style="--c:${MAPC[y]}"><i></i>${NAT[y].n}${n.st==='puppet'?'<small>괴뢰</small>':''}${n.ls?'<small style="color:var(--hot)">결사항전</small>':''}<b>${out?'—':n.r}</b></span>`}).join('');
+  $('#gbar').innerHTML=`<div class="bar"><span class="big">${turnTxt}</span><span id="tmr" class="stat" style="color:var(--hot)"></span><span style="flex:1"></span>
+    ${mn?`<span><span class="flag" style="background:${MAPC[mn]}"></span><b>${NAT[mn].n}</b> 자원 <span class="stat">${s.N[mn].r}</span> <span class="note">(+${income(s,mn)})</span> · 자본 <span class="stat" style="color:var(--gold)">${s.N[mn].capital||0}</span> <span class="note">(+${capitalIncome(s,mn)})</span> · 과학 <span class="stat" style="color:#2E8FD0">${s.N[mn].science||0}</span> <span class="note">(+${labCount(s,mn)})</span> · ${capBadge(s,mn)}</span>`:'<span class="note">관전 중</span>'}
+    ${mn&&s.N[mn].ls?`<span class="pill bad" style="font-weight:700">⚠ 결사항전 · 이번 차례 안에 ${NAT[mn].cap} 탈환</span>`:''}
+    ${myT?`<button class="red" onclick="endTurn()">턴 종료</button>`:''}
+    ${mode==='host'&&s.ph==='play'&&!s.on[x]&&s.seats[x]?`<button class="ghost sm" onclick="sendAct({k:'auto'})">자동 진행</button>`:''}</div><div class="order">${strip}</div>`;
+  $('#side').innerHTML=`${s.ph==='end'?endSheet():''}${sidePanel(opts)}${logSheet()}${hostPanel()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button>`;
+  if(!myTurn()){airMode=null;nukeMode=false;nukeTgt=null}
+  $('#gmodal').innerHTML=capModal()+nukeModal();
+  updateMap(opts);bindHost();bindChat()}
+function endTurn(){sel=null;tgt=null;sendAct({k:'end'})}
+function logSheet(){const L=V.log.slice(-40);return`<section class="sheet"><span class="lab">전황 기록</span><div class="log" id="logBox">${L.map(l=>`<div>${l.x?`<span class="flag" style="background:${MAPC[l.x]}"></span>`:''}<span class="note">R${l.r}</span> ${esc(l.m)}</div>`).join('')}</div></section>`}
+function endSheet(){const e=V.end;if(!e)return'';return`<section class="sheet" style="border:2px solid var(--gold)"><span class="lab">종전</span><h2>${esc(e.name)} 승리</h2><p>${esc(e.why)} · ${e.rd}라운드</p>
+  <p class="mute">${e.mem.map(x=>NAT[x].n).join(', ')}</p>${mode==='host'?`<button onclick="hostRestart()">대기실로 돌아가기</button>`:''}</section>`}
+function capModal(){const p=V.pend;if(!p||V.ph!=='play')return'';const mine=myCtl(p.by);
+  return`<div class="modal"><div class="sheet"><span class="lab">${p.nk?'☢ 무조건 항복':p.ls?'결사항전 실패':'수도 함락'}</span><h2>${p.nk?`핵 공격으로 ${NAT[p.v].n}이(가) 전의를 상실했습니다`:p.ls?`${NAT[p.v].n}이(가) 수도 ${NAT[p.v].cap}을(를) 되찾지 못하고 항복합니다`:`${NAT[p.v].n}의 수도 ${NAT[p.v].cap} 함락`}</h2>
+  ${mine?`<p>항복 조건을 정하세요.</p><ul class="note"><li><b>괴뢰국</b>: ${NAT[p.v].n}은(는) 남은 영토와 자원으로 스스로를 지키며, 우리 진영 보너스를 자동으로 받습니다. 플레이어는 계속 조종합니다.</li><li><b>병합</b>: ${NAT[p.v].n}의 모든 영토가 우리 땅이 됩니다(그곳 병력은 해산, 공장 유지). 그 나라는 게임에서 빠집니다.</li></ul>
+  <div class="row"><button onclick="sendAct({k:'cap',m:'puppet'})">괴뢰국으로 삼기</button><button class="red" onclick="sendAct({k:'cap',m:'annex'})">병합하기</button></div>`
+  :`<p class="mute">${NAT[p.by].n}이(가) 항복 조건을 정하는 중입니다.</p>`}</div></div>`}
+function sidePanel(opts){
+  const s=V;const mn=myNat();
+  const tabs=[['act','지역'],['nat','내 나라'],['world','세계']];
+  let body='';
+  if(tab==='act')body=regionPanel(opts);else if(tab==='nat')body=mn?natPanel(mn):'<p class="mute">맡은 나라가 없습니다.</p>';else body=worldPanel();
+  return`<section class="sheet"><div class="tabs">${tabs.map(([k,l])=>`<button class="sm ${tab===k?'act':''}" onclick="tab='${k}';render()">${l}</button>`).join('')}</div>${body}</section>`}
+function unitRows(us,x){return`<div class="units">${us.map(u=>{const mh=x==='N'?UT[u.t].p:maxHp(V,x,u.t);return`<div class="unit"><span>${UT[u.t].n}</span><span class="note">체력 ${u.hp}/${mh} <span class="hpbar"><i style="width:${Math.round(u.hp/mh*100)}%"></i></span> · 이동 ${u.mv}${u.a?' · 공격함':''}</span></div>`}).join('')}</div>`}
+function ownerName(o){return o==='N'?'중립국':o==='X'?'참전하지 않은 나라':NAT[o].n+(V.N[o]&&V.N[o].st==='puppet'?' (괴뢰국)':'')}
+function regionPanel(opts){
+  const s=V;if(!sel)return`<p class="mute">지도에서 영토나 바다를 누르세요.</p>${tokPanel(null)}`;
+  const nm=selName();const x=s.cur;const myT=myTurn();
+  if(sel[0]==='S'){const S=s.S[nm];let h=`<h2>${nm}</h2><p class="note">${supOwner(s,nm)?'✈ '+NAT[supOwner(s,nm)].n+' 제공권 · ':''}${S.o?NAT[S.o].n+' 제해권':'제해권 없음'} · 이웃 바다: ${SN[nm].seas.join(', ')}</p>`;
+    if(S.hid)h+=`<p class="note"><b>함대: ? (정찰되지 않음)</b></p>`;
+    else if(S.u.length)h+=unitRows(S.u,S.o)+`<p class="note">방어력 ${stackPow(s,S.o,S.u,'def',{tr:null}).p}</p>`;
+    if(myT&&S.o===x&&eligible(S.u)){h+=cntPicker(S.u)+`<p class="note">초록 바다로 이동(한 칸, 레지아 마리나는 두 칸), 빨강 바다의 적 함대를 공격합니다. 이 바다를 통제하면 연안 어디로든 상륙할 수 있습니다.</p>`}
+    if(tgt&&opts&&opts[tgt])h+=previewBox(nm,tgt,'sea');
+    return h+tokPanel(nm)}
+  const T=s.T[nm],L=LN[nm];
+  const capOf=Object.keys(NAT).find(k=>NAT[k].cap===nm);
+  let h=`<h2>${nm}</h2><p class="note">${ownerName(T.o)} · ${TRN[L.tr]}${T.f?' · 공장':''}${capOf&&s.N[capOf]?' · '+NAT[capOf].n+' 수도':''}${T.fort?' · 마지노 요새':''}</p>
+   <p class="note">이웃: ${ADJ[nm].map(v=>RIV.has(ek(nm,v))?v+'(강)':v).join(', ')}${CS[nm].length?' · 바다: '+CS[nm].join(', '):''}</p>`;
+  if(T.o!=='X'&&(T.lab||T.fallout>0||supOwner(s,nm)))h+=`<p class="note">${T.lab?'🧪 연구소 (매 턴 과학 +1)':''}${T.fallout>0?` <b style="color:#5DA51E">☢ 방사능 오염 ${T.fallout}턴 — 진입·공격 불가</b>`:''}${supOwner(s,nm)?` ✈ ${NAT[supOwner(s,nm)].n} 제공권`:''}</p>`;
+  if(T.o!=='X'){const p=popOf(T);h+=`<p class="note">인구 ${'●'.repeat(p)}${'○'.repeat(POP_MAX-p)} ${p-1}단계${T.wonder?` · <b style="color:var(--gold)">불가사의 ${WONDERS[T.wonder].n}</b> — ${WONDERS[T.wonder].d}`:''}</p>`}
+  if(T.o==='X')return h+'<p class="mute">참전하지 않은 강대국의 땅이라 지나가거나 점령할 수 없습니다.</p>';
+  {const th=s.ph==='play'&&neutralThreat(s,nm);if(th)h+=`<p class="pill bad" style="display:block;border-radius:8px;padding:6px 10px">⚠ 중립국 침공 위험 · ${th.from} 수비대 공격력 ${th.A} vs 이곳 방어력 ${th.D}${s.rd<NEU_FROM?' (10라운드부터 진격)':''}</p>`}
+  if(T.hid)h+=`<p class="note"><b>병력: ? (정찰되지 않음)</b> — 내 영토·함대와 맞닿거나 전투기로 제공권을 잡으면 보입니다.</p>`;
+  else if(T.u.length){h+=unitRows(T.u,T.o);const dp=stackPow(s,T.o,T.u,'def',{tr:L.tr,land:nm});h+=`<p class="note">방어력 ${dp.p} <span class="brk">(${dp.pr.map(p=>p[0]+(p[1]>=0?' +':' ')+p[1]).join(', ')})</span> · 강을 건너 오는 적에게는 +1</p>`}
+  else h+='<p class="note">주둔 병력 없음</p>';
+  if(myT&&T.o===x){const n=s.N[x];
+    if(eligible(T.u))h+=cntPicker(T.u);
+    const heal=T.u.filter(u=>!u.h&&u.hp<maxHp(s,x,u.t)).reduce((a,u)=>a+maxHp(s,x,u.t)-u.hp,0);
+    if(!T.lab)h+=`<div class="row" style="margin:8px 0 0"><button class="sm ${n.r>=LAB_RES&&(n.capital||0)>=LAB_CAP?'':'ghost'}" ${n.r>=LAB_RES&&(n.capital||0)>=LAB_CAP?'':'disabled'} onclick="sendAct({k:'lab',t:'${nm}'})">🧪 연구소 건설 (자원 ${LAB_RES} + 자본 ${LAB_CAP})</button></div>`;
+    {const pc=popCost(s,x,nm),p=popOf(T);h+=`<div class="row" style="margin:8px 0 0"><button class="sm ${p<POP_MAX&&(n.capital||0)>=pc?'':'ghost'}" ${p<POP_MAX&&(n.capital||0)>=pc?'':'disabled'} onclick="sendAct({k:'pop',t:'${nm}'})">${p>=POP_MAX?'인구 최대':`인구 +1 (자본 ${pc})`}</button><span class="note">자본 ${n.capital||0}</span></div>`}
+    h+=`<div class="row" style="margin:8px 0">${heal?`<button class="ghost sm" onclick="sendAct({k:'heal',t:'${nm}'})">치료 (-${heal})</button>`:''}
+      ${!T.f?`<button class="ghost sm" onclick="sendAct({k:'fac',t:'${nm}'})" ${n.r<facCost(s,x,nm)?'disabled':''}>공장 건설 (-${facCost(s,x,nm)})</button>`:''}</div>`;
+    if(T.f){const land=buildable(x).filter(t=>UT[t].k!=='sea');const sea=buildable(x).filter(t=>UT[t].k==='sea');
+      if(capFull(s,x))h+=`<p class="note" style="color:var(--hot)">${CAP_MSG} (부대 ${unitCount(s,x)} / ${unitCap(s,x)})</p>`;
+      h+=`<span class="lab">생산</span><div class="row">${land.map(t=>{const c=unitCost(s,x,t);const ok=n.r>=c&&!capFull(s,x)&&canStack(s,nm,[{t}]);return`<button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} onclick="sendAct({k:'build',t:'${nm}',u:'${t}'})">${UT[t].n} ${c}</button>`}).join('')}</div>`;
+      if(CS[nm].length)h+=`<div class="col" style="gap:4px;margin-top:6px">${CS[nm].map(z=>{const S=s.S[z];const blocked=(S.o&&S.o!==x)||S.u.length>=STACK||capFull(s,x);
+        return`<div class="row"><span class="note" style="min-width:70px">${z}</span>${sea.map(t=>{const c=unitCost(s,x,t);const ok=!blocked&&n.r>=c;return`<button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} onclick="sendAct({k:'build',t:'${nm}',u:'${t}',sea:'${z}'})">${UT[t].n} ${c}</button>`}).join('')}</div>`}).join('')}</div>`}}
+  if(tgt&&opts&&opts[tgt])h+=previewBox(nm,tgt,opts[tgt].k==='aatk'?'amph':'land');
+  else if(myT&&sel&&T.o===x&&opts){const nA=Object.values(opts).filter(o=>o.k==='atk'||o.k==='aatk').length,nM=Object.values(opts).filter(o=>o.k!=='atk'&&o.k!=='aatk').length;h+=`<p class="note">이동 가능 ${nM}곳 · 공격 가능 ${nA}곳</p>`}
+  if(myT&&T.o!==x&&T.o!=='N'&&V.N[T.o]&&!atWar(s,x,T.o)){const ws=warState(s,x,T.o);h+=`<p class="note">${ws===1?'선전포고 완료 — 다음 라운드부터 침공 가능':'전쟁 중이 아닙니다. 내 나라 탭의 외교에서 선전포고(8)하세요.'}</p>`}
+  return h+tokPanel(nm)}
+function cntPicker(us){const e=eligible(us);const c=effCnt(us);let b='';for(let i=1;i<=e;i++)b+=`<button class="sm ${i===c?'':'ghost'}" onclick="setCnt(${i})">${i}</button>`;
+  return`<span class="lab" style="margin-top:8px">움직일 부대 수</span><div class="row">${b}</div>`}
+function previewBox(f,t,modeK){const s=V,x=s.cur;const us=modeK==='sea'?s.S[f].u:s.T[f].u;const r=fight(s,x,f,t,effCnt(us),modeK);
+  const dst=modeK==='sea'?s.S[t]:s.T[t];if(dst.hid){const brk=pr=>pr.map(p=>`${p[0]} ${p[1]>=0?'+':''}${p[1]}`).join(', ');
+    return`<div class="pv"><span class="lab">${modeK==='amph'?'상륙 공격':modeK==='sea'?'해전':'공격'} · ${esc(t)}</span><table><tr><td>${NAT[x].n} 공격력</td><td class="stat">${r.A.p}</td><td class="brk">${brk(r.A.pr)}</td></tr>
+    <tr><td>방어군</td><td colspan="2"><b>? 미확인</b> — 전장의 안개. 전투기로 제공권을 잡으면 정찰됩니다.</td></tr></table>
+    <p style="margin:6px 0">결과를 예측할 수 없습니다.</p><div class="row"><button class="red" onclick="doAttack()">그래도 공격</button><button class="ghost" onclick="tgt=null;render()">취소</button></div></div>`}
+  const dn=r.dO==='N'?'중립군':NAT[r.dO].n;
+  let res;if(!r.dS.length&&r.aS.length)res=`<b style="color:var(--ok)">${modeK==='sea'?'적 함대 격멸 · 제해권 장악':'방어군 전멸 → 점령'}</b>`;
+  else if(!r.aS.length&&!r.dS.length)res='<b>양쪽 모두 전멸</b>';
+  else if(!r.aS.length)res='<b style="color:var(--hot)">공격군 전멸</b>'+(modeK!=='sea'&&s.T[f].u.length===r.att.length&&r.dO!=='N'?' · 출발지가 비어 반격 점령 위험':'');
+  else res=`점령 실패 · 공격군 ${r.aS.length}부대 생존, 방어군 ${r.dS.length}부대 생존`;
+  const brk=pr=>pr.map(p=>`${p[0]} ${p[1]>=0?'+':''}${p[1]}`).join(', ');
+  return`<div class="pv"><span class="lab">${modeK==='amph'?'상륙 공격':modeK==='sea'?'해전':'공격'} 예측 · ${esc(t)}</span><table>
+  <tr><td>${NAT[x].n} 공격력</td><td class="stat">${r.A.p}</td><td class="brk">${brk(r.A.pr)}</td></tr>
+  <tr><td>${dn} 방어력</td><td class="stat">${r.D.p}</td><td class="brk">${brk(r.D.pr)}</td></tr>
+  <tr><td>잃는 부대</td><td colspan="2">아군 ${r.att.length-r.aS.length} / 적 ${r.def.length-r.dS.length}</td></tr></table>
+  <p style="margin:6px 0">${res}</p><div class="row"><button class="red" onclick="doAttack()">공격</button><button class="ghost" onclick="tgt=null;render()">취소</button></div></div>`}
+function tokPanel(nm){if(!myTurn())return'';const x=V.cur;const tk=V.N[x].tok;if(!tk.length)return'';
+  return`<div class="sheet" style="margin:10px 0 0;border-style:dashed"><span class="lab">배치할 보급품 ${tk.length}개</span>${tk.map((t,i)=>{const nmT=t.u?UT[t.u].n:t.ural?'우랄 공장':t.fort?'마지노 요새 공장':'무료 공장';
+    const where=t.u&&UT[t.u].k==='sea'?(nm&&sel[0]==='L'?CS[nm]:nm?[nm]:[]):nm&&sel[0]==='L'?[nm]:[];
+    const ok=where.filter(w=>tokOk(V,x,t,w));
+    return`<div class="row" style="margin-top:4px"><span>${nmT}</span>${ok.length?ok.map(w=>`<button class="sm" onclick="sendAct({k:'tok',i:${i},t:'${w}'})">${w}에 배치</button>`).join(''):`<span class="note">${t.u&&UT[t.u].k==='sea'?'내 해안 영토나 바다를 선택하세요':t.ural?'외국과 닿지 않은 내 영토를 선택하세요':'배치할 내 영토를 선택하세요'}</span>`}</div>`}).join('')}</div>`}
+function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=facOf(s,x);
+  let h=`<div class="row" style="justify-content:space-between"><h2 style="margin:0"><span class="flag" style="background:${NAT[x].c}"></span>${NAT[x].n}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?(fac?FACN[fac]:'무소속'):n.st==='annexed'?'병합됨':'몰락'}</span></div>
+  <p class="note">자원 ${n.r} · 수입 +${income(s,x)} · 영토 ${landCount(s,x)}</p>${capMeter(s,x)}
+  <div class="tabs" style="margin-top:8px">${[['focus','중점'],['gov','내정'],['air','공군'],['dip','외교'],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['trait','특성']].map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
+  if(ntab==='focus'){const fp=n.fp||0,up=n.up||{};
+    h+=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:var(--gold)"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">병기창 · 중점 포인트</span><span class="stat" style="font-size:18px;color:var(--gold)">${fp} FP</span></div>
+    <p class="note" style="margin:4px 0 8px">중점을 하나 완료할 때마다 1 FP. 1 FP로 유닛 한 종류의 전투력을 +1 합니다(게임마다 초기화).</p>
+    <div class="col" style="gap:4px">${buildable(x).map(t=>`<div class="row" style="justify-content:space-between"><span>${UT[t].n}${UT[t].only?' <span class="note">특수</span>':''} <span class="note">기본 ${UT[t].p}</span>${up[t]?` <b style="color:var(--ok)">+${up[t]}</b>`:''}</span>
+      <button class="sm ${fp&&myT?'':'ghost'}" ${fp&&myT?'':'disabled'} onclick="sendAct({k:'up',u:'${t}'})">+1 강화</button></div>`).join('')}</div></div>`;
+    h+=n.fo?`<p>진행 중: <b>${FOC[x].find(f=>f[0]===n.fo.id)[1]}</b> · ${n.fo.left}턴 남음</p>`:n.st==='on'?'<p class="note">진행 중인 중점이 없습니다. 하나를 고르세요 (한 번에 하나).</p>':'<p class="note">괴뢰국은 중점을 진행하지 않습니다.</p>';
+    h+=`<div class="col" style="gap:5px">${FOC[x].map(f=>{const st=focusState(s,x,f);return`<div class="fo ${st==='done'?'done':st==='cur'?'cur':''}"><div><b>${f[1]}</b> <span class="note">${f[2]}턴${f[3]?' · 선행: '+FOC[x].find(g=>g[0]===f[3])[1]:''}</span><br><span class="note">${f[5]}</span></div>
+      ${st==='open'&&myT&&!n.fo&&n.st==='on'?`<button class="sm" onclick="sendAct({k:'focus',id:'${f[0]}'})">시작</button>`:`<span class="note">${({done:'완료',cur:'진행 중',lock:'잠김',ex:'택일로 막힘',open:'가능'})[st]}</span>`}</div>`}).join('')}</div>`}
+  else if(ntab==='dip'){const others=Object.keys(s.N).filter(y=>y!==x&&['on','puppet'].includes(s.N[y].st));
+    h+=`<span class="lab">선전포고 (8) · 다음 라운드부터 침공</span><div class="col" style="gap:5px">${others.map(y=>{const T=topOf(s,y);const same=teamOf(s,x)===teamOf(s,y);const ws=warState(s,x,y);
+      return`<div class="row" style="justify-content:space-between"><span><span class="flag" style="background:${NAT[y].c}"></span>${NAT[y].n} <span class="note">${s.N[y].st==='puppet'?'('+NAT[s.N[y].m].n+' 괴뢰국)':facOf(s,y)?FACN[facOf(s,y)]:'무소속'}</span></span>
+      ${same?'<span class="pill ok">같은 편</span>':ws===2?'<span class="pill bad">전쟁 중</span>':ws===1?'<span class="pill bad">선포함 · 다음 라운드부터</span>':myT&&n.st==='on'?`<button class="sm red" onclick="sendAct({k:'war',t:'${T}'})" ${n.r<WAR_COST?'disabled':''}>선전포고</button>`:'<span class="note">평화</span>'}</div>`}).join('')||'<span class="note">다른 강대국이 없습니다.</span>'}</div>
+    <p class="note">중립국은 선전포고 없이 공격할 수 있습니다. 같은 진영에 들어간 나라와는 싸울 수 없습니다.</p>`;
+    const mates=others.filter(y=>teamOf(s,y)===teamOf(s,x)&&(fac||topOf(s,y)===x||topOf(s,x)===y));
+    h+=`<span class="lab" style="margin-top:10px">동맹 지원 (이번 턴 ${n.sent}/${SEND_MAX})</span>`+(mates.length?`<div class="row"><select id="sendTo">${mates.map(y=>`<option value="${y}">${NAT[y].n}</option>`).join('')}</select><input id="sendAmt" type="number" min="1" max="5" value="${Math.max(1,Math.min(5,SEND_MAX-n.sent))}" style="width:70px" aria-label="금액"><button class="sm" ${myT?'':'disabled'} onclick="sendAct({k:'send',to:$('#sendTo').value,amt:$('#sendAmt').value})">보내기</button></div>`:'<p class="note">중점으로 같은 진영에 들어간 나라가 있어야 자원을 보낼 수 있습니다.</p>')}
+  else if(ntab==='trade')h+=tradePanel(x);
+  else if(ntab==='gov')h+=govPanel(x,myT);
+  else if(ntab==='air')h+=airPanel(x,myT);
+  else h+=`<ul>${TRAIT[x].map(t=>`<li>${esc(t)}</li>`).join('')}</ul><p class="note">진영 보너스: 연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1</p>
+    <span class="lab">현재 생산 비용</span><p class="note">${buildable(x).map(t=>UT[t].n+' '+unitCost(s,x,t)).join(' · ')} · 공장 ${facCost(s,x,NAT[x].cap)}${x==='GB'&&!has(s,'GB','counter')?' (대륙 '+facCost(s,x,'북프랑스')+')':''}</p>`;
+  return h}
+function capBadge(s,x){const c=unitCount(s,x),m=unitCap(s,x);return`<span class="capb ${c>=m?'full':c>=m*.8?'near':''}" title="부대 수 / 보유 한도(인구 합 × 2)">부대 <b>${c} / ${m}</b></span>`}
+function capMeter(s,x){const c=unitCount(s,x),m=unitCap(s,x);const pct=m?Math.min(100,c/m*100):100;
+  return`<div class="capm ${c>=m?'full':c>=m*.8?'near':''}"><div class="row" style="justify-content:space-between"><span>부대 보유 <b>${c} / ${m}</b></span><span class="note">한도 = 인구 합 ${m/2} × 2</span></div><div class="bar2"><i style="width:${pct}%"></i></div>${c>=m?`<p class="note" style="color:var(--hot);margin:4px 0 0">${CAP_MSG}</p>`:''}</div>`}
+function airPanel(x,myT){const s=V,n=s.N[x];const sc=n.science||0;const af=n.airforce||[];
+  let h=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:#2E8FD0"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">공군 사령부</span><span class="stat" style="font-size:18px;color:#2E8FD0">과학 ${sc}</span></div>
+   <p class="note" style="margin:4px 0 8px">연구소 ${labCount(s,x)}곳 → 매 턴 과학 +${labCount(s,x)}. 연구소는 내 영토를 눌러 자원 ${LAB_RES} + 자본 ${LAB_CAP}으로 짓습니다. 항공기는 지도에 놓이지 않고, 내 영토에서 2칸 안까지 출격합니다.</p>
+   <div class="col" style="gap:6px">${Object.keys(AIR).map(k=>{const A=airSpec(x,k);const ok=myT&&n.r>=A.r&&sc>=A.sc&&af.length<AIR_MAX;return`<div class="row" style="justify-content:space-between;align-items:flex-start"><span>${A.perk?'<b style="color:#2E8FD0">★ ':''}${A.n}${A.perk?'</b>':''} <span class="note">재출격 ${A.cd}턴 · ${airSkills(x,k).map(q=>SKILL[q].n).join('·')}</span>${A.perk?`<br><span class="note">${A.perk}</span>`:''}</span><button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} onclick="sendAct({k:'air',u:'${k}'})">${A.n} 생산 (${A.r} + 과학 ${A.sc})</button></div>`}).join('')}</div></div>`;
+  h+=`<span class="lab">격납고 ${af.length}/${AIR_MAX}</span>`;
+  if(!af.length)h+='<p class="note">아직 항공기가 없습니다.</p>';
+  h+=`<div class="col" style="gap:5px">${af.map((p,i)=>{const sks=airSkills(x,p.type).map(id=>[id,SKILL[id]]);const ready=p.cd===0;
+    return`<div class="fo ${airMode&&airMode.i===i?'cur':''}"><div><b>✈ ${airSpec(x,p.type).n}</b> <span class="note">${ready?'<span style="color:var(--ok)">출격 가능</span>':`재출격 ${p.cd}턴 후`}</span></div>
+    <div class="row">${sks.map(([sk,q])=>{const nt=airTargets(s,x,sk).length;const ok=myT&&ready&&nt>0;return`<button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} title="${q.d}" onclick="airMode={i:${i},sk:'${sk}'};nukeMode=false;render()">${q.n}${ready&&myT?` (${nt})`:''}</button>`}).join('')}</div></div>`}).join('')}</div>`;
+  if(airMode&&myT){const q=SKILL[airMode.sk];const ts=airTargets(s,x,airMode.sk);
+    h+=`<div class="pv" style="border-color:#2E8FD0"><span class="lab">${q.n} · 대상 선택</span><p class="note" style="margin:0 0 6px">${q.d}. 지도에서 파랗게 깜빡이는 곳을 누르거나 아래에서 고르세요.</p>`;
+    if(airMode.sk==='strat'&&airMode.t){const L=s.T[airMode.t];h+=`<p><b>${airMode.t}</b> 폭격 방식</p><div class="row">${L.f?`<button class="sm red" onclick="sendAct({k:'sortie',i:${airMode.i},sk:'strat',t:'${airMode.t}',op:'fac'});airMode=null;render()">공장 파괴</button>`:''}${L.lab?`<button class="sm red" onclick="sendAct({k:'sortie',i:${airMode.i},sk:'strat',t:'${airMode.t}',op:'lab'});airMode=null;render()">연구소 파괴</button>`:''}${popOf(L)>1?`<button class="sm red" onclick="sendAct({k:'sortie',i:${airMode.i},sk:'strat',t:'${airMode.t}',op:'pop'});airMode=null;render()">인구 -1</button>`:''}</div>`}
+    else h+=`<div class="row">${ts.map(t=>`<button class="sm ghost" onclick="airClick('${t}')">${t}</button>`).join('')||'<span class="note">가능한 대상이 없습니다. 먼저 전투기로 제공권을 장악하세요.</span>'}</div>`;
+    h+=`<div class="row" style="margin-top:6px"><button class="sm ghost" onclick="airMode=null;render()">취소</button></div></div>`}
+  const canN=n.r>=NUKE_COST&&(n.capital||0)>=NUKE_COST&&sc>=NUKE_COST;
+  h+=`<div class="sheet nukebox" style="margin:12px 0 0;padding:10px 12px"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0;color:#B42A1F">☢ 핵폭탄</span><span class="note">자원 ${NUKE_COST} · 자본 ${NUKE_COST} · 과학 ${NUKE_COST}</span></div>
+   <p class="note" style="margin:4px 0 8px">지도 어디든 한 곳. 그곳의 모든 병력(아군 포함) 소멸, 인구 1, 공장·연구소 파괴, ${FALLOUT_T}턴간 진입 불가. 플레이어 수도에 떨어지면 그 나라는 즉시 무조건 항복합니다.</p>
+   ${nukeMode&&myT?`<p><b style="color:#B42A1F">지도에서 투하 지점을 누르세요.</b></p><button class="sm ghost" onclick="nukeMode=false;render()">취소</button>`:`<button class="sm red" ${canN&&myT?'':'disabled'} onclick="nukeMode=true;airMode=null;render()">핵 투하 지점 선택</button>`}</div>`;
+  return h}
+function nukeModal(){if(!nukeTgt||!V||!myTurn())return'';const T=V.T[nukeTgt];const cv=ORDER.find(y=>NAT[y].cap===nukeTgt&&V.N[y]&&y!==V.cur&&T.o===y);
+  return`<div class="modal"><div class="sheet" style="border:2px solid #B42A1F"><span class="lab" style="color:#B42A1F">☢ 최종 확인</span><h2>${nukeTgt}에 핵폭탄을 투하합니까?</h2>
+   <p>소유: ${ownerName(T.o)} · 병력 ${T.u.length}부대${T.f?' · 공장':''}${T.lab?' · 연구소':''} · 인구 ${popOf(T)}</p>${cv?`<p><b>${NAT[cv].n}의 수도입니다. 투하하면 ${NAT[cv].n}은(는) 즉시 무조건 항복합니다.</b></p>`:''}
+   <p class="note">되돌릴 수 없습니다. 자원·자본·과학이 각각 ${NUKE_COST}씩 소모됩니다.</p>
+   <div class="row"><button class="red" onclick="sendAct({k:'nuke',t:nukeTgt});nukeTgt=null;nukeMode=false;render()">투하</button><button class="ghost" onclick="nukeTgt=null;render()">취소</button></div></div></div>`}
+let spyTo='';
+function spySheet(x,myT){const s=V,n=s.N[x];const ts=Object.keys(s.N).filter(y=>y!==x&&['on','puppet'].includes(s.N[y].st)&&teamOf(s,y)!==teamOf(s,x));
+  if(!ts.length)return'';if(!ts.includes(spyTo))spyTo=ts[0];const ok=myT&&(n.capital||0)>=SPY_COST;
+  return`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:#555"><span class="lab">🕵 첩보부 · 자본 ${SPY_COST}</span>
+   <p class="note" style="margin:0 0 6px"><b style="color:var(--hot)">45% 실패(스파이 체포, 자본만 잃음)</b> · 38.5% 상대 국고에서 자본 10~20 탈취 · 8.25% 무작위 공장 1곳 파괴 · 8.25% 무작위 영토 인구 -1 (대상이 없으면 자본 탈취)</p>
+   <div class="row"><select id="spyTo" onchange="spyTo=this.value">${ts.map(y=>`<option value="${y}" ${y===spyTo?'selected':''}>${NAT[y].n}</option>`).join('')}</select>
+   <button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} onclick="sendAct({k:'spy',t:spyTo})">스파이 파견</button></div></div>`}
+function govPanel(x,myT){const s=V,n=s.N[x];const cap=n.capital||0;
+  const mine=Object.keys(s.T).filter(k=>s.T[k].o===x).sort((a,b)=>popOf(s.T[b])-popOf(s.T[a]));
+  const ws=Object.keys(WONDERS).filter(id=>hasWonder(s,x,id));
+  return`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:var(--gold)"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">국고</span><span class="stat" style="font-size:18px;color:var(--gold)">자본 ${cap}</span></div>
+   <p class="note" style="margin:4px 0 8px">매 턴 내 영토 인구 합만큼 자본이 들어옵니다 (지금 +${capitalIncome(s,x)}). 인구가 2 이상인 땅을 적에게 빼앗기면 약탈당해 인구 -1, 적은 자원 +${LOOT_RES}.</p>
+   <div class="row"><button class="sm ${cap>=EMERG_COST&&myT&&!n.emU?'':'ghost'}" ${cap>=EMERG_COST&&myT&&!n.emU?'':'disabled'} onclick="sendAct({k:'emerg'})">비상금: 자본 ${EMERG_COST} → 자원 ${EMERG_GAIN}</button><span class="note">${n.emU?'이번 턴 사용함':'한 턴에 한 번'}</span></div></div>
+  ${spySheet(x,myT)}
+  ${ws.length?`<span class="lab">보유 불가사의</span><div class="col" style="gap:4px;margin-bottom:10px">${ws.map(id=>`<div class="fo"><div><b>${WONDERS[id].n}</b> <span class="note">${WONDERS[id].t}</span><br><span class="note">${WONDERS[id].d}</span></div></div>`).join('')}</div>`:''}
+  <span class="lab">영토 인구 · 비용은 단계마다 올라갑니다 (${[2,3,4].map(q=>`→${q-1}단계 ${hasWonder(s,x,'eiffel')?Math.round(POP_COSTS[q]*.8):POP_COSTS[q]}`).join(' · ')})${hasWonder(s,x,'eiffel')?' · 에펠탑 20% 할인':''}</span>
+  <div class="col" style="gap:4px">${mine.map(k=>{const p=popOf(s.T[k]);const pc=popCost(s,x,k);const ok=myT&&p<POP_MAX&&cap>=pc;return`<div class="row" style="justify-content:space-between"><span>${k} <span style="color:var(--gold)">${'●'.repeat(p)}${'○'.repeat(POP_MAX-p)}</span></span><button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} onclick="sendAct({k:'pop',t:'${k}'})">${p>=POP_MAX?'최대':'+1 (자본 '+pc+')'}</button></div>`}).join('')}</div>
+  <span class="lab" style="margin-top:10px">유럽의 불가사의</span><div class="note">${Object.entries(WONDERS).map(([id,w])=>{const o=s.T[w.t].o;return`${w.n}(${w.t}) — ${o==='N'?'중립':o==='X'?'없음':NAT[o].n}`}).join(' · ')}</div>`}
+function incoming(){if(!V||!V.trades)return[];return V.trades.filter(o=>myCtl(o.t))}
+function tradeDesc(o){const g=[o.gr?'자원 '+o.gr:'',o.gt||''].filter(Boolean).join(' + ')||'없음',r=[o.rr?'자원 '+o.rr:'',o.rt||''].filter(Boolean).join(' + ')||'없음';
+  return`<b>${NAT[o.f].n}</b>이(가) 줌: ${esc(g)} · 대가: ${esc(r)}`}
+let trTo='';
+function tradePanel(x){const s=V;const others=Object.keys(s.N).filter(y=>y!==x&&['on','puppet'].includes(s.N[y].st));
+  if(!others.length)return'<p class="note">거래할 다른 강대국이 없습니다.</p>';if(!others.includes(trTo))trTo=others[0];
+  const tradable=o=>Object.keys(s.T).filter(k=>s.T[k].o===o&&!s.T[k].u.length&&NAT[o].cap!==k);
+  const rel=y=>teamOf(s,x)===teamOf(s,y)?'같은 편':atWar(s,x,y)?'전쟁 중':warState(s,x,y)===1?'선포함':'평화';
+  const inc=s.trades.filter(o=>o.t===x),out=s.trades.filter(o=>o.f===x);
+  return`${inc.length?`<span class="lab">받은 제안</span>${inc.map(o=>`<div class="fo"><div>${tradeDesc(o)}<br><span class="note">R${o.rd} 제안 · 2라운드 지나면 만료</span></div><div class="row"><button class="sm" onclick="sendAct({k:'tacc',id:${o.id}})">수락</button><button class="sm ghost" onclick="sendAct({k:'tdec',id:${o.id}})">거절</button></div></div>`).join('')}`:''}
+  <span class="lab" style="margin-top:10px">거래 제안 · 적국과도 가능</span>
+  <div class="col" style="gap:6px"><label class="row">상대 <select id="trTo" onchange="trTo=this.value;render()">${others.map(y=>`<option value="${y}" ${y===trTo?'selected':''}>${NAT[y].n} (${rel(y)})</option>`).join('')}</select></label>
+  <div class="row"><label>내가 줄 자원 <input id="trGr" type="number" min="0" max="999" value="0" style="width:70px"></label><label>받을 자원 <input id="trRr" type="number" min="0" max="999" value="0" style="width:70px"></label></div>
+  <label class="row">내가 줄 영토 <select id="trGt"><option value="">없음</option>${tradable(x).map(k=>`<option>${k}</option>`).join('')}</select></label>
+  <label class="row">받을 영토 <select id="trRt"><option value="">없음</option>${tradable(trTo).map(k=>`<option>${k}</option>`).join('')}</select></label>
+  <button class="sm" onclick="sendAct({k:'trade',from:'${x}',to:trTo,gr:$('#trGr').value,rr:$('#trRr').value,gt:$('#trGt').value,rt:$('#trRt').value})">제안 보내기</button>
+  <p class="note">병력이 없는 영토만 넘길 수 있고 수도는 거래할 수 없습니다. 상대는 자기 차례가 아니어도 언제든 수락할 수 있습니다. 동맹 지원과 달리 금액 제한이 없습니다.</p></div>
+  ${out.length?`<span class="lab" style="margin-top:10px">보낸 제안</span>${out.map(o=>`<div class="fo"><div>→ ${NAT[o.t].n}: ${tradeDesc(o)}</div><button class="sm ghost" onclick="sendAct({k:'tcan',id:${o.id}})">취소</button></div>`).join('')}`:''}`}
+function worldPanel(){const s=V;const rows=ORDER.filter(x=>s.N[x]).map(x=>{const n=s.N[x];const f=facOf(s,x);
+  return`<tr><td><span class="flag" style="background:${NAT[x].c}"></span>${NAT[x].n}</td><td>${n.st==='puppet'?'괴뢰('+NAT[n.m].n+')':n.st==='on'?(f?FACN[f]:'무소속'):n.st==='annexed'?'병합됨':'몰락'}</td><td class="stat">${landCount(s,x)}</td><td class="stat">${n.r}</td><td class="note">${s.seats[x]?esc(nickOf(s.seats[x]))+(s.on[x]?'':' ✕'):'자동'}${mode==='guest'&&!s.on[x]&&!mySeats().length&&['on','puppet'].includes(n.st)?` <button class="sm ghost" onclick="wantSeat('${x}')">이어받기</button>`:''}</td></tr>`}).join('');
+  const neu=Object.keys(s.T).filter(k=>s.T[k].o==='N').length;
+  const wars=Object.entries(s.war).map(([k,r])=>`${k.split('|').map(y=>NAT[y].n).join(' ⚔ ')} <span class="note">(R${r} 선포${r<s.rd?'':' · 준비 중'})</span>`);
+  return`<table class="tbl"><tr><th>나라</th><th>진영</th><th>영토</th><th>자원</th><th>플레이어</th></tr>${rows}</table>
+  <p class="note">남은 중립국 ${neu}곳 · 관전자 ${(s.wt||[]).length}명</p><span class="lab">전쟁</span><div style="font-size:14px">${wars.length?wars.join('<br>'):'<span class="note">아직 강대국 사이의 전쟁은 없습니다.</span>'}</div>`}
+boot();
+</script>
+</body>
+</html>
