@@ -189,6 +189,7 @@ button.ldcard:hover{border-color:var(--ink)}.ldcard.on{border:2px solid var(--go
 .ldt .ok b{color:var(--ok)}.ldt .bad b{color:var(--hot)}
 .ldpill{display:inline-flex;align-items:center;gap:4px;font:600 13px var(--f-body);padding:2px 10px;border-radius:12px;border:1px solid var(--gold);color:var(--ink);vertical-align:middle;margin-left:6px;cursor:help}
 @media (max-width:900px){.ldgrid{grid-template-columns:1fr}}
+.seatpl{margin:6px 0;padding:6px 9px;border-radius:8px;background:color-mix(in srgb,var(--gold) 12%,transparent);font-size:13px}.seatpl a{margin-left:4px}
 *{box-sizing:border-box}
 html{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body)}
@@ -705,11 +706,11 @@ const UT={
  arm:{n:'기갑',s:'기',c:8,p:4,m:3,k:'arm'},
  art:{n:'포병',s:'포',c:6,p:4,m:1,k:'art'},
  flt:{n:'함대',s:'함',c:8,p:3,m:1,k:'sea'},
- dread:{n:'드레드노트',s:'드',c:8,p:4,m:1,k:'sea',only:'GB'},
- magi:{n:'마지노 산악보병',s:'마',c:3,p:2,m:2,k:'inf',only:'FR'},
- panz:{n:'판저',s:'판',c:6,p:5,m:3,k:'arm',only:'DE'},
- mari:{n:'레지아 마리나',s:'레',c:7,p:3,m:2,k:'sea',only:'IT'},
- coss:{n:'카자크 군단',s:'카',c:2,p:2,m:2,k:'inf',only:'SU'},
+ dread:{n:'드레드노트',s:'드',c:8,p:4,m:1,k:'sea',only:'GB',d:'파워 4의 거대 전함 · 영국은 함대 비용 -2'},
+ magi:{n:'마지노 산악보병',s:'마',c:3,p:2,m:2,k:'inf',only:'FR',d:'언덕 방어 +1'},
+ panz:{n:'판저',s:'판',c:6,p:5,m:3,k:'arm',only:'DE',d:'기갑보다 싸고 강한 독일 전차 (파워 5 · 이동 3)'},
+ mari:{n:'레지아 마리나',s:'레',c:7,p:3,m:2,k:'sea',only:'IT',d:'한 번에 바다 두 칸을 가는 빠른 함대'},
+ coss:{n:'카자크 군단',s:'카',c:2,p:2,m:2,k:'inf',only:'SU',d:'자원 2짜리 값싼 보병'},
  uboat:{n:'U보트',s:'U',c:5,p:2,m:2,k:'sea',only:'DE',img:'flt',sub:1,need:{pt:['sea.doc.A2','sea.doc.B2','sea.doc.C2']},d:'통상 파괴: 적국과 맞닿은 바다에 있으면 그 나라 수입 -1 (바다마다, 최대 -4) · 구축함 계열 상대 -1'},
  tiger:{n:'티거',s:'티',c:12,p:7,m:2,k:'arm',only:'DE',img:'panz',need:{pt:['arm.doc.A3','arm.doc.B3']},d:'적 기갑 상대 +1 · 겨울 이동 -1'},
  cmdo:{n:'코만도',s:'코',c:5,p:3,m:2,k:'inf',only:'GB',img:'inf',need:{f:'homeguard'},d:'상륙 패널티 없음 · 상륙 공격 +1'},
@@ -906,6 +907,9 @@ function gpGive(x,id){const n=G.N[x];(n.gp=n.gp||[]).push(id);app(x,5,'위인 �
   if(id==='watt'){for(const q of['sea.doc.B2','sea.doc.B3'])if(!n.rs.own.includes(q))n.rs.own.push(q);n.science=(n.science||0)+5}
   if(id==='joliot'){n.science=(n.science||0)+10;for(const q of n.rs.sl)q.left=Math.max(1,q.left-1)}
   if(id==='koshkin'){const nx=['arm.doc.B2','arm.doc.B3'].find(q=>!n.rs.own.includes(q));if(nx)n.rs.own.push(nx)}}
+/* 나라 특성 표시: 예전 '특수: …' '항공기: …' 줄은 빼고, 덱 후보(2개 고름)와 지도자 후보를 붙인다 */
+function traitsOf(x){const base=(TRAIT[x]||[]).filter(t=>!/^(특수|항공기):/.test(t));
+  return base.concat([`특수 유닛 후보 (덱에 ${DECK_N}개): ${deckPool(x).map(d=>deckName(x,d)).join(' · ')}`,`지도자 후보: ${(LEAD_ROSTER[x]||[]).map(id=>(LEAD_ICON[id]||'')+' '+LEAD[id].n).join(' · ')}`])}
 const TRAIT={
  GB:['해군 비용 -2 (함대·드레드노트)','해안 요새화: 영국 땅에 상륙하는 적은 총 -3','대륙 진출의 한계: 대륙 공장 +7 (대독 재반격으로 해제)','특수: 드레드노트 (8 · 파워 4 · 이동 1)','항공기: 스핏파이어 — 요격해도 쿨타임이 늘지 않음'],
  FR:['난공불락의 요새: 산·언덕 방어 +2','부패 정부: 생산 +1 · 공장 건설 +3.5 (정부 예산 증가로 해제)','특수: 마지노 산악보병 (3 · 파워 2 · 이동 2, 언덕 방어 +1)','항공기: 파르망 F.222 — 폭격기 쿨타임 1턴'],
@@ -1295,11 +1299,11 @@ const POP_MAX=4,POP_COSTS=[0,0,14,21,32],EMERG_COST=5,EMERG_GAIN=3,LOOT_RES=5,SP
 const WONDERS={
  bigben:{n:'빅벤',t:'런던',d:'턴 시작 시 자본 +3 · 방첩: 이 나라를 노린 적 첩보 실패 확률 +10%'},
  eiffel:{n:'에펠탑',t:'파리',d:'인구 증가 비용 20% 할인'},
- colosseum:{n:'콜로세움',t:'로마',d:'포병 생산 비용 -1'},
- kremlin:{n:'크렘린',t:'모스크바',d:'방어할 때 파워 +1'},
- brandenburg:{n:'브란덴부르크 문',t:'베를린',d:'기갑·판저 생산 비용 -1'},
+ colosseum:{n:'콜로세움',t:'로마',d:'포병·카추샤 생산 비용 -1'},
+ kremlin:{n:'크렘린',t:'모스크바',d:'방어할 때 모든 부대(특수 유닛 포함) 파워 +1'},
+ brandenburg:{n:'브란덴부르크 문',t:'베를린',d:'기갑 계열(기갑·판저·티거·마틸다 II·샤르 B1 bis·T-34) 생산 비용 -1'},
  warsaw:{n:'바르샤바 왕궁',t:'바르샤바',d:'턴 시작 시 자본 +1'},
- belem:{n:'벨렝 탑',t:'리스본',d:'서지중해·북대서양 해전에서 함대 파워 +1'},
+ belem:{n:'벨렝 탑',t:'리스본',d:'서지중해·북대서양 해전에서 모든 함대(드레드노트·U보트·레지아 마리나·데치마 MAS 포함) 파워 +1'},
  parthenon:{n:'파르테논',t:'아테네',d:'턴 시작 시 자원 +1'}};
 const WONDER_AT={};for(const id in WONDERS)WONDER_AT[WONDERS[id].t]=id;
 /* ---- DLC 2: 과학 · 공군 · 핵 ---- */
@@ -4385,7 +4389,8 @@ function renderRoom(app){
      return`<div class="seat ${m?'mine':''}" style="border-left-color:${NAT[x].c}"><div class="row" style="justify-content:space-between"><b style="font:400 20px var(--f-display)">${emb(x).replace('class="emb"','class="emb" style="width:30px;height:30px;vertical-align:-7px"')}${NAT[x].n}</b>
      <span class="note">${NAT[x].fac?FACN[NAT[x].fac]:'무소속'} · 수도 ${NAT[x].cap}</span></div>
      <div>${p?`<span class="dot ${on?'on':''}"></span> ${nickBadge(p)}${m?' (나)':''}`:'<span class="mute">비어 있음</span>'}</div>
-     <ul>${TRAIT[x].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+     <ul>${traitsOf(x).map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+     ${m?(()=>{const pl=planGet(x);return`<div class="seatpl">${LEAD_ICON[pl.ld]||''} <b>${LEAD[pl.ld]?esc(LEAD[pl.ld].n):'지도자 없음'}</b> · 덱 ${pl.deck.map(d=>esc(deckName(x,d))).join(' · ')} <a href="#" onclick="event.preventDefault();planX='${x}';planTab='deck';render();setTimeout(()=>{const e=document.querySelector('.plan');if(e)e.scrollIntoView({behavior:'smooth'})},50)">바꾸기</a></div>`})():''}
      ${take?`<button class="ghost sm" onclick="wantSeat('${x}')">이 나라 맡기</button>`:''}${m?`<button class="ghost sm" onclick="${isH?`wantSeat('${x}')`:`wantSeat('')`}">자리 비우기</button>`:''}</div>`}).join('')}</div></section>
    ${isH?`<section class="sheet"><span class="lab">설정</span>${optControls()}
      <div class="row" style="margin-top:8px"><button class="red" onclick="hostStart()">전쟁 시작</button><span class="note">${ORDER.filter(x=>V.seats[x]).length}개국 참전</span></div></section>`
@@ -5378,7 +5383,7 @@ function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=
   else if(ntab==='rs')h+=rsPanel(x,myT);
   else if(ntab==='bp')h+=bpPanel(x,myT);
   else if(ntab==='era')h+=eraPanel(x);
-  else h+=`${ldOf(s,x)?`<span class="lab">지도자</span>${ldCard(x,ldOf(s,x),false,null)}`:''}<span class="lab">나라 특성</span><ul>${TRAIT[x].map(t=>`<li>${esc(t)}</li>`).join('')}</ul><p class="note">진영 보너스: 연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1</p>
+  else h+=`${ldOf(s,x)?`<span class="lab">지도자</span>${ldCard(x,ldOf(s,x),false,null)}`:''}<span class="lab">나라 특성</span><ul>${traitsOf(x).filter(t=>!t.startsWith('지도자 후보')).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><p class="note">이번 게임 덱: <b>${deckOf(s,x).map(d=>esc(deckName(x,d))).join(' · ')}</b></p><p class="note">진영 보너스: 연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1</p>
     <span class="lab">현재 생산 비용</span><p class="note">${buildable(x).map(t=>UT[t].n+' '+unitCost(s,x,t)).join(' · ')} · 공장 ${facCost(s,x,NAT[x].cap)}${x==='GB'&&!has(s,'GB','counter')?' (대륙 '+facCost(s,x,'파리')+')':''}</p>`;
   return h}
 /* ---- 상단 시대 · 지지율 칩 ---- */
