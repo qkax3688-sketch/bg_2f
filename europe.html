@@ -178,6 +178,17 @@ button.plcard:hover{border-color:var(--ink);transform:translateY(-1px)}.plcard.o
 .erasp.out{opacity:0;transition:opacity .8s}@keyframes erin{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
 @media (pointer:coarse){.erach .ert small,.erdots,.appch small{display:none}.apbar{width:48px}.apl b{font-size:13px}.erach .ert b{font-size:12.5px}.erach .eri{width:20px;height:20px;font-size:12px}}
 .ocag{font-size:14px;line-height:1;margin-left:1px;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.ocag.dark{filter:saturate(1.3)}.oc[data-tip]{cursor:help}
+/* ---- 지도자 ---- */
+.ldgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.ldcard{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:400;position:relative}
+button.ldcard:hover{border-color:var(--ink)}.ldcard.on{border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 9%,var(--paper));outline:0}
+.ldh{display:flex;gap:10px;align-items:center}.ldh b{font:400 18px var(--f-display);display:block}.ldh small{font-size:11.5px;color:var(--mute)}
+.ldi{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:color-mix(in srgb,var(--ink) 8%,transparent);flex:none}
+.ldcard.on .ldi{background:var(--gold)}.ldh em{margin-left:auto;font-style:normal;color:var(--gold);font-weight:700}
+.ldt{display:flex;flex-direction:column;gap:4px}.ldt span{font-size:12px;line-height:1.4;color:var(--mute)}.ldt b{color:var(--ink);font-weight:700}
+.ldt .ok b{color:var(--ok)}.ldt .bad b{color:var(--hot)}
+.ldpill{display:inline-flex;align-items:center;gap:4px;font:600 13px var(--f-body);padding:2px 10px;border-radius:12px;border:1px solid var(--gold);color:var(--ink);vertical-align:middle;margin-left:6px;cursor:help}
+@media (max-width:900px){.ldgrid{grid-template-columns:1fr}}
 *{box-sizing:border-box}
 html{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body)}
@@ -1385,7 +1396,7 @@ function unitCost0(s,x,t,d){const u=UT[t];let c=u.c;d=d||bpOf(s,x,t);if(d){c+=bp
   if(s.N[x]&&s.N[x].mefo>0)c-=1;
   {const pb=pactBonus(s,x);if(pb&&pb.k==='cost'&&pactMatch(pb,x,t))c-=1}   // 연합군 보너스                       // 독일: 메포 어음 (3턴)
   if(x==='GB'&&has(s,'GB','lendlease')&&['inf','art','arm'].includes(t))c-=1;   // 영국: 무기대여법
-  {const L=ldOf(s,x);if(L==='monty'&&u.k==='art')c-=tb(s,x,1);if(L==='degaulle'&&u.k==='arm')c-=tb(s,x,1);if(L==='blum'&&['inf','arm','art'].includes(t))c+=pI(s,x,1);if(L==='zhukov'&&t==='coss')return 1;if(finOn(s,x,'tukha')&&u.k==='arm')c-=fv(s,x,2)}   // 지도자 (소수점은 반올림)
+  {const L=ldOf(s,x);if(L==='cunningham'&&u.k==='arm')c+=1;if(L==='monty'&&u.k==='art')c-=tb(s,x,1);if(L==='degaulle'&&u.k==='arm')c-=tb(s,x,1);if(L==='blum'&&['inf','arm','art'].includes(t))c+=pI(s,x,1);if(L==='zhukov'&&t==='coss')return 1;if(finOn(s,x,'tukha')&&u.k==='arm')c-=fv(s,x,2)}   // 지도자 (소수점은 반올림)
   return Math.max(1,Math.round(c))}
 function facCost(s,x,terr){return Math.max(1,facCost0(s,x,terr)-(rfx(s,x).facCost||0))}
 function facCost0(s,x,terr){let c=10;if(x==='DE'&&!has(s,'DE','autarky'))c+=2;if(x==='GB'&&!has(s,'GB','counter')&&!BRIT.includes(terr))c+=2;if(x==='FR'&&!has(s,'FR','budget'))c+=isL(s,x,'blum')?1.5/BUILD_MUL:1;if(isL(s,x,'goring')&&LN[terr]&&LN[terr].o0==='DE')c+=10*pm(s,x)/BUILD_MUL;if(has(s,x,'speer'))c-=2;let r=Math.round(c*BUILD_MUL);if(isL(s,x,'chamberlain'))r=Math.round(r*(1-ldDisc(s,x)));return r}
@@ -1456,7 +1467,7 @@ function typePow(s,x,t,tr,role,foeArm,cx,uu){const u=UT[t];let p=x==='N'?u.p:max
     if(t==='alpini'&&role==='att'&&(tr==='m'||tr==='h'))add('알피니: 산악 공격',1);
     if(t==='katyu')add(role==='att'?'카추샤: 일제 사격':'카추샤: 재장전',role==='att'?1:-1)}
   return[p,pr]}
-function amphPen(s,x,to){if(x==='IT')return 0;const p=s.T[to].o==='GB'?3:2;return isL(s,x,'cunningham')?p/2:p}
+function amphPen(s,x,to){if(x==='IT')return 0;const p=s.T[to].o==='GB'?3:2;return p}
 // 요새: 1 = 일반 요새(누구나 자원 35), 2 = 마지노선 확장 중점 요새. 그 땅을 지키는 쪽이 방어 보너스를 받는다
 function fortLv(T){return!T||!T.fort?0:typeof T.fort==='number'?T.fort:1}
 function stackPow(s,x,units,role,c){
@@ -1663,17 +1674,17 @@ function winnerTeam(s){let team=null;for(const k in s.T){const o=s.T[k].o;if(o==
    튜토리얼에는 지도자가 없다. 기본 지도자 외 20명은 훈장(🎖)으로 해금한다. */
 const LEAD={
  churchill:{x:'GB',n:'윈스턴 처칠',nk:'불독',sp:'결속력 · 영토 수성 · 후반 도모',d:'수세에 몰린 영국에서 진가를 발휘하는 결사항전의 지도자. 폭격과 상륙 위협 속에서도 절대 항복하지 않는 우주방어에 맞습니다.',
-  t:['[사자후] 매 턴 결속도 +1 추가 (기본과 합쳐 +2)','[우리는 해변에서 싸울 것입니다] 영국 본토(그레이트브리튼 섬)에서 방어할 때 육군 전투력 +1','[끝없는 결사항전] 결사항전 유예 +2턴']},
+  t:['[사자후] 매 턴 결속도 +1 추가 (기본과 합쳐 +2)','[우리는 해변에서 싸울 것입니다] 영국 본토(그레이트브리튼 섬)에서 방어할 때 육군 전투력 +1','[페널티: 제국의 부담] 매 턴 자원 -2']},
  chamberlain:{x:'GB',n:'네빌 체임벌린',nk:'유화주의자',sp:'초반 내정 · 자본과 공장 · 외교',d:'전쟁을 최대한 피하고 내정에 집중해 초반 산업 기반을 다지는 지도자.',
   t:['[우리의 시대에 평화를] 누구와도 전쟁 중이 아니면 매 턴 자본 +3 · 자원 +3 (한 번이라도 전쟁에 휘말리면 영구 상실)','[군수공업 대전환] 공장·인구 증가 비용 20% 할인 (에펠탑과 중첩)','[페널티: 소극적 외교] 선전포고 비용 자원 8 → 16']},
  monty:{x:'GB',n:'버나드 몽고메리',nk:'사막의 쥐',sp:'육군 · 포병 연계 · 계획된 공세',d:'포병 화력을 앞세워 한 칸씩 적을 갉아먹는 안정적인 지상전의 장군.',
   t:['[주도면밀한 계획] 전선 명령·공세 화살표로 턴 종료 때 자동으로 벌어지는 공격의 전투력 +1.5','[포병의 대가] 포병 생산 -1 · 포병이 낀 공격은 상대의 강 건너 방어 보너스를 무시','[페널티: 신중함] 기갑·보병 기본 이동력 -1']},
  cunningham:{x:'GB',n:'앤드루 커닝엄',nk:'지중해의 지배자',sp:'해군 · 드레드노트 · 상륙 작전',d:'대서양과 지중해를 장악해 적의 바닷길을 끊고 유럽 해안을 마음대로 치는 제독.',
-  t:['[해양 제국] 드레드노트 이동력 +1 · 전투력 +1','[바다의 군주] 제해권을 쥔 바다 1곳마다 매 턴 자원 +1','[토치 작전] 상륙할 때 받는 상륙·해안 요새 페널티 절반']},
+  t:['[해양 제국] 드레드노트 이동력 +1 · 전투력 +1','[바다의 군주] 제해권을 쥔 바다 1곳마다 매 턴 자원 +1','[페널티: 해군 우선] 기갑 생산 자원 +1']},
  harris:{x:'GB',n:'아서 해리스',nk:'폭격기 사령부',sp:'공군 · 전략 폭격 · 적 내정 파괴',d:'압도적인 폭격기로 적의 공장·연구소·보급망을 잿더미로 만드는 지도자.',
   t:['[바람을 심은 자] 폭격기 생산 자원 -2 · 과학 -2','[폭풍 수확] 전략 폭격 후 재출격 대기 -1턴 (최소 1)','[초토화] 전략 폭격이 성공하면 50% 확률로 그 땅 인구도 -1']},
  degaulle:{x:'FR',n:'샤를 드골',nk:'자유 프랑스의 횃불',sp:'기갑전 · 레지스탕스 · 후반 역전',d:'프랑스가 무너진 뒤에 오히려 빛나는 불굴의 지도자. 기갑을 공격적으로 쓰고 레지스탕스로 점령국을 흔듭니다.',
-  t:['[기동방어 이론] 기갑 생산 -1 · 기갑 공격력 +1','[알제의 불꽃] 자유 프랑스로 수도가 알제로 옮겨지면 모든 육군 전투력 +1 · 매 턴 정치력 +2','[보이지 않는 군대] 레지스탕스 조직 효과 2배 (땅마다 결속도 -2, 최대 -6)']},
+  t:['[기동방어 이론] 기갑 생산 -1 · 기갑 공격력 +1','[알제의 불꽃] 자유 프랑스로 수도가 알제로 옮겨지면 모든 육군 전투력 +1 · 매 턴 정치력 +2','[페널티: 독불장군] 동맹에게 보내는 자원 지원 한도 절반']},
  daladier:{x:'FR',n:'에두아르 달라디에',nk:'보클뤼즈의 황소',sp:'우주 방어 · 마지노선 · 초반 수성',d:'독일의 전격전을 온몸으로 받아내는 극단적인 요새화의 총리.',
   t:['[마지노선 연장] 요새 건설 자원 -3 · 요새가 있는 땅에서 방어할 때 +1 추가','[총동원령] 시작할 때 파리·릴·알자스로렌에 방어 보병 1기씩 무료','[페널티: 방어적 사고] 땅을 공격할 때 전투력 -1']},
  reynaud:{x:'FR',n:'폴 레노',nk:'결사항전의 투사',sp:'동맹 시너지 · 버티기 · 공군',d:'영국과의 협력을 극대화하고 수도가 포위돼도 끝까지 버티는 근성의 총리.',
@@ -1713,6 +1724,9 @@ const LEAD={
  chuikov:{x:'SU',n:'바실리 추이코프',nk:'스탈린그라드의 수호자',sp:'시가전 · 공장 방위 · 포병',d:'폐허 속에서 적의 피를 말리는 시가전의 달인. 공장과 요새가 있는 땅을 철벽으로 만듭니다.',
   t:['[폐허의 저격수] 공장이나 요새가 있는 땅에서 방어할 때 +1.5','[파편 폭풍] 방어 부대에 포병이 있으면 공격해 온 기갑·판저가 평원 기갑 보너스(+2)를 잃음','[페널티: 야전의 열세] 공장도 요새도 없는 땅에서 방어할 때 -1']}};
 const LEAD0={GB:'churchill',FR:'degaulle',DE:'hitler',IT:'mussolini',SU:'stalin'};
+/* 나라마다 고를 수 있는 지도자 3명 (공세형 · 수비형 · 특수형). 결정타·등급·레벨·과업은 쓰지 않는다 */
+const LEAD_ROSTER={GB:['monty','churchill','cunningham'],FR:['degaulle','daladier','blum'],DE:['hitler','rommel','donitz'],IT:['mussolini','messe','balbo'],SU:['zhukov','stalin','tukha']};
+const LEAD_ROLE={monty:'공세',churchill:'수비',cunningham:'해군',degaulle:'공세',daladier:'수비',blum:'경제·첩보',hitler:'공세',rommel:'기동',donitz:'해군',mussolini:'선동',messe:'수비',balbo:'공군',zhukov:'공세',stalin:'수비',tukha:'과학'};
 const LEADS_OF={};for(const id in LEAD)(LEADS_OF[LEAD[id].x]=LEADS_OF[LEAD[id].x]||[]).push(id);
 const LEAD_ICON={churchill:'🎩',chamberlain:'☂️',monty:'🎖️',cunningham:'⚓',harris:'💣',degaulle:'🗼',daladier:'🧱',reynaud:'✊',petain:'🏛️',blum:'🌹',hitler:'🦅',rommel:'🦊',donitz:'🐺',goring:'✈️',beck:'🎼',mussolini:'🏟️',badoglio:'👑',messe:'⛰️',balbo:'🛩️',graziani:'🏜️',stalin:'⭐',zhukov:'🐎',tukha:'⚙️',trotsky:'📕',chuikov:'🏚️'};
 /* 등급: main 메인(뽑기 없음) · leg 전설 · hero 영웅 · rare 희귀 — 덱 코스트 1·4·3·2 */
@@ -1732,7 +1746,7 @@ function pm(s,x){return LVL(s,x)>=10?.5:1}                       // Lv10: 페널
 function pI(s,x,v){return Math.floor(v*pm(s,x))}                // 정수 페널티 (Lv10이면 1 → 0)
 function tn(s,x,v){const l=LVL(s,x);return v+(l>=5?1:0)+(l>=10?1:0)}   // 턴·횟수: Lv5·Lv10에서 +1
 function pp1(s,x){return 0.01*(LVL(s,x)-1)}                    // 확률: 레벨당 +1%p
-function ldOf(s,x){return null;const n=s&&s.N&&s.N[x];if(!n||!n.ld||!LEAD[n.ld])return null;if(n.ld==='balbo'&&(s.rd||0)>20+LVL(s,x)-1)return null;return n.ld}
+function ldOf(s,x){const n=s&&s.N&&s.N[x];if(!n||!n.ld||!LEAD[n.ld]||!(LEAD_ROSTER[x]||[]).includes(n.ld))return null;if(n.ld==='balbo'&&(s.rd||0)>20+LVL(s,x)-1)return null;return n.ld}
 function isL(s,x,id){return ldOf(s,x)===id}
 function ruleOf(s){return'basic'}
 function trOpt(s){return ruleOf(s)==='custom'?(s.opts.tr==='off'?'off':s.opts.tr==='5'?'5':'on'):'off'}
@@ -1741,21 +1755,24 @@ function chamPeace(s,x){const n=s.N[x];return!!n&&!n.ldWar&&!Object.keys(s.war||
 function vichyPeace(s){return has(s,'FR','petain')&&!atWar(s,'FR','DE')}
 function ldBan(s,x,id){const L=ldOf(s,x);return(L==='beck'&&id==='blitzall')||(L==='petain'&&(id==='joinally'||id==='antide'))}
 function warCost(s,x){return isL(s,x,'chamberlain')?Math.round(WAR_COST*(1+pm(s,x))):WAR_COST}
-function sendMax(s,x){if(finOn(s,x,'reynaud'))return 999;return isL(s,x,'reynaud')?SEND_MAX*2:SEND_MAX}
+function sendMax(s,x){if(finOn(s,x,'reynaud'))return 999;return isL(s,x,'reynaud')?SEND_MAX*2:isL(s,x,'degaulle')?Math.ceil(SEND_MAX/2):SEND_MAX}
 function spyCost(s,x){const L=ldOf(s,x);return L==='trotsky'?5:L==='blum'?Math.round(10-tb(s,x,0)):L==='hitler'?Math.round(SPY_COST*(1+pm(s,x))):SPY_COST}
 function ldSpyB(s,x){const L=ldOf(s,x);return L==='trotsky'?.2+pp1(s,x):L==='blum'?.1+pp1(s,x):0}
 function ldDisc(s,x){return .2+pp1(s,x)}   // 체임벌린·페탱 할인율
 function ldCapInc(s,x){const L=ldOf(s,x);if(!L||!s.N[x])return 0;let c=0;
   if(L==='chamberlain'&&chamPeace(s,x))c+=ib(s,x,3);if(L==='petain'&&vichyPeace(s))c+=ib(s,x,3);if(L==='blum')c+=ib(s,x,5);if(L==='mussolini'&&s.T['로마']&&s.T['로마'].o===x)c+=ib(s,x,5);return c}
 function ldResInc(s,x){const L=ldOf(s,x);let r=0;if(L&&s.N[x]){
-  if(L==='chamberlain'&&chamPeace(s,x))r+=ib(s,x,3);if(L==='cunningham'){let k=0;for(const z in s.S)if(s.S[z].o===x)k++;r+=Math.round(k*(1+0.2*(LVL(s,x)-1)))}
+  if(L==='chamberlain'&&chamPeace(s,x))r+=ib(s,x,3);if(L==='churchill')r-=2;if(L==='cunningham'){let k=0;for(const z in s.S)if(s.S[z].o===x)k++;r+=Math.round(k*(1+0.2*(LVL(s,x)-1)))}
   if(L==='beck'&&has(s,x,'autarky'))r+=ib(s,x,2);if(L==='graziani'&&has(s,x,'eth2'))r+=ib(s,x,3)}
   return r}
 /* ---- 결정타 효과가 켜져 있나 ---- */
 function finOn(s,x,id){const n=s&&s.N&&s.N[x];const F=n&&n.fin;return!!(F&&F.id===id&&F.until!=null&&(s.rd||0)<=F.until)}
 function subBlock(s,x){for(const y in s.N){const F=s.N[y].fin;if(F&&F.id==='donitz'&&F.t===x&&(s.rd||0)<=F.until)return true}return false}
 /* 지도자 정하기 (게임 시작 때) */
-function ldAssign(){for(const x of Object.keys(G.N)){const n=G.N[x];n.ld=null;n.lvl=1;n.q={st:0,c:{}}}}
+function ldAssign(){for(const x of Object.keys(G.N)){const n=G.N[x];n.lvl=1;n.q=null;n.ld=null;if(G.tut||G.camp)continue;
+    const pl=planFor(G,x);const want=pl&&pl.ld;n.ld=(LEAD_ROSTER[x]||[]).includes(want)?want:LEAD0[x];
+    if(n.ld==='messe')n.r=0;   // 메세: 열악한 지원
+    if(n.ld==='daladier')for(const k of['파리','릴','알자스로렌'])if(G.T[k]&&G.T[k].o===x){const u=nu(G,x,'inf');u.d=1;G.T[k].u.push(u)}}}   // 달라디에: 총동원령
 function ldTurn(x){const n=G.N[x];const L=ldOf(G,x);if(!L||!['on','puppet'].includes(n.st))return;
   if(L==='chamberlain'&&!n.ldWar&&Object.keys(G.war).some(k=>k.split('|').includes(x))){n.ldWar=1;lg('☂️ 체임벌린: 전쟁에 휘말려 「우리의 시대에 평화를」 보너스를 영구히 잃었습니다',x)}
   if(L==='donitz'&&alive(G,'GB')&&atWar(G,'DE','GB')&&['북대서양','북해 서부'].some(z=>G.S[z]&&G.S[z].o===x&&G.S[z].u.length)){const t=Math.min(ib(G,x,3),G.N.GB.r);if(t>0){G.N.GB.r-=t;n.r+=t;lg(`🐺 통상파괴전: 영국 자원 -${t} → 독일 +${t}`,x)}}
@@ -2099,6 +2116,7 @@ function setupBoard(){
     const isCap=o!=='N'&&o!=='X'&&NAT[o].cap===a[0];
     G.T[a[0]]={o,u,f:o==='X'?0:L.f0,fort:null,hub:isCap?1:0,pop:isCap?2:1,wonder:WONDER_AT[a[0]]||null,lab:0,fallout:0,rail:0,port:(o!=='N'&&o!=='X'&&CS[a[0]].length&&(isCap||L.f0))?1:0}}
   for(const a of SEA)G.S[a[0]]={o:null,u:[]};
+  ldAssign();
   railTrunk(G,'FR',['릴','마르세유','보르도','리옹','알자스로렌','브르타뉴']);   // 프랑스 국철망: 파리에서 뻗은 간선만 깔린 채 시작
   if(G.tut){for(const x of act){const sp=NAT[x].sp;
       for(const k in G.T){const T=G.T[k];if(T.o!==x)continue;T.u=[nu(G,x,'inf'),nu(G,x,'inf')];if(k===NAT[x].cap){const su=nu(G,x,UT[sp].k==='sea'?'art':sp);su.d=0;T.u.push(su)}}}
@@ -2124,7 +2142,7 @@ function startTurn(x){
   lg(`${G.rd}라운드 · ${NAT[x].n} 차례 (자원 +${inc}${tutOn(G,'gov')?' · 자본 +'+capInc:''}${sciInc?' · 과학 +'+sciInc:''})`,x);
   if(polOn(G)&&['on','puppet'].includes(n.st)){if(n.conf==null)n.conf=POL.conf0;const g=ppGain(G,x);n.pp=(n.pp||0)+g;pol(x,0,1,'결속 회복 (매 턴 +1)');if(regOf(G,x)==='soc')pol(x,0,regMul(G,x),'사회주의 체제');if(n.ccamp){const cc=campCost(G,x);if(n.conf>=100){n.ccamp=false}else if(n.pp>=cc){n.pp-=cc;pol(x,0,1+(rfx(G,x).campB||0)+(isL(G,x,'mussolini')?ib(G,x,2):0),`체제 결속 캠페인 (정치력 -${cc})`)}else{n.ccamp=false;lg(`🏛 정치력이 모자라 체제 결속 캠페인이 멈췄습니다`,x)}}
     if(has(G,x,'stakh'))pol(x,0,-1,'스타하노프 운동');
-    if(x==='FR'&&has(G,'FR','resist')){const occ={};for(const k in G.T){const o=G.T[k].o;if(LN[k].o0==='FR'&&o!=='FR'&&G.N[o])occ[o]=(occ[o]||0)+1}const dg=isL(G,'FR','degaulle');for(const o in occ)pol(o,0,-Math.min(dg?6:3,occ[o]*(dg?2:1)),'프랑스 레지스탕스')}
+    if(x==='FR'&&has(G,'FR','resist')){const occ={};for(const k in G.T){const o=G.T[k].o;if(LN[k].o0==='FR'&&o!=='FR'&&G.N[o])occ[o]=(occ[o]||0)+1}const dg=false;for(const o in occ)pol(o,0,-Math.min(dg?6:3,occ[o]*(dg?2:1)),'프랑스 레지스탕스')}
     rebelPhase(x);
     if(n.st!=='dead'&&n.conf<40)natAlert(x,n.conf<POL.low?`⚠ 결속도가 위험할 만큼 낮습니다 (${cfv(G,x)}) — 지금 수도를 잃으면 결사항전 없이 바로 항복합니다. 결속 캠페인으로 끌어올리세요`:`⚠ 결속도가 낮아지고 있습니다 (${cfv(G,x)}) — 30 아래로 떨어지면 수도 함락 즉시 항복`)}
   if(n.ls)n.ls.started=1;
@@ -2272,7 +2290,7 @@ function capture0(x,to,units,prev,how){
     else if(NAT[prev].cap===to&&(G.N[prev].st==='on'||G.N[prev].st==='puppet')){
       // 결사항전: 다음 자기 차례가 끝날 때까지 수도를 되찾지 못하면 그때 항복 (핵심 도시가 남아 있으면 그곳으로 수도 이전)
       if(prev==='FR'&&has(G,'FR','freefr')&&G.T['알제']&&G.T['알제'].o==='FR'&&to!=='알제'){G.capOv=G.capOv||{};G.capOv.FR='알제';applyCaps(G);lg(`🇫🇷 ${to} 함락 — 자유 프랑스가 수도를 알제로 옮겨 싸움을 이어갑니다`,prev);fx({k:'ls',x:prev,t:to})}
-      else{const L3=(has(G,prev,'reynaud')?(isL(G,prev,'reynaud')?3+tn(G,prev,2):3):1)+(isL(G,prev,'churchill')?tn(G,prev,2):0);G.N[prev].ls={by:x,started:G.cur===prev?1:0,left:L3};lg(`${NAT[prev].n}의 수도 ${to} 함락! 결사항전${L3>1?` ${L3}턴`:''} — ${keyRule(G)&&keyLeft(G,prev).length&&keyLost(G,prev)<keyNeed(G,prev)?`탈환하지 못하면 수도를 ${keyLeft(G,prev)[0]}(으)로 옮깁니다 (남은 핵심 도시 ${keyLeft(G,prev).length}곳)`:'탈환하지 못하면 항복합니다'}`,prev);fx({k:'ls',x:prev,t:to})}}
+      else{const L3=(has(G,prev,'reynaud')?(isL(G,prev,'reynaud')?3+tn(G,prev,2):3):1)+0;G.N[prev].ls={by:x,started:G.cur===prev?1:0,left:L3};lg(`${NAT[prev].n}의 수도 ${to} 함락! 결사항전${L3>1?` ${L3}턴`:''} — ${keyRule(G)&&keyLeft(G,prev).length&&keyLost(G,prev)<keyNeed(G,prev)?`탈환하지 못하면 수도를 ${keyLeft(G,prev)[0]}(으)로 옮깁니다 (남은 핵심 도시 ${keyLeft(G,prev).length}곳)`:'탈환하지 못하면 항복합니다'}`,prev);fx({k:'ls',x:prev,t:to})}}
   }
   checkWin();
 }
@@ -4284,7 +4302,7 @@ function pickCard(i){if(!V||V.ph!=='draw')return;sendAct({k:'draw',i})}
    계획은 이 기기(localStorage eu_plan_<나라>)에 저장되고, 방에 들어가 있으면 호스트에게 보낸다(호스트만 보관 · 다른 플레이어에게는 안 보임). */
 const HPLANS={};let planX=null,planTab='deck',planK='arm',planBp=null,PLAN_SENT=false;
 function planSan(x,p){if(!p||typeof p!=='object'||!NAT[x])return null;const ids=a=>(Array.isArray(a)?a:[]).filter(id=>typeof id==='string');
-  const o={deck:ids(p.deck).filter(d=>deckPool(x).includes(d)).slice(0,DECK_N),rq:ids(p.rq).filter((id,i,a)=>PARTS[id]||(NT[id]&&!a.slice(0,i).some(q=>NT[q]&&NT[q].f===NT[id].f))).slice(0,40),fq:ids(p.fq).filter(id=>(FOC[x]||[]).some(f=>f[0]===id)).slice(0,30),ln:{},bp:[],abp:{}};
+  const o={deck:ids(p.deck).filter(d=>deckPool(x).includes(d)).slice(0,DECK_N),rq:ids(p.rq).filter((id,i,a)=>PARTS[id]||(NT[id]&&!a.slice(0,i).some(q=>NT[q]&&NT[q].f===NT[id].f))).slice(0,40),fq:ids(p.fq).filter(id=>(FOC[x]||[]).some(f=>f[0]===id)).slice(0,30),ln:{},bp:[],abp:{},ld:(LEAD_ROSTER[x]||[]).includes(p.ld)?p.ld:LEAD0[x]};
   if(o.deck.length!==DECK_N)o.deck=plan0(x).deck;for(const k in p.ln||{})if(PLINE[k]&&PLINE[k]['ABC'.indexOf(p.ln[k])])o.ln[k]=p.ln[k];
   for(const d of(Array.isArray(p.bp)?p.bp:[]).slice(0,12))if(d&&UT[d.ch]&&PSLOT[UT[d.ch].k]&&(!UT[d.ch].only||UT[d.ch].only===x)){const pt={};for(const[sl]of PSLOT[UT[d.ch].k])if(d.pt&&PARTS[d.pt[sl]]&&PARTS[d.pt[sl]].sl===sl&&PARTS[d.pt[sl]].K===UT[d.ch].k)pt[sl]=d.pt[sl];o.bp.push({ch:d.ch,nm:String(d.nm||'').slice(0,16),pt})}
   o.bp=o.bp.filter(d=>!UT[d.ch].only||o.deck.includes(d.ch));
@@ -4303,6 +4321,9 @@ function planAdd(key,v){const p=planGet(planX);if(!p[key].includes(v))p[key].pus
 function planEdit(f){const p=planGet(planX);f(p);planPut(planX,p)}
 /* ---- 작전 계획 화면 ----
    탭: 덱 · 노선과 연구 · 중점 · 설계도. 위쪽 요약 칩을 눌러도 탭이 바뀐다. 카드는 눌러서 넣고 뺀다 */
+function ldTraits(id){return LEAD[id].t.map(t=>{const m=t.match(/^\[(페널티: )?([^\]]+)\]\s*(.*)$/);return m?{bad:!!m[1],n:m[2],d:m[3]}:{bad:false,n:'',d:t}})}
+function ldCard(x,id,on,click){const L=LEAD[id];return`<${click?'button':'div'} class="ldcard${on?' on':''}" ${click?`onclick="${click}"`:''}><span class="ldh"><span class="ldi">${LEAD_ICON[id]||'👤'}</span><span><b>${esc(L.n)}</b><small>${esc(L.nk)} · ${LEAD_ROLE[id]||''}</small></span>${on?'<em>✓</em>':''}</span>
+  <span class="ldt">${ldTraits(id).map(t=>`<span class="${t.bad?'bad':'ok'}"><b>${t.bad?'▼':'▲'} ${esc(t.n)}</b> ${esc(t.d)}</span>`).join('')}</span></${click?'button':'div'}>`}
 function plQ(p,id){return p.rq.indexOf(id)}
 function plNt(id){planEdit(p=>{const T=NT[id];const had=p.rq.includes(id);p.rq=p.rq.filter(q=>!(NT[q]&&NT[q].f===T.f));if(!had){const i=p.rq.findIndex(q=>NT[q]&&NT[q].tr>T.tr);if(i<0)p.rq.push(id);else p.rq.splice(i,0,id)}})}
 function plRq(id){planEdit(p=>{if(p.rq.includes(id))p.rq=p.rq.filter(q=>q!==id);else{const P=PARTS[id];for(let t=2;t<=P.tr;t++){const q=P.K+'.'+P.sl+'.'+P.L+t;if(!p.rq.includes(q))p.rq.push(q)}}})}
@@ -4313,11 +4334,11 @@ function plDeck(d){planEdit(p=>{if(p.deck.includes(d)){if(p.deck.length<=DECK_N)
 function plQueue(arr,key,lab){return arr.length?`<ol class="plq">${arr.map((v,i)=>`<li><span class="pln">${i+1}</span><span class="plt">${lab(v)}</span><span class="plb"><button onclick="planMv('${key}',${i},-1)" title="위로">↑</button><button onclick="planMv('${key}',${i},1)" title="아래로">↓</button><button onclick="planDel('${key}',${i})" title="빼기">✕</button></span></li>`).join('')}</ol>`:'<p class="note">비어 있음 — 아래 카드를 눌러 넣으세요.</p>'}
 function planSheet(){const mine=V&&V.seats?mySeats():[];if(!planX||!NAT[planX])planX=mine[0]||ORDER[0];const x=planX,p=planGet(x);if(planTab==='rs'||planTab==='fq'||planTab==='bp'||planTab==='deck');else planTab='deck';
   const ntN=Object.keys(NT_FORK).filter(f=>p.rq.some(id=>NT[id]&&NT[id].f===f)).length,lnN=Object.keys(PSLOT).filter(K=>p.ln[K+'.doc']).length;
-  const tabs=[['deck','🃏 덱',`${p.deck.length}/${DECK_N}`],['rs','🏛 노선·연구',`노선 ${ntN}/5 · 대기열 ${p.rq.length}`],['fq','🎯 중점',`${p.fq.length}개`],['bp','📐 설계도',`${p.bp.length}개`]];
+  const tabs=[['deck','🃏 지도자·덱',`${LEAD_ICON[p.ld]||''} ${LEAD[p.ld]?LEAD[p.ld].n.split(' ').pop():''} · 덱 ${p.deck.length}/${DECK_N}`],['rs','🏛 노선·연구',`노선 ${ntN}/5 · 대기열 ${p.rq.length}`],['fq','🎯 중점',`${p.fq.length}개`],['bp','📐 설계도',`${p.bp.length}개`]];
   let h=`<section class="sheet plan"><div class="plhead"><div><span class="lab" style="margin:0">작전 계획</span><p class="note" style="margin:2px 0 0">게임 전에 짜 두면 게임 중에 고르지 않아도 계획대로 자동 진행됩니다. 이 기기에 저장되고 호스트에게만 전달됩니다.</p></div></div>
    <div class="plnat">${ORDER.map(y=>`<button class="${y===x?'on':''}" style="--c:${MAPC[y]}" onclick="planX='${y}';planBp=null;render()">${emb(y)}${NAT[y].n}${mine.includes(y)?' <small>★ 내 나라</small>':''}</button>`).join('')}</div>
    <div class="pltabs">${tabs.map(([k,l,c])=>`<button class="${planTab===k?'on':''}" onclick="planTab='${k}';render()"><b>${l}</b><small>${c}</small></button>`).join('')}</div><div class="plbody">`;
-  if(planTab==='deck'){h+=`<p class="note">특수 유닛 3종과 특유 공군 중 <b>${DECK_N}개</b>를 고릅니다. 덱에 없는 특수 유닛은 생산할 수 없고, 특유 공군을 빼면 일반 기체를 씁니다.</p><div class="plgrid">${deckPool(x).map(d=>{const on=p.deck.includes(d);const u=UT[d];const air=d==='air';
+  if(planTab==='deck'){h+=`<div class="plsec"><span class="lab">지도자 <span class="note">한 명 · 능력 2개와 단점 1개 · 게임 시작 때 확정</span></span><div class="ldgrid">${(LEAD_ROSTER[x]||[]).map(id=>ldCard(x,id,p.ld===id,`planEdit(p=>{p.ld='${id}'})`)).join('')}</div></div><span class="lab">덱</span>`;h+=`<p class="note">특수 유닛 3종과 특유 공군 중 <b>${DECK_N}개</b>를 고릅니다. 덱에 없는 특수 유닛은 생산할 수 없고, 특유 공군을 빼면 일반 기체를 씁니다.</p><div class="plgrid">${deckPool(x).map(d=>{const on=p.deck.includes(d);const u=UT[d];const air=d==='air';
       const img=air?airImg(x,'fighter',54):`<img src="${IU('img/unit/'+(u.img||d)+'.png')}" alt="" onerror="this.remove()">`;
       return`<button class="plcard deck${on?' on':''}" onclick="plDeck('${d}')"><span class="plimg">${img}</span><span class="plc"><b>${esc(deckName(x,d))}</b>${air?`<small>${esc(Object.values(AIRV[x]||{}).map(v=>v.perk).join(' · '))}</small>`:`<span class="plst"><i>◆ ${u.c}</i><i>⚔ ${u.p}</i><i>➜ ${u.m}</i></span><small>${esc(u.d||'')}</small><small class="plun">해금: ${esc(spNeedTxt(d))}</small>`}</span><span class="plck">${on?'✓ 덱':'＋'}</span></button>`}).join('')}</div>`}
   if(planTab==='rs'){
@@ -4352,7 +4373,7 @@ function planSheet(){const mine=V&&V.seats?mySeats():[];if(!planX||!NAT[planX])p
   if(!PLAN_SENT&&V&&(V.ph==='lobby'||V.ph==='draw'))setTimeout(planSendAll,0);
   return h}
 function planBrief(){const mine=mySeats();if(!PLAN_SENT&&V&&(V.ph==='lobby'||V.ph==='draw'))setTimeout(planSendAll,0);
-  return`<section class="sheet"><span class="lab">작전 계획</span>${mine.length?mine.map(x=>{const p=planGet(x);return`<p style="margin:2px 0">${emb(x)}<b>${NAT[x].n}</b> · 덱 ${p.deck.map(d=>deckName(x,d)).join(' · ')} · 연구 대기열 ${p.rq.length}개 · 중점 ${p.fq.length}개 · 설계도 ${p.bp.length}개</p>`}).join(''):'<p class="note">나라를 고르면 그 나라의 작전 계획이 적용됩니다.</p>'}
+  return`<section class="sheet"><span class="lab">작전 계획</span>${mine.length?mine.map(x=>{const p=planGet(x);return`<p style="margin:2px 0">${emb(x)}<b>${NAT[x].n}</b> · 지도자 ${LEAD_ICON[p.ld]||''} ${LEAD[p.ld]?esc(LEAD[p.ld].n):'없음'} · 덱 ${p.deck.map(d=>deckName(x,d)).join(' · ')} · 연구 대기열 ${p.rq.length}개 · 중점 ${p.fq.length}개 · 설계도 ${p.bp.length}개</p>`}).join(''):'<p class="note">나라를 고르면 그 나라의 작전 계획이 적용됩니다.</p>'}
    <p class="note" style="margin:4px 0 0">덱·연구·중점·설계도는 <b>메인 화면</b>의 「작전 계획」에서 짭니다. 방에 들어올 때 자동으로 호스트에게 전달됩니다.</p></section>`}
 function renderRoom(app){
   if(V.rand)return renderRandRoom(app);
@@ -5329,9 +5350,9 @@ function pactPanel(x,myT,others){const s=V,n=s.N[x];const P=pactOf(s,x);const po
   h+=myT&&n.st==='on'?(cand.length?`<div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${cand.map(y=>`<button class="sm" onclick="sendAct({k:'pact',from:'${x}',to:'${y}'})">${CAPN[x]}-${CAPN[y]} 연합군 제안</button>`).join('')}</div>`:'<p class="note">지금 제안할 수 있는 나라가 없습니다 (전쟁 중이거나, 괴뢰국이거나, 이미 연합군 소속).</p>'):'<p class="note">내 차례에 제안할 수 있습니다. 받은 제안은 언제든 수락할 수 있습니다.</p>';
   return h+'</div>'}
 function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=facOf(s,x);
-  let h=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${emb(x)}${NAT[x].n}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?affName(s,x):n.st==='annexed'?'병합됨':'몰락'}</span></div>
+  const LDx=ldOf(s,x);let h=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${emb(x)}${NAT[x].n}${LDx?` <span class="ldpill" data-tip="${esc(`<div class='th'>${LEAD_ICON[LDx]} ${LEAD[LDx].n}</div>`+ldTraits(LDx).map(t=>`<div class='${t.bad?'tbad':''}'>${t.bad?'▼':'▲'} <b>${t.n}</b> ${t.d}</div>`).join(''))}">${LEAD_ICON[LDx]} ${esc(LEAD[LDx].n)}</span>`:''}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?affName(s,x):n.st==='annexed'?'병합됨':'몰락'}</span></div>
   <p class="note">자원 ${n.r} · 수입 +${income(s,x)} · 영토 ${landCount(s,x)}</p>${eraOn(s)?`<p class="note">🕰 ${eraName(eraOf(s.rd))} 시대 (${eraLeft(s.rd)}라운드 남음) · 지지율 <b>${n.app??APP0}</b>${n.age?` · ${AGE[n.age].i} <b>${AGE[n.age].n}</b>`:''}</p>`:''}${keyRule(s)&&KEYC[x]&&['on','puppet'].includes(n.st)?`<p class="note" title="결속도 30 미만: 수도 함락 즉시 항복 · 30~49: 결사항전, 수도(1곳)를 잃으면 항복 · 50~69: 2곳 · 70 이상: 3곳">🏛 핵심 도시 ${(KEYC[x].concat(x==='FR'&&has(s,'FR','freefr')?['알제']:[])).map(k=>`${s.T[k]&&s.T[k].o===x?'✓':'✗'} ${k}${NAT[x].cap===k?'★':''}`).join(' · ')} — ${lowConf(s,x)?'<b style="color:var(--hot)">결속도 30 미만: 수도를 잃으면 결사항전 없이 바로 항복</b>':`결속도 ${cfv(s,x)}: 결사항전 + 핵심 도시 <b>${keyNeed(s,x)}곳</b>을 잃으면 항복`}</p>`:''}${capMeter(s,x)}
-  <div class="tabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['trait','나라 특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
+  <div class="tabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['trait','지도자·특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
   if(!tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[ntab]))ntab='dip';
   if(ntab==='focus'){const fp=n.fp||0,up=n.up||{};
     h+=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:var(--gold)"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">병기창 · 중점 포인트</span><span class="stat" style="font-size:18px;color:var(--gold)">${fp} FP</span></div>
@@ -5357,7 +5378,7 @@ function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=
   else if(ntab==='rs')h+=rsPanel(x,myT);
   else if(ntab==='bp')h+=bpPanel(x,myT);
   else if(ntab==='era')h+=eraPanel(x);
-  else h+=`<span class="lab">나라 특성</span><ul>${TRAIT[x].map(t=>`<li>${esc(t)}</li>`).join('')}</ul><p class="note">진영 보너스: 연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1</p>
+  else h+=`${ldOf(s,x)?`<span class="lab">지도자</span>${ldCard(x,ldOf(s,x),false,null)}`:''}<span class="lab">나라 특성</span><ul>${TRAIT[x].map(t=>`<li>${esc(t)}</li>`).join('')}</ul><p class="note">진영 보너스: 연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1</p>
     <span class="lab">현재 생산 비용</span><p class="note">${buildable(x).map(t=>UT[t].n+' '+unitCost(s,x,t)).join(' · ')} · 공장 ${facCost(s,x,NAT[x].cap)}${x==='GB'&&!has(s,'GB','counter')?' (대륙 '+facCost(s,x,'파리')+')':''}</p>`;
   return h}
 /* ---- 상단 시대 · 지지율 칩 ---- */
