@@ -80,7 +80,7 @@ kbd{display:inline-block;min-width:74px;text-align:center;font:600 11.5px var(--
 .techm .ghost{color:#e7edf2;border-color:#4a6274;background:transparent}
 .ttabs{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:10px 0 8px;border-bottom:1px solid #2b3f50}
 .ttabs>button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;color:#8fa6b8;padding:6px 12px;margin-bottom:-1px;font-weight:600}.ttabs>button.on{color:#fff;border-bottom-color:#6cc0ff;outline:0}
-.ttabs small{font:600 11px var(--f-mono);color:#6d8597;margin-left:3px}
+.ttabs small{font:600 11px var(--f-body);color:#6d8597;margin-left:3px}
 .tleg{margin-left:auto;font-size:11.5px;color:#8fa6b8;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.lg{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:6px}
 .lg.own{background:#b8913f}.lg.cur{background:#2E8FD0}.lg.avail{background:#e7edf2}.lg.lock{background:#4a5a66}
 .ttree{flex:1;min-height:0;overflow:auto;border-radius:8px;background:radial-gradient(ellipse at 30% 0%,#1d3242,#0d151b 70%);scrollbar-width:thin}
@@ -104,6 +104,13 @@ kbd{display:inline-block;min-width:74px;text-align:center;font:600 11.5px var(--
 .tn.cur{border-color:#2E8FD0;box-shadow:0 0 0 2px rgba(46,143,208,.5),0 4px 14px rgba(0,0,0,.4)}
 .tn.avail{border-color:#7fa3bd;background:#22384a}
 .tn.lock{opacity:.6}.tn.lock .tic{filter:grayscale(.7)}
+.rpath{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px}.rpath span{padding:2px 8px;border-radius:10px;border:1px dashed var(--line);color:var(--mute)}.rpath span.on{border-style:solid;border-color:var(--gold);color:var(--ink);font-weight:600}.rpath i{font-style:normal;color:var(--mute)}
+.tlane{position:absolute;border-radius:14px;background:color-mix(in srgb,var(--lc) 10%,transparent);border:1px solid color-mix(in srgb,var(--lc) 25%,transparent)}.tlane.on{background:color-mix(in srgb,var(--lc) 22%,transparent);border-color:var(--lc)}
+.tln{position:absolute;left:14px;width:150px;height:30px;font-size:13px;border-radius:15px;background:#1c2d3a;border:1.5px solid var(--lc);color:#e7edf2;text-align:left;padding:0 12px;font-weight:600}
+.tln.on{background:var(--lc);color:#fff;outline:0}.tln.on:disabled{opacity:1;cursor:default}.tln:not(:disabled):hover{filter:brightness(1.25)}
+.tn.off{opacity:.5}.tfork em{position:absolute;left:50%;transform:translate(-50%,-50%);font:700 11px var(--f-body);color:#ff8a7a;background:#0f171e;padding:1px 8px;border-radius:8px;font-style:normal;white-space:nowrap}.tfork.done em{color:#e8c56a}
+.tnote{font-size:12px;color:#8fa6b8;margin:4px 14px 10px}
+#rtip .tsub{font:600 11px var(--f-body);color:var(--gold);margin-left:4px}
 .tn.fork{opacity:.45;background:#2a1d1d;border-color:#5e3a35}.tn.fork .tic{filter:grayscale(1)}
 .tn.inq{border-style:dashed;border-color:#6cc0ff}
 .teu{position:absolute;right:6px;top:4px;font-size:14px;filter:grayscale(1) brightness(.7);opacity:.6}.teu.on{filter:drop-shadow(0 0 4px #ffd34d);opacity:1}
@@ -631,15 +638,15 @@ const UT={
  panz:{n:'판저',s:'판',c:6,p:5,m:3,k:'arm',only:'DE'},
  mari:{n:'레지아 마리나',s:'레',c:7,p:3,m:2,k:'sea',only:'IT'},
  coss:{n:'카자크 군단',s:'카',c:2,p:2,m:2,k:'inf',only:'SU'},
- uboat:{n:'U보트',s:'U',c:5,p:2,m:2,k:'sea',only:'DE',img:'flt',sub:1,need:{pt:['sea.hull.A2','sea.hull.B2']},d:'통상 파괴: 적국과 맞닿은 바다에 있으면 그 나라 수입 -1 (바다마다, 최대 -4) · 구축함 계열 상대 -1'},
- tiger:{n:'티거',s:'티',c:12,p:7,m:2,k:'arm',only:'DE',img:'panz',need:{pt:['arm.hull.B2'],pt2:['arm.gun.A4']},d:'적 기갑 상대 +1 · 겨울 이동 -1'},
+ uboat:{n:'U보트',s:'U',c:5,p:2,m:2,k:'sea',only:'DE',img:'flt',sub:1,need:{pt:['sea.doc.A2','sea.doc.B2','sea.doc.C2']},d:'통상 파괴: 적국과 맞닿은 바다에 있으면 그 나라 수입 -1 (바다마다, 최대 -4) · 구축함 계열 상대 -1'},
+ tiger:{n:'티거',s:'티',c:12,p:7,m:2,k:'arm',only:'DE',img:'panz',need:{pt:['arm.doc.A3','arm.doc.B3']},d:'적 기갑 상대 +1 · 겨울 이동 -1'},
  cmdo:{n:'코만도',s:'코',c:5,p:3,m:2,k:'inf',only:'GB',img:'inf',need:{f:'homeguard'},d:'상륙 패널티 없음 · 상륙 공격 +1'},
- matilda:{n:'마틸다 II',s:'마',c:9,p:6,m:1,k:'arm',only:'GB',img:'arm',need:{pt:['arm.armor.A2','arm.armor.A3']},d:'보병이 있는 땅에서 공격하면 +1 · 적 포병의 대전차 보너스 절반'},
- char:{n:'샤르 B1 bis',s:'샤',c:10,p:6,m:2,k:'arm',only:'FR',img:'arm',need:{pt:['arm.hull.B2','arm.hull.B3']},d:'방어전 +1 · 이번 턴 이동했으면 공격 -1'},
+ matilda:{n:'마틸다 II',s:'마',c:9,p:6,m:1,k:'arm',only:'GB',img:'arm',need:{pt:['arm.doc.B2']},d:'보병이 있는 땅에서 공격하면 +1 · 적 포병의 대전차 보너스 절반'},
+ char:{n:'샤르 B1 bis',s:'샤',c:10,p:6,m:2,k:'arm',only:'FR',img:'arm',need:{pt:['arm.doc.B2']},d:'방어전 +1 · 이번 턴 이동했으면 공격 -1'},
  legion:{n:'외인부대',s:'외',c:4,p:3,m:2,k:'inf',only:'FR',img:'inf',need:{f:'freefr'},d:'북아프리카에서 +1 · 잃어도 결속도가 떨어지지 않음'},
- decima:{n:'데치마 MAS',s:'데',c:3,p:1,m:2,k:'sea',only:'IT',img:'flt',need:{pt:['sea.hull.B2','sea.hull.B3']},d:'적 항구와 맞닿은 바다의 함대를 치면 +2 · 한 번 공격하면 소멸'},
- alpini:{n:'알피니',s:'알',c:4,p:3,m:2,k:'inf',only:'IT',img:'magi',need:{pt:['inf.gear.A2','inf.gear.A3']},d:'산·언덕 공격 +1 · 겨울 패널티 없음'},
- t34:{n:'T-34',s:'T',c:7,p:5,m:3,k:'arm',only:'SU',img:'arm',need:{pt:['arm.armor.A3']},d:'겨울·진흙 패널티 없음 · 같은 턴 두 번째부터 생산 -2'},
+ decima:{n:'데치마 MAS',s:'데',c:3,p:1,m:2,k:'sea',only:'IT',img:'flt',need:{pt:['sea.doc.C2','sea.doc.B2']},d:'적 항구와 맞닿은 바다의 함대를 치면 +2 · 한 번 공격하면 소멸'},
+ alpini:{n:'알피니',s:'알',c:4,p:3,m:2,k:'inf',only:'IT',img:'magi',need:{pt:['inf.doc.C2','inf.doc.B2']},d:'산·언덕 공격 +1 · 겨울 패널티 없음'},
+ t34:{n:'T-34',s:'T',c:7,p:5,m:3,k:'arm',only:'SU',img:'arm',need:{pt:['arm.doc.B3','arm.doc.C3']},d:'겨울·진흙 패널티 없음 · 같은 턴 두 번째부터 생산 -2'},
  katyu:{n:'카추샤',s:'추',c:6,p:5,m:2,k:'art',only:'SU',img:'art',need:{f:'reorg'},d:'공격 +1 · 방어 -1'}};
 /* ================= 연구 · 설계도 =================
    부품 id = 병종.칸.계열+단계 (예: arm.gun.A3). 1단계는 처음부터 가진 기본 부품(A 계열). B 계열은 2단계부터.
@@ -647,103 +654,62 @@ const UT={
    설계도: n.bp[병종] = [{id,nm,ch(차체 유닛),pt:{칸:부품id}}] (병종마다 BP_MAX개). 생산할 때 설계 스탯을 유닛에 새겨 둔다(u.b 설계 이름 · u.bp 파워 · u.bm 이동 · u.bc 비용 · u.bt 특성). */
 const SPX={DE:['panz','uboat','tiger'],GB:['dread','cmdo','matilda'],FR:['magi','char','legion'],IT:['mari','decima','alpini'],SU:['coss','t34','katyu']};
 const PK={inf:'보병',art:'포병',arm:'기갑',sea:'함대',air:'항공기'};
-const PSLOT={inf:[['rifle','소총'],['sup','지원화기'],['trans','수송'],['gear','장비']],art:[['cal','구경'],['tow','견인'],['fc','사격통제']],
- arm:[['hull','차체'],['gun','주포'],['eng','엔진'],['armor','장갑'],['radio','무전기']],sea:[['hull','선체'],['gun','주포'],['det','탐지']],air:[['frame','기체'],['eng','엔진'],['wpn','무장']]};
-const PLINE={'inf.rifle':['정밀 사격','화력'],'inf.sup':['기관총','박격포'],'inf.trans':['차량화','산악'],'inf.gear':['피복','위장'],'art.cal':['야포','대전차'],'art.tow':['견인','자주'],'art.fc':['관측','항공 관측'],
- 'arm.hull':['중형','중전차'],'arm.gun':['관통','고폭'],'arm.eng':['가솔린','디젤'],'arm.armor':['장갑','공간 장갑'],'arm.radio':['통신','지휘'],'sea.hull':['전함','순양·구축'],'sea.gun':['거포','속사포'],'sea.det':['탐지','대잠'],
- 'air.frame':['기체','장거리'],'air.eng':['신뢰성','출력'],'air.wpn':['기관포','폭탄창']};
+const PSLOT={inf:[['doc','방향']],art:[['doc','방향']],arm:[['doc','방향']],sea:[['doc','방향']],air:[['doc','방향']]};
+/* 병종마다 세 방향(A 공격형 · B 방어형 · C 기동형). 2단계부터는 한 방향만 올릴 수 있고, 바꾸려면 과학 RS_SWITCH */
+const PLINE={'inf.doc':['돌격','참호','기동'],'art.doc':['중포','대전차','자주'],'arm.doc':['돌파','중장갑','고속'],'sea.doc':['전함','호위','순양'],'air.doc':['전투','폭격','해상']};
+const PLINE_I={A:'⚔',B:'🛡',C:'➜'};
 /* [id, 이름, 파워, 이동, 비용, 특성, 설명] — 특성: def 방어 · atk 공격 · vsArm 적 기갑 상대 · vsInf 적 보병 상대 · fortA 요새 공격 · mtnA 산·언덕 공격 · noWin 겨울 패널티 없음 · radio 여러 부대 공격 · asw 잠수함 상대 · aa 대공(항공 타격 피해 -1)
    항공기: r 자원 · sc 과학 · dmg 타격 피해 · cd 재출격 대기 · slip 요격 회피 · navB 해상 타격 */
 const PARTS={};
-[['inf.rifle.A1','볼트액션 소총',0,0,0],['inf.rifle.A2','개량 볼트액션',0,0,0,{def:1}],['inf.rifle.A3','저격 분대',0,0,1,{def:1,atk:1}],
- ['inf.rifle.B2','반자동 소총',0,0,0,{atk:1}],['inf.rifle.B3','돌격소총',1,0,1,{atk:1}],['inf.rifle.B4','기관단총 분대',1,0,2,{atk:2}],
- ['inf.sup.A1','소총 분대',0,0,0],['inf.sup.A2','경기관총',1,0,1],['inf.sup.A3','범용 기관총',1,0,1,{atk:1,def:1}],['inf.sup.B2','박격포',1,0,1],['inf.sup.B3','중박격포',1,0,2,{fortA:1,mtnA:1}],
- ['inf.trans.A1','도보',0,0,0],['inf.trans.A2','트럭',0,1,1],['inf.trans.A3','하프트랙',1,1,2],
- ['inf.gear.A1','기본 군복',0,0,0],['inf.gear.A2','동계 군복',0,0,0,{noWin:1}],['inf.gear.A3','철모 개량',1,0,1,{noWin:1}],
- ['art.cal.A1','75mm 야포',0,0,0],['art.cal.A2','105mm 곡사포',1,0,1],['art.cal.A3','150mm 중곡사포',2,0,3],['art.cal.B2','대전차포',0,0,0,{vsArm:2}],['art.cal.B3','장포신 대전차포',1,0,1,{vsArm:2}],
- ['art.tow.A1','말 견인',0,0,0],['art.tow.A2','트럭 견인',0,1,1],['art.tow.B2','자주포 차대',1,1,3],
- ['art.fc.A1','관측반',0,0,0],['art.fc.A2','무전 사격통제',0,0,0,{def:1}],['art.fc.A3','사격 계산반',0,0,1,{def:1,atk:1}],
- ['arm.hull.A1','중형 전차',0,0,0],['arm.hull.A2','개량 중형',1,0,1],['arm.hull.A3','주력 전차',2,0,2],['arm.hull.B2','중전차',2,-1,4],['arm.hull.B3','초중전차',3,-1,6],
- ['arm.gun.A1','37mm 포',0,0,0],['arm.gun.A2','50mm 포',1,0,1],['arm.gun.A3','75mm 장포신',1,0,1,{vsArm:1}],['arm.gun.A4','88mm 포',2,0,2,{vsArm:1}],['arm.gun.B2','75mm 단포신',0,0,0,{vsInf:1}],['arm.gun.B3','105mm 전차포',1,0,2,{vsInf:1,fortA:1}],
- ['arm.eng.A1','가솔린 엔진',0,0,0],['arm.eng.A2','고출력 가솔린',0,1,1],['arm.eng.B2','디젤 엔진',0,0,0,{noWin:1}],['arm.eng.B3','개량 디젤',0,1,1,{noWin:1}],
- ['arm.armor.A1','리벳 장갑',0,0,0],['arm.armor.A2','용접 장갑',1,0,1],['arm.armor.A3','경사 장갑',2,0,1],
- ['arm.radio.A1','수기 신호',0,0,0],['arm.radio.A2','차량 무전기',0,0,1,{radio:1}],
- ['sea.hull.A1','혼성 함대',0,0,0],['sea.hull.A2','전함',1,0,2],['sea.hull.A3','고속 전함',2,0,3],['sea.hull.B2','순양함',0,1,0],['sea.hull.B3','구축 함대',-1,1,-2,{asw:2}],
- ['sea.gun.A1','8인치 포',0,0,0],['sea.gun.A2','15인치 포',1,0,1],['sea.gun.B2','6인치 속사포',0,0,0,{aa:1}],
- ['sea.det.A1','육안 관측',0,0,0],['sea.det.A2','소나',0,0,0,{asw:1}],['sea.det.A3','레이더',0,0,1,{atk:1,def:1}],
- ['air.frame.A1','복엽기',0,0,0],['air.frame.A2','전금속 단엽기',0,0,0,{r:1,dmg:1}],['air.frame.A3','제트기',0,0,0,{r:2,sc:2,dmg:2}],
- ['air.eng.A1','기본 엔진',0,0,0],['air.eng.A2','신뢰성 엔진',0,0,0,{r:1,cd:-1}],['air.eng.B2','고출력 엔진',0,0,0,{r:1,slip:1}],
- ['air.wpn.A1','기관총',0,0,0],['air.wpn.A2','기관포',0,0,0,{r:1,dmg:1}],['air.wpn.B2','대형 폭탄창',0,0,0,{r:1,navB:1,scd:-1}],
- /* ---- 확장: 4~5단계 · 새 B 계열 ---- */
- ['inf.rifle.A4','정밀 소총 중대',1,0,2,{def:2,atk:1}],['inf.sup.A4','무반동포',1,0,2,{vsArm:1,atk:1}],['inf.sup.B4','로켓 발사기',2,0,3,{fortA:1}],
- ['inf.trans.A4','장갑 수송차',1,1,3,{def:1}],['inf.trans.B2','노새 수송대',0,0,0,{mtnA:1}],['inf.trans.B3','산악 보급대',0,0,1,{mtnA:1,noWin:1}],
- ['inf.gear.A4','방한 방탄 장비',1,0,2,{noWin:1,def:1}],['inf.gear.B2','위장복',0,0,0,{def:1}],['inf.gear.B3','야전 위장망',0,0,1,{def:2}],
- ['art.cal.A4','210mm 중포',3,0,4,{fortA:1}],['art.cal.B4','88mm 대전차포',2,0,2,{vsArm:3}],['art.tow.A3','궤도 견인차',1,1,2],['art.tow.B3','구축전차 차대',2,1,4,{vsArm:1}],
- ['art.fc.A4','레이더 사격통제',1,0,2,{def:1,atk:1}],['art.fc.B2','항공 관측',0,0,1,{atk:1}],['art.fc.B3','전방 항공 통제',1,0,2,{atk:1,radio:1}],
- ['arm.hull.A4','중형 주력 전차',3,0,3],['arm.hull.B4','초중전차 마우스',4,-1,8],['arm.gun.A5','128mm 포',3,0,3,{vsArm:2}],['arm.gun.B4','화염방사 전차',1,0,2,{vsInf:2,fortA:1}],
- ['arm.eng.A3','터보 가솔린',0,1,2],['arm.eng.B4','다연료 디젤',0,1,2,{noWin:1}],['arm.armor.A4','주조 경사 장갑',3,0,2],['arm.armor.B2','공간 장갑',1,0,1,{def:1}],['arm.armor.B3','쉬르첸',1,0,1,{def:1,vsArm:1}],
- ['arm.radio.A3','무전 중계망',0,0,2,{radio:1,atk:1}],['arm.radio.B2','지휘 전차',0,0,1,{atk:1}],
- ['sea.hull.A4','초대형 전함',3,-1,5],['sea.hull.B4','호위 구축함',0,1,-1,{asw:3}],['sea.gun.A3','18인치 포',2,0,2],['sea.gun.B3','양용포',0,0,1,{aa:2}],
- ['sea.det.A4','사격통제 레이더',1,0,1,{atk:1,def:1}],['sea.det.B2','수중청음기',0,0,0,{asw:2}],['sea.det.B3','대잠 폭뢰',0,0,1,{asw:3}],
- ['air.frame.B2','장거리 기체',0,0,0,{r:1,cd:-1}],['air.frame.B3','중폭격 기체',0,0,0,{r:2,dmg:2}],['air.eng.A3','과급기 엔진',0,0,0,{r:1,cd:-1,slip:1}],['air.eng.B3','제트 엔진',0,0,0,{r:2,slip:1,dmg:1}],
- ['air.wpn.A3','로켓탄',0,0,0,{r:1,dmg:2}],['air.wpn.B3','유도 폭탄',0,0,0,{r:2,navB:1,dmg:1}]
+[['inf.doc.A1','소총 보병',0,0,0],
+ ['inf.doc.A2','돌격 분대',0,0,0,{atk:1}],['inf.doc.A3','기관단총 중대',1,0,1,{atk:1}],['inf.doc.A4','돌격소총 사단',1,0,2,{atk:2}],
+ ['inf.doc.B2','참호 보병',0,0,0,{def:1}],['inf.doc.B3','기관총 진지',1,0,1,{def:1}],['inf.doc.B4','요새 보병',1,0,2,{def:2}],
+ ['inf.doc.C2','트럭 보병',0,1,1],['inf.doc.C3','하프트랙 보병',1,1,2],['inf.doc.C4','기계화 보병',1,1,2,{atk:1}],
+ ['art.doc.A1','75mm 야포',0,0,0],
+ ['art.doc.A2','105mm 곡사포',1,0,1],['art.doc.A3','150mm 중포',2,0,2,{fortA:1}],['art.doc.A4','210mm 거포',3,0,4,{fortA:1}],
+ ['art.doc.B2','대전차포',0,0,0,{vsArm:2}],['art.doc.B3','장포신 대전차포',1,0,1,{vsArm:2}],['art.doc.B4','88mm 대전차포',2,0,2,{vsArm:3}],
+ ['art.doc.C2','트럭 견인',0,1,1],['art.doc.C3','자주포',1,1,3],['art.doc.C4','로켓 포병',2,1,3,{atk:1}],
+ ['arm.doc.A1','중형 전차',0,0,0],
+ ['arm.doc.A2','75mm 장포신',1,0,1,{vsArm:1}],['arm.doc.A3','88mm 전차포',2,0,2,{vsArm:1}],['arm.doc.A4','128mm 전차포',3,0,3,{vsArm:2}],
+ ['arm.doc.B2','용접 장갑',1,0,1,{def:1}],['arm.doc.B3','중전차',2,-1,3,{def:1}],['arm.doc.B4','초중전차',3,-1,5,{def:2}],
+ ['arm.doc.C2','고출력 엔진',0,1,1],['arm.doc.C3','무전 지휘 전차',1,1,2,{radio:1}],['arm.doc.C4','주력 전차',2,1,3,{radio:1}],
+ ['sea.doc.A1','혼성 함대',0,0,0],
+ ['sea.doc.A2','전함',1,0,2],['sea.doc.A3','고속 전함',2,0,3],['sea.doc.A4','초대형 전함',3,0,5],
+ ['sea.doc.B2','소나 구축함',0,0,0,{asw:1}],['sea.doc.B3','대공 호위함',0,0,1,{asw:2,aa:1}],['sea.doc.B4','레이더 호위 함대',1,0,2,{asw:3,aa:1,def:1}],
+ ['sea.doc.C2','순양함',0,1,0],['sea.doc.C3','경순양 전대',1,1,1],['sea.doc.C4','항공모함 전대',2,1,3,{atk:1}],
+ ['air.doc.A1','복엽기',0,0,0],
+ ['air.doc.A2','단엽 전투기',0,0,0,{r:1,cd:-1}],['air.doc.A3','고속 전투기',0,0,0,{r:1,cd:-1,slip:1}],['air.doc.A4','제트기',0,0,0,{r:2,sc:2,cd:-1,slip:1,dmg:1}],
+ ['air.doc.B2','급강하 폭격기',0,0,0,{r:1,dmg:1}],['air.doc.B3','중폭격기',0,0,0,{r:2,dmg:2,navB:1}],['air.doc.B4','전략 폭격기',0,0,0,{r:2,dmg:2,navB:1,scd:-1}],
+ ['air.doc.C2','뇌격기',0,0,0,{r:1,navB:1}],['air.doc.C3','해상 초계기',0,0,0,{r:1,navB:2}],['air.doc.C4','함상 공격대',0,0,0,{r:2,navB:2,dmg:1}]
 ].forEach(([id,n,p,m,c,tg])=>{const[K,sl,lt]=id.split('.');PARTS[id]={id,K,sl,L:lt[0],tr:+lt.slice(1),n,p,m,c,tg:tg||{}}});
-const RS_COST=[0,0,6,12,20,30],RS_TURN=[0,0,2,3,4,5],RS_SWITCH=10,BP_MAX=4,BP_NEW=4;
+const RS_COST=[0,0,6,12,20],RS_TURN=[0,0,2,3,4],RS_SWITCH=10,BP_MAX=4,BP_NEW=4;
 /* 나라 강점 계열: 연구 과학 -30% · 턴 -1 (최소 1) */
-const RS_STRONG={DE:['arm.gun.A','arm.eng.A','sea.hull.A'],SU:['arm.armor.A','arm.eng.B','inf.gear.A'],GB:['sea.det.A','sea.hull.A','air.eng.A'],FR:['arm.hull.B','art.cal.B','art.fc.A'],IT:['sea.hull.B','inf.gear.A','air.wpn.B']};
-/* ================= 국가 기술 (부품이 아닌 기술: 경제·병참·첩보·과학·교리) =================
-   [id, 아이콘, 이름, 분야, 단계(열), 선행(모두 필요 · 'a|b'는 둘 중 하나), 택1 묶음, 효과(rfx 키), 설명, 유레카 설명, 유레카 조건]
-   택1 묶음(f)이 같은 기술은 하나를 연구하기 시작하면 나머지는 그 게임 내내 잠긴다. 유레카: 조건을 채우면 그 기술 과학 비용 50% */
-const NT_CAT={eco:['경제','#B8862B'],log:['병참','#4D8A4F'],int:['첩보·정치','#7B68B5'],sci:['과학','#2E8FD0'],doc:['교리·비밀 병기','#B42A1F']};
-const NT_FORK={ind:'산업 방식',air:'항공 교리',eco2:'전시 경제',wpn:'비밀 병기'};
-const euU=(s,x,f)=>{let c=0;for(const k in s.T)if(s.T[k].o===x)for(const u of s.T[k].u)if(f(u,k))c++;for(const k in s.S)if(s.S[k].o===x)for(const u of s.S[k].u)if(f(u,k))c++;return c};
-const euT=(s,x,f)=>{let c=0;for(const k in s.T)if(s.T[k].o===x&&f(s.T[k],k))c++;return c};
-const euHurt=(s,x)=>euU(s,x,u=>UT[u.t]&&u.hp<maxHp(s,x,u.t,u));
-const euFoes=(s,x)=>Object.keys(s.N).filter(y=>y!==x&&atWar(s,x,y)).length;
+const RS_STRONG={DE:['arm.doc.A','air.doc.B'],SU:['arm.doc.B','inf.doc.B'],GB:['sea.doc.A','air.doc.A'],FR:['art.doc.B','inf.doc.B'],IT:['sea.doc.C','inf.doc.C']};
+/* ================= 국가 기술: 갈림길 사다리 =================
+   단계마다 두 방향 중 하나만 고른다(영구). 다음 단계는 앞 단계에서 무엇을 골랐든 열린다.
+   [id, 아이콘, 이름, 방향 이름, 단계, 묶음, 효과(rfx 키), 설명] */
+const NT_FORK={g1:'산업',g2:'전술',g3:'군 구조',g4:'국가 운영',g5:'비밀 병기'};
+const NT_COST=[0,8,14,20,28,36],NT_TURN=[0,2,3,3,4,5];
 const NT={};
-[['nt.assem','🏭','조립 라인','eco',2,[],null,{facCost:8},'공장 건설 비용 -8','공장 4곳 보유',(s,x)=>euT(s,x,T=>T.f)>=4],
- ['nt.city','🏙','도시 계획','eco',2,[],null,{popCost:5},'인구 늘리기 자본 -5','인구 3단계 이상인 땅 2곳',(s,x)=>euT(s,x,T=>popOf(T)>=4)>=2],
- ['nt.medic','🩹','야전 의무대','log',2,[],null,{heal:1},'치료 비용: 부상 1당 -1','부상 부대 5개',(s,x)=>euHurt(s,x)>=5],
- ['nt.radio','📻','무선 통신망','log',2,[],null,{spreadMv:1},'전선 배치로 보낸 부대도 이동 1이 남음','적과 맞닿은 내 땅 6곳',(s,x)=>euT(s,x,(T,k)=>ADJ[k].some(v=>{const o=s.T[v].o;return o!==x&&s.N[o]&&atWar(s,x,o)}))>=6],
- ['nt.prop','📢','선전 기구','int',2,[],null,{ppB:1},'정치력 매 턴 +1','정치력 15 이상 모으기',(s,x)=>(s.N[x].pp||0)>=15],
- ['nt.cipher','🔐','암호 연구','int',2,[],null,{spyFail:.1},'첩보 실패 확률 -10%','강대국과 전쟁 중',(s,x)=>euFoes(s,x)>=1],
- ['nt.univ','🎓','대학 연계','sci',2,[],null,{sciB:1},'과학 매 턴 +1','연구소 2곳',(s,x)=>labCount(s,x)>=2],
- ['nt.mass','⚙','대량 생산','eco',3,['nt.assem'],'ind',{infCost:1,artCost:1,armCost:1},'보병·포병·기갑 생산비 -1','부대 20개 보유',(s,x)=>unitCount(s,x)>=20],
- ['nt.prec','🔧','정밀 공학','eco',3,['nt.assem'],'ind',{precHp:1,bpNew:1},'기갑·함대 파워 +1 · 새 설계도 첫 생산 추가 비용 없음','설계도 6개',(s,x)=>Object.values(s.N[x].bp||{}).reduce((a,L)=>a+L.length,0)>=6],
- ['nt.rail','🚂','철도 표준화','log',3,['nt.radio'],null,{railCost:2,hubCost:10},'철도 비용 -2 · 보급 허브 비용 -10','철도 4칸',(s,x)=>euT(s,x,T=>T.rail)>=4],
- ['nt.fortx','🏰','방어선 공학','log',3,['nt.medic'],null,{fortCost:10},'요새 비용 -10','요새 3곳',(s,x)=>euT(s,x,T=>T.fort)>=3],
- ['nt.radar','📡','레이더망','sci',3,['nt.univ'],null,{intCd:1},'요격당한 적 항공기의 재출격 +1턴','항공기 3대',(s,x)=>(s.N[x].airforce||[]).length>=3],
- ['nt.decode','🗝','암호 해독','int',3,['nt.cipher'],null,{spyDef:.15,spySteal:5},'적 첩보 실패 +15% · 공작으로 빼앗는 자본 +5','강대국 2나라와 전쟁',(s,x)=>euFoes(s,x)>=2],
- ['nt.mob','📣','대중 동원','int',3,['nt.prop'],null,{campB:1,confBat:1},'결속 캠페인 효과 +1 · 전투로 잃는 결속 -1','결속도 50 미만',(s,x)=>cfv(s,x)<50],
- ['nt.strat','💣','전략 폭격 교리','doc',3,[],'air',{stratCd:1},'전략 폭격 재출격 -1턴','항공기 3대',(s,x)=>(s.N[x].airforce||[]).length>=3],
- ['nt.tac','✈','전술 항공 교리','doc',3,[],'air',{airRange:1},'항공기 작전 범위 +1칸','항공기 3대',(s,x)=>(s.N[x].airforce||[]).length>=3],
- ['nt.total','🔥','총력전 경제','eco',4,['nt.mass|nt.prec'],'eco2',{incB:6,capU:8},'자원 매 턴 +6 · 부대 한도 +8','영토 25곳',(s,x)=>landCount(s,x)>=25],
- ['nt.welfare','🏥','전시 복지','eco',4,['nt.mass|nt.prec'],'eco2',{capB:6,confBat:1},'자본 매 턴 +6 · 전투로 잃는 결속 -1','영토 25곳',(s,x)=>landCount(s,x)>=25],
- ['nt.pen','💊','페니실린','log',4,['nt.medic','nt.univ'],null,{heal:1,capKeep:1},'치료 비용 부상 1당 -1 더 · 전선 배치 때 수도에 1부대만 남김','부상 부대 10개',(s,x)=>euHurt(s,x)>=10],
- ['nt.comp','🖥','전자 계산기','sci',4,['nt.radar','nt.decode'],null,{sciB:2,rsSlot:1},'과학 매 턴 +2 · 연구 칸 +1','연구 20개 완료',(s,x)=>s.N[x].rs.own.filter(id=>NT[id]||PARTS[id].tr>1).length>=20],
- ['nt.atom','☢','원자폭탄','doc',5,['nt.comp'],'wpn',{nuke:1,nukeC:20},'핵폭탄 사용 가능 · 핵 비용 -20','연구소 4곳',(s,x)=>labCount(s,x)>=4],
- ['nt.rocket','🚀','V2 로켓','doc',5,['nt.comp'],'wpn',{v2:1},'매 턴 한 번 로켓 공격: 3칸 안 적 땅의 시설 하나 파괴 (요격 불가)','연구소 4곳',(s,x)=>labCount(s,x)>=4]
-].forEach(([id,ic,n,cat,tr,req,f,fx,d,eut,euf])=>{NT[id]={id,ic,n,cat,tr,req,f,fx,d,eut,euf,nt:1}});
+[['nt.mass','⚙','대량 생산','물량',1,'g1',{infCost:1,artCost:1,armCost:1},'보병·포병·기갑 생산비 -1'],
+ ['nt.prec','🔧','정밀 공학','질',1,'g1',{precHp:1,bpNew:1},'기갑·함대 파워 +1 · 새 설계도 첫 생산 추가 비용 없음'],
+ ['nt.blitz','⚔','전격전 교리','공세',2,'g2',{atkB:1},'모든 부대 공격 +1'],
+ ['nt.deep','🏰','종심 방어','방어',2,'g2',{defB:1,fortCost:10},'모든 부대 방어 +1 · 요새 비용 -10'],
+ ['nt.army','🪖','대륙군','육군',3,'g3',{capU:8,heal:1},'부대 한도 +8 · 치료 비용 부상 1당 -1'],
+ ['nt.navair','⚓','해·공군 중심','해·공군',3,'g3',{seaCost:1,airRange:1,stratCd:1},'함대 생산비 -1 · 항공 작전 범위 +1칸 · 전략 폭격 대기 -1턴'],
+ ['nt.econ','💰','총력전 경제','경제',4,'g4',{incB:6,capB:4},'자원 매 턴 +6 · 자본 매 턴 +4'],
+ ['nt.sci','🔬','과학 입국','과학',4,'g4',{sciB:3,rsSlot:1},'과학 매 턴 +3 · 연구 칸 +1'],
+ ['nt.atom','☢','원자폭탄','핵',5,'g5',{nuke:1,nukeC:20},'핵폭탄 사용 가능 · 핵 비용 -20'],
+ ['nt.rocket','🚀','V2 로켓','로켓',5,'g5',{v2:1},'매 턴 한 번 로켓 공격: 3칸 안 적 땅의 시설 하나 파괴 (요격 불가)']
+].forEach(([id,ic,n,dir,tr,f,fx,d])=>{NT[id]={id,ic,n,dir,tr,f,fx,d,nt:1,req:[]}});
+for(const T of Object.values(NT))if(T.tr>1)T.req=[Object.values(NT).filter(o=>o.tr===T.tr-1).map(o=>o.id).join('|')];
 function tInfo(id){return PARTS[id]||NT[id]||null}
 function tName(id){const t=tInfo(id);return t?t.n:id}
+function tCost(T){return T.nt?[NT_COST[T.tr],NT_TURN[T.tr]]:[RS_COST[T.tr],RS_TURN[T.tr]]}
 const V2_SC=5;
-/* 유레카: 국가 기술은 기술마다 조건. 부품 2단계는 '그 병종 부대 12개(항공기 3대) 보유',
-   3단계부터는 '앞 단계 부품을 단 설계로 만든 부대 4개(항공기 2대) 보유' — 써 보면서 개량한다 */
-function euPrev(P){return P.tr===2?P.K+'.'+P.sl+'.A1':P.K+'.'+P.sl+'.'+P.L+(P.tr-1)}
-function euText(id){const T=NT[id];if(T)return T.eut;const P=PARTS[id];if(!P||P.tr<2)return'';
-  if(P.tr===2)return P.K==='air'?'항공기 3대 보유':`${PK[P.K]} 부대 12개 보유`;const pv=PARTS[euPrev(P)];return P.K==='air'?`「${pv.n}」을 단 항공기 2대`:`「${pv.n}」을 단 부대 4개 보유`}
-function euMet(s,x,id){const T=NT[id];if(T){try{return!!T.euf(s,x)}catch(e){return false}}const P=PARTS[id];if(!P||P.tr<2)return false;const n=s.N[x];
-  if(P.K==='air'){const af=n.airforce||[];if(P.tr===2)return af.length>=3;const pv=euPrev(P);return af.filter(pl=>n.abp&&n.abp[pl.type]&&n.abp[pl.type][P.sl]===pv).length>=2}
-  if(P.tr===2)return euU(s,x,u=>UT[u.t]&&UT[u.t].k===P.K)>=12;const pv=euPrev(P);
-  return euU(s,x,u=>{if(!UT[u.t]||UT[u.t].k!==P.K||!u.b)return false;const d=bpFind(s,x,u.b);return!!(d&&d.pt&&d.pt[P.sl]===pv)})>=4}
-function euHas(s,x,id){const n=s&&s.N&&s.N[x];return!!(n&&n.rs&&n.rs.eu&&n.rs.eu.includes(id))}
-function euCheck(x){const n=G.N[x];if(!n||!n.rs)return;n.rs.eu=n.rs.eu||[];const ids=Object.keys(NT).concat(Object.keys(PARTS));
-  for(const id of ids){if(n.rs.eu.includes(id)||n.rs.own.includes(id)||n.rs.sl.some(q=>q.id===id))continue;const P=PARTS[id];if(P&&P.tr<2)continue;if(NT[id]&&ntForkLock(G,x,id))continue;
-    if(euMet(G,x,id)){n.rs.eu.push(id);if(G.seats&&G.seats[x]&&G.seats[x]!=='ai')lg(`💡 유레카! ${tName(id)} — ${euText(id)} (연구 과학 50%)`,x)}}}
 /* 택1: 같은 묶음의 다른 기술을 가졌거나 연구 중이면 잠김 */
 function ntForkLock(s,x,id){const T=NT[id];if(!T||!T.f)return null;const n=s.N[x];if(!n||!n.rs)return null;
   const o=Object.values(NT).find(o=>o.f===T.f&&o.id!==id&&(n.rs.own.includes(o.id)||n.rs.sl.some(q=>q.id===o.id)));return o||null}
-function ntReqOk(s,x,id){const n=s.N[x];return NT[id].req.every(r=>r.split('|').some(q=>n.rs.own.includes(q)))}
 /* 국가 기술 효과 합 (기존 rfx 훅을 그대로 씀) */
 const RFX_C=new WeakMap();
 function rfx(s,x){const n=s&&s.N&&s.N[x];if(!n||!n.rs||!n.rs.own)return{};const own=n.rs.own;const c=RFX_C.get(n.rs);if(c&&c.l===own.length)return c.f;
@@ -764,17 +730,17 @@ function spNeedTxt(t){const q=UT[t].need;if(!q)return'처음부터';const o=[];i
   if(q.f){const f=Object.values(FOC).flat().find(f=>f[0]===q.f);o.push(`중점 「${f?f[1]:q.f}」`)}return o.join(' + ')}
 function partsOf(K,sl){return Object.values(PARTS).filter(p=>p.K===K&&p.sl===sl).sort((a,b)=>a.L<b.L?-1:a.L>b.L?1:a.tr-b.tr)}
 function rsStrong(x,id){return(RS_STRONG[x]||[]).some(p=>id.startsWith(p))}
-function rsCost(x,id){const s=G||V;const P=tInfo(id);const st=!P.nt&&rsStrong(x,id);const eu=euHas(s,x,id);return{sc:Math.round(RS_COST[P.tr]*(st?.7:1)*(gpHas(s,x,'fermi')?.8:1)*(eu?.5:1)),t:Math.max(1,RS_TURN[P.tr]-(st?1:0)),st,eu}}
+function rsCost(x,id){const s=G||V;const P=tInfo(id);const st=!P.nt&&rsStrong(x,id);const[c0,t0]=tCost(P);return{sc:Math.round(c0*(st?.7:1)*(gpHas(s,x,'fermi')?.8:1)),t:Math.max(1,t0-(st?1:0)),st}}
 function rsSlots(s,x){return Math.min(4,2+Math.floor(labCount(s,x)/2))+(gpHas(s,x,'heis')?1:0)+(rfx(s,x).rsSlot||0)}
 /* 연구할 수 있나: 이미 가짐/진행 중이면 안 됨 · 같은 계열 앞 단계가 있어야 함 (B2는 그 칸 1단계) · 고른 계열만 */
 function rsWhy(s,x,id){const n=s.N[x];if(NT[id]){const T=NT[id];if(!n.rs)return'연구를 할 수 없습니다';if(n.rs.own.includes(id))return'이미 연구했습니다';if(n.rs.sl.some(q=>q.id===id))return'연구 중입니다';
     const fl=ntForkLock(s,x,id);if(fl)return`택1: 이미 「${fl.n}」을(를) 골랐습니다`;
     const miss=T.req.filter(r=>!r.split('|').some(q=>n.rs.own.includes(q)));if(miss.length)return`먼저 ${miss.map(r=>r.split('|').map(tName).join(' 또는 ')).join(', ')}을(를) 연구해야 합니다`;return null}
   const P=PARTS[id];if(!P)return'없는 부품';if(!n.rs)return'연구를 할 수 없습니다';if(n.rs.own.includes(id))return'이미 연구했습니다';if(n.rs.sl.some(q=>q.id===id))return'연구 중입니다';
-  const key=P.K+'.'+P.sl;const ln=n.rs.ln[key];if(P.tr>=2&&ln&&ln!==P.L)return`이 칸은 「${PLINE[key][ln==='A'?0:1]}」 계열을 골랐습니다 (계열 전환 필요)`;
+  const key=P.K+'.'+P.sl;const ln=n.rs.ln[key];if(P.tr>=2&&ln&&ln!==P.L)return`이 병종은 「${PLINE[key]['ABC'.indexOf(ln)]}」 방향을 골랐습니다 (방향 전환: 과학 ${RS_SWITCH})`;
   const prev=P.tr===2?P.K+'.'+P.sl+'.A1':P.K+'.'+P.sl+'.'+P.L+(P.tr-1);if(P.tr>1&&!n.rs.own.includes(prev))return`먼저 ${PARTS[prev]?PARTS[prev].n:prev}을(를) 연구해야 합니다`;return null}
 function bpDefault(x,ch){const K=UT[ch].k;const pt={};for(const[sl]of PSLOT[K])pt[sl]=K+'.'+sl+'.A1';return{ch,pt,nm:UT[ch].n+' 기본형'}}
-function abpDefault(){return{frame:'air.frame.A1',eng:'air.eng.A1',wpn:'air.wpn.A1'}}
+function abpDefault(){return{doc:'air.doc.A1'}}
 /* 설계 스탯: 차체 기본값 + 부품 (파워 1~8 · 이동 1~4 · 비용 2~16) */
 function bpStat(d){const u=UT[d.ch];let p=0,m=0,c=0;const tg={};for(const sl in d.pt){const P=PARTS[d.pt[sl]];if(!P)continue;p+=P.p;m+=P.m;c+=P.c;for(const k in P.tg)tg[k]=(tg[k]||0)+P.tg[k]}
   const cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));return{dp:cl(u.p+p,1,8)-u.p,dm:cl(u.m+m,1,4)-u.m,dc:cl(u.c+c,2,16)-u.c,tg}}
@@ -786,22 +752,22 @@ function bpStamp(u,d){const st=bpStat(d);u.b=d.id;u.bn=d.nm;u.bp=st.dp;u.bm=st.d
 function tagOf(u,k){return u&&u.bt&&u.bt[k]||0}
 /* 나라별 역사 교리 기본 계획 (계획을 안 짠 플레이어와 AI가 씀) */
 const PLAN0={
- DE:{deck:['panz','air'],rq:['arm.gun.A2','arm.radio.A2','arm.eng.A2','inf.trans.A2','arm.armor.A2','air.frame.A2','arm.gun.A3','sea.hull.A2','inf.sup.A2','arm.hull.B2','arm.gun.A4','inf.gear.A2','air.wpn.A2','arm.armor.A3','air.frame.A3'],
-  bp:[{ch:'panz',nm:'3호 전차',pt:{gun:'arm.gun.A2',radio:'arm.radio.A2'}},{ch:'inf',nm:'차량화 보병',pt:{trans:'inf.trans.A2',sup:'inf.sup.A2'}},{ch:'panz',nm:'4호 전차 F2',pt:{gun:'arm.gun.A3',armor:'arm.armor.A2',radio:'arm.radio.A2',eng:'arm.eng.A2'}}],abp:{cas:{frame:'air.frame.A2',wpn:'air.wpn.A2'},fighter:{frame:'air.frame.A2'}}},
- GB:{deck:['dread','air'],rq:['sea.det.A2','air.eng.A2','sea.det.A3','air.frame.A2','sea.hull.A2','sea.gun.A2','inf.sup.A2','art.cal.A2','arm.armor.A2','inf.trans.A2','air.wpn.B2'],
-  bp:[{ch:'inf',nm:'영국 원정군',pt:{sup:'inf.sup.A2'}},{ch:'dread',nm:'킹 조지 5세급',pt:{hull:'sea.hull.A2',gun:'sea.gun.A2',det:'sea.det.A3'}}],abp:{fighter:{frame:'air.frame.A2',eng:'air.eng.A2'},bomber:{frame:'air.frame.A2',wpn:'air.wpn.B2'}}},
- FR:{deck:['magi','air'],rq:['art.cal.B2','art.fc.A2','arm.hull.B2','inf.sup.A2','arm.armor.A2','art.cal.B3','inf.gear.A2','arm.gun.B2','air.frame.A2'],
-  bp:[{ch:'art',nm:'대전차 포대',pt:{cal:'art.cal.B2',fc:'art.fc.A2'}},{ch:'magi',nm:'알프스 엽병',pt:{sup:'inf.sup.A2',gear:'inf.gear.A2'}},{ch:'arm',nm:'르노 R35 개량',pt:{hull:'arm.hull.B2',armor:'arm.armor.A2'}}]},
- IT:{deck:['mari','air'],rq:['sea.hull.B2','inf.gear.A2','air.wpn.B2','sea.gun.B2','art.cal.A2','inf.sup.B2','arm.gun.A2','air.frame.A2'],
-  bp:[{ch:'mari',nm:'자라급 순양함',pt:{hull:'sea.hull.B2',gun:'sea.gun.B2'}},{ch:'inf',nm:'산악 사단',pt:{gear:'inf.gear.A2',sup:'inf.sup.B2'}}],abp:{bomber:{wpn:'air.wpn.B2',frame:'air.frame.A2'}}},
- SU:{deck:['coss','air'],rq:['arm.eng.B2','arm.armor.A2','inf.gear.A2','arm.armor.A3','art.cal.A2','arm.gun.A2','arm.gun.A3','art.tow.A2','inf.sup.B2','air.frame.A2'],
-  bp:[{ch:'arm',nm:'BT-7 개량',pt:{eng:'arm.eng.B2',armor:'arm.armor.A2'}},{ch:'inf',nm:'근위 소총병',pt:{gear:'inf.gear.A2',sup:'inf.sup.B2'}},{ch:'arm',nm:'KV-1',pt:{eng:'arm.eng.B2',armor:'arm.armor.A3',gun:'arm.gun.A3'}}],abp:{cas:{frame:'air.frame.A2',wpn:'air.wpn.A2'}}}};
+ DE:{deck:['panz','air'],rq:['arm.doc.A2','inf.doc.C2','air.doc.B2','arm.doc.A3','art.doc.A2','sea.doc.A2','inf.doc.C3','air.doc.B3','arm.doc.A4'],ln:{'arm.doc':'A','inf.doc':'C','air.doc':'B','art.doc':'A','sea.doc':'A'},
+  bp:[{ch:'panz',nm:'3호 전차',pt:{doc:'arm.doc.A2'}},{ch:'inf',nm:'차량화 보병',pt:{doc:'inf.doc.C2'}},{ch:'panz',nm:'4호 전차 F2',pt:{doc:'arm.doc.A3'}}],abp:{cas:{doc:'air.doc.B2'},bomber:{doc:'air.doc.B3'}}},
+ GB:{deck:['dread','air'],rq:['sea.doc.A2','air.doc.A2','inf.doc.B2','sea.doc.A3','art.doc.A2','air.doc.A3','arm.doc.B2'],ln:{'sea.doc':'A','air.doc':'A','inf.doc':'B','art.doc':'A','arm.doc':'B'},
+  bp:[{ch:'inf',nm:'영국 원정군',pt:{doc:'inf.doc.B2'}},{ch:'dread',nm:'킹 조지 5세급',pt:{doc:'sea.doc.A2'}}],abp:{fighter:{doc:'air.doc.A2'}}},
+ FR:{deck:['magi','air'],rq:['art.doc.B2','inf.doc.B2','arm.doc.B2','art.doc.B3','inf.doc.B3','arm.doc.B3','air.doc.A2'],ln:{'art.doc':'B','inf.doc':'B','arm.doc':'B','air.doc':'A'},
+  bp:[{ch:'art',nm:'대전차 포대',pt:{doc:'art.doc.B2'}},{ch:'magi',nm:'알프스 엽병',pt:{doc:'inf.doc.B2'}},{ch:'arm',nm:'르노 R35 개량',pt:{doc:'arm.doc.B2'}}]},
+ IT:{deck:['mari','air'],rq:['sea.doc.C2','inf.doc.C2','air.doc.C2','sea.doc.C3','art.doc.A2','arm.doc.C2','air.doc.C3'],ln:{'sea.doc':'C','inf.doc':'C','air.doc':'C','art.doc':'A','arm.doc':'C'},
+  bp:[{ch:'mari',nm:'자라급 순양함',pt:{doc:'sea.doc.C2'}},{ch:'inf',nm:'산악 사단',pt:{doc:'inf.doc.C2'}}],abp:{bomber:{doc:'air.doc.C2'}}},
+ SU:{deck:['coss','air'],rq:['arm.doc.B2','inf.doc.B2','art.doc.C2','arm.doc.B3','art.doc.C3','inf.doc.B3','air.doc.B2'],ln:{'arm.doc':'B','inf.doc':'B','art.doc':'C','air.doc':'B'},
+  bp:[{ch:'arm',nm:'BT-7 개량',pt:{doc:'arm.doc.B2'}},{ch:'inf',nm:'근위 소총병',pt:{doc:'inf.doc.B2'}},{ch:'arm',nm:'KV-1',pt:{doc:'arm.doc.B3'}}],abp:{cas:{doc:'air.doc.B2'}}}};
 function plan0(x){const P=JSON.parse(JSON.stringify(PLAN0[x]||{}));P.fq=(DOCT[x]&&DOCT[x].foc||[]).slice();return P}
 /* 작전 계획(로비) → 나라 상태 */
 function rsInit(s,x,plan){const n=s.N[x];plan=plan||plan0(x);
   n.deck=Array.isArray(plan.deck)&&plan.deck.length===DECK_N&&plan.deck.every(d=>deckPool(x).includes(d))?plan.deck.slice():[(SPX[x]||[])[0],'air'];
-  n.rs={own:Object.keys(PARTS).filter(id=>PARTS[id].tr===1),sl:[],q:(plan.rq||[]).filter(id=>PARTS[id]||NT[id]),ln:{},eu:[]};
-  for(const k in plan.ln||{})if(PLINE[k]&&(plan.ln[k]==='A'||plan.ln[k]==='B'&&PLINE[k][1]))n.rs.ln[k]=plan.ln[k];
+  n.rs={own:Object.keys(PARTS).filter(id=>PARTS[id].tr===1),sl:[],q:(plan.rq||[]).filter(id=>PARTS[id]||NT[id]),ln:{}};
+  for(const k in plan.ln||{})if(PLINE[k]&&PLINE[k]['ABC'.indexOf(plan.ln[k])])n.rs.ln[k]=plan.ln[k];
   n.fq=(plan.fq||[]).filter(id=>(FOC[x]||[]).some(f=>f[0]===id));
   n.bp={inf:[],art:[],arm:[],sea:[]};n.bpN=0;bpEnsure(s,x);
   for(const d of plan.bp||[]){if(!UT[d.ch]||!PSLOT[UT[d.ch].k])continue;const K=UT[d.ch].k;const pt={};for(const[sl]of PSLOT[K])pt[sl]=(d.pt&&d.pt[sl]&&PARTS[d.pt[sl]]&&PARTS[d.pt[sl]].K===K&&PARTS[d.pt[sl]].sl===sl)?d.pt[sl]:K+'.'+sl+'.A1';
@@ -816,7 +782,7 @@ function bpAuto(s,x){const n=s.N[x];if(!n.bpq||!n.bpq.length)return[];const out=
 function rsTurn(x){const n=G.N[x];if(!n||!n.rs)return;
   for(const q of n.rs.sl){q.left--;if(q.left<=0){n.rs.own.push(q.id);app(x,1);{const T=NT[q.id];if(T)lg(`🔬 기술 완료: ${T.ic} ${T.n} — ${T.d}`,x);else lg(`🔬 연구 완료: ${PARTS[q.id].n} (${PK[PARTS[q.id].K]} ${PSLOT[PARTS[q.id].K].find(z=>z[0]===PARTS[q.id].sl)[1]})`,x);if(T&&T.f)fx({k:'focus',x,t:`${T.n}`})}
       for(const t of SPX[x]||[])if(UT[t].need&&spOk(G,x,t)&&!n.spSeen?.includes(t)){(n.spSeen=n.spSeen||[]).push(t);lg(`🎖 특수 유닛 해금: ${UT[t].n}`,x);fx({k:'focus',x,t:`${UT[t].n} 해금`})}}}
-  n.rs.sl=n.rs.sl.filter(q=>q.left>0);euCheck(x);rsFill(x);
+  n.rs.sl=n.rs.sl.filter(q=>q.left>0);rsFill(x);
   for(const nm of bpAuto(G,x))lg(`📐 계획한 설계도 「${nm}」 생산 준비 완료`,x);bpEnsure(G,x)}
 function rsFill(x){const n=G.N[x];if(!n.rs||!tutOn(G,'air'))return;let guard=0;
   while(n.rs.sl.length<rsSlots(G,x)&&n.rs.q.length&&guard++<30){const id=n.rs.q.find(id=>!rsWhy(G,x,id));if(!id){n.rs.q=n.rs.q.filter(id=>!n.rs.own.includes(id));break}
@@ -863,9 +829,9 @@ function eraEnd(){if(!eraOn(G))return;const ei=eraOf(G.rd-1);const xs=Object.key
   for(const x of xs){const n=G.N[x];const a=n.app??APP0;const prev=n.age;n.age=a>=APP_GOLD?(prev==='dark'?'hero':'gold'):a<=APP_DARK?'dark':null;
     lg(n.age?`${AGE[n.age].i} ${NAT[x].n}: ${AGE[n.age].n} (지지율 ${a}) — ${AGE[n.age].d}`:`${NAT[x].n}: 평범한 시대 (지지율 ${a})`,x);n.gps=0;n.gpe=0;n.app=APP0}}
 function gpGive(x,id){const n=G.N[x];(n.gp=n.gp||[]).push(id);app(x,5,'위인 영입');
-  if(id==='watt'){for(const q of['sea.det.A2','sea.det.A3'])if(!n.rs.own.includes(q))n.rs.own.push(q);n.science=(n.science||0)+5}
+  if(id==='watt'){for(const q of['sea.doc.B2','sea.doc.B3'])if(!n.rs.own.includes(q))n.rs.own.push(q);n.science=(n.science||0)+5}
   if(id==='joliot'){n.science=(n.science||0)+10;for(const q of n.rs.sl)q.left=Math.max(1,q.left-1)}
-  if(id==='koshkin'){const nx=['arm.armor.A2','arm.armor.A3'].find(q=>!n.rs.own.includes(q));if(nx)n.rs.own.push(nx)}}
+  if(id==='koshkin'){const nx=['arm.doc.B2','arm.doc.B3'].find(q=>!n.rs.own.includes(q));if(nx)n.rs.own.push(nx)}}
 const TRAIT={
  GB:['해군 비용 -2 (함대·드레드노트)','해안 요새화: 영국 땅에 상륙하는 적은 총 -3','대륙 진출의 한계: 대륙 공장 +7 (대독 재반격으로 해제)','특수: 드레드노트 (8 · 파워 4 · 이동 1)','항공기: 스핏파이어 — 요격해도 쿨타임이 늘지 않음'],
  FR:['난공불락의 요새: 산·언덕 방어 +2','부패 정부: 생산 +1 · 공장 건설 +3.5 (정부 예산 증가로 해제)','특수: 마지노 산악보병 (3 · 파워 2 · 이동 2, 언덕 방어 +1)','항공기: 파르망 F.222 — 폭격기 쿨타임 1턴'],
@@ -1339,7 +1305,7 @@ function atWar(s,a,b){
 }
 function warState(s,a,b){const A=topOf(s,a),B=topOf(s,b);const r=s.war[wk(A,B)];if(r==null)return 0;return r<s.rd?2:1}
 function maxHp(s,x,t,u){return Math.max(1,UT[t].p+(u&&u.bp||0)+(x!=='N'&&(UT[t].k==='arm'||UT[t].k==='sea')?(rfx(s,x).precHp||0):0)-(x==='SU'&&!suReorg(s)?1:0)-(isL(s,x,'mussolini')?pI(s,x,1):0))}
-function unitCost(s,x,t,d){let c=unitCost0(s,x,t,d);if(x==='N'||!UT[t])return c;const f=rfx(s,x),k=UT[t].k;if(k==='inf')c-=f.infCost||0;if(k==='art')c-=f.artCost||0;
+function unitCost(s,x,t,d){let c=unitCost0(s,x,t,d);if(x==='N'||!UT[t])return c;const f=rfx(s,x),k=UT[t].k;if(k==='inf')c-=f.infCost||0;if(k==='art')c-=f.artCost||0;if(k==='sea')c-=f.seaCost||0;
   if(f.bpNew){const dd=d||bpOf(s,x,t);if(dd&&dd.nw)c-=BP_NEW}return Math.max(1,c)}
 function unitCost0(s,x,t,d){const u=UT[t];let c=u.c;d=d||bpOf(s,x,t);if(d){c+=bpStat(d).dc;if(d.nw)c+=BP_NEW}if(t==='t34'&&s.N&&s.N[x]&&(s.N[x].t34n||0)>0)c-=2;if(gpHas(s,x,'porsche')&&u.k==='arm')c-=1;if(gpHas(s,x,'grabin')&&u.k==='art')c-=1;if(gpHas(s,x,'pugliese')&&u.k==='sea')c-=1;{const A=ageOf(s,x);if(A==='gold'||A==='hero')c-=1;if(A==='dark')c+=1}
   if(x==='GB'&&u.k==='sea')c-=2;                 // 영국: 함대·드레드노트
@@ -1388,7 +1354,7 @@ function capitalIncome0(s,x){let c=0;for(const k in s.T)if(s.T[k].o===x)c+=popOf
 function income(s,x){return income0(s,x)+(rfx(s,x).incB||0)}
 function income0(s,x){let r=hasWonder(s,x,'parthenon')?1:0;if(polOn(s)&&s.N[x]&&regOf(s,x)==='mil')r+=regMul(s,x);if(s.N[x])r+=memberIncome(s,x);if(has(s,x,'fyp2'))r+=2;if(has(s,x,'stakh'))r+=2;r+=evIncome(s,x);r-=uRaid(s,x);for(const k in s.T){const t=s.T[k];if(t.o===x){r+=1;if(t.f)r+=1;if(t.f&&t.nw)r+=2}}if(has(s,x,'eth2'))r+=1;
   if(x==='SU')r+=1;if(has(s,x,'fouryear'))r+=1;if(has(s,x,'mare'))for(const k in s.S)if(s.S[k].o===x)r+=1;r+=ldResInc(s,x);r+=railInc(s,x);if(subBlock(s,x))r=Math.floor(r/2);return r}
-function typePow(s,x,t,tr,role,foeArm,cx,uu){const u=UT[t];let p=x==='N'?u.p:maxHp(s,x,t,uu);const pr=[[uu&&uu.bn&&!/기본형$/.test(uu.bn)?`${u.n}「${uu.bn}」`:u.n,p]];const add=(l,v)=>{p+=v;pr.push([l,v])};const nt=role==='def'&&cx&&cx.noTer;
+function typePow(s,x,t,tr,role,foeArm,cx,uu){const u=UT[t];let p=x==='N'?u.p:maxHp(s,x,t,uu);const pr=[[uu&&uu.bn&&!/기본형$/.test(uu.bn)?`${u.n}「${uu.bn}」`:u.n,p]];const add=(l,v)=>{p+=v;pr.push([l,v])};const nt=role==='def'&&cx&&cx.noTer;if(x!=='N'&&s&&s.N&&s.N[x]){const tf=rfx(s,x);if(role==='att'&&tf.atkB)add('전격전 교리',tf.atkB);if(role==='def'&&tf.defB)add('종심 방어',tf.defB)}
   if(tr==='p'&&u.k==='arm'&&role==='att'){if(cx&&cx.noPlain)pr.push(['평원 기갑(파편 폭풍으로 상실)',0]);else add('평원 기갑',2);if(x==='DE')add('전격전',1)}
   if(tr==='h'&&u.k==='inf'&&!nt)add('언덕 보병',2);
   if(u.k==='art'&&foeArm)add('대전차 포격',cx&&cx.foe&&cx.foe.every(v=>v.t==='matilda')?1:2);
@@ -2949,13 +2915,13 @@ function act(x,a){
     else{G.T[a.t].f=1;if(tk.fort)G.T[a.t].fort=2;if(tk.nw)G.T[a.t].nw=1;lg(`${a.t}에 ${tk.nw?'신여성 공장 (매 턴 자원 +2)':'무료 공장'}${tk.fort?' · 요새(방어 +2)':''}`,x)}return}
   if(k==='rs'){const w=rsWhy(G,x,a.id);if(w)return w;if(n.rs.sl.length>=rsSlots(G,x))return`연구 칸이 모두 찼습니다 (${rsSlots(G,x)}칸 · 연구소 2개마다 1칸)`;const c=rsCost(x,a.id);if((n.science||0)<c.sc)return`과학 ${c.sc}이 필요합니다`;
     if(NT[a.id]){const T=NT[a.id];n.science-=c.sc;n.rs.sl.push({id:a.id,left:c.t,t0:c.t});n.rs.q=n.rs.q.filter(q=>q!==a.id);
-      if(T.f){const lost=Object.values(NT).filter(o=>o.f===T.f&&o.id!==T.id);n.rs.q=n.rs.q.filter(q=>!lost.some(o=>o.id===q));lg(`⚖ ${NT_FORK[T.f]}: 「${T.n}」 선택 — ${lost.map(o=>o.n).join('·')}은(는) 잠깁니다`,x)}
-      lg(`🔬 기술 연구 시작: ${T.ic} ${T.n} (과학 -${c.sc}, ${c.t}턴${c.eu?' · 💡유레카':''})`,x);return}
+      if(T.f){const lost=Object.values(NT).filter(o=>o.f===T.f&&o.id!==T.id);n.rs.q=n.rs.q.filter(q=>!lost.some(o=>o.id===q));lg(`⚖ ${NT_FORK[T.f]}: 「${T.dir}」 노선 — ${T.n} (${lost.map(o=>o.n).join('·')}은(는) 잠깁니다)`,x)}
+      lg(`🔬 기술 연구 시작: ${T.ic} ${T.n} (과학 -${c.sc}, ${c.t}턴)`,x);return}
     const P=PARTS[a.id];n.science-=c.sc;const key=P.K+'.'+P.sl;if(P.tr>=2&&!n.rs.ln[key])n.rs.ln[key]=P.L;n.rs.sl.push({id:a.id,left:c.t,t0:c.t});n.rs.q=n.rs.q.filter(q=>q!==a.id);
-    lg(`🔬 연구 시작: ${P.n} (과학 -${c.sc}, ${c.t}턴${c.st?' · 강점 계열':''}${c.eu?' · 💡유레카':''})`,x);return}
-  if(k==='rsln'){const key=a.key,L=a.L;if(!PLINE[key]||(L!=='A'&&L!=='B')||(L==='B'&&!PLINE[key][1]))return'없는 계열';const cur=n.rs.ln[key];if(cur===L)return'이미 고른 계열입니다';
-    if(n.rs.sl.some(q=>q.id.startsWith(key+'.')))return'이 칸의 연구가 끝난 뒤에 바꿀 수 있습니다';const fee=cur?RS_SWITCH:0;if((n.science||0)<fee)return`계열 전환에는 과학 ${fee}이 필요합니다`;
-    n.science-=fee;n.rs.ln[key]=L;lg(`🔀 ${PK[key.split('.')[0]]} ${PSLOT[key.split('.')[0]].find(z=>z[0]===key.split('.')[1])[1]}: 「${PLINE[key][L==='A'?0:1]}」 계열${fee?` (과학 -${fee})`:''}`,x);return}
+    lg(`🔬 연구 시작: ${P.n} (과학 -${c.sc}, ${c.t}턴${c.st?' · 강점 계열':''})`,x);return}
+  if(k==='rsln'){const key=a.key,L=a.L;if(!PLINE[key]||!'ABC'.includes(L)||L.length!==1||!PLINE[key]['ABC'.indexOf(L)])return'없는 계열';const cur=n.rs.ln[key];if(cur===L)return'이미 고른 계열입니다';
+    if(n.rs.sl.some(q=>q.id.startsWith(key+'.')))return'이 병종의 연구가 끝난 뒤에 방향을 바꿀 수 있습니다';const fee=cur?RS_SWITCH:0;if((n.science||0)<fee)return`계열 전환에는 과학 ${fee}이 필요합니다`;
+    n.science-=fee;n.rs.ln[key]=L;lg(`🔀 ${PK[key.split('.')[0]]} 방향: ${PLINE_I[L]} 「${PLINE[key]['ABC'.indexOf(L)]}」${fee?` (과학 -${fee})`:''}`,x);return}
   if(k==='rsq'){n.rs.q=(a.q||[]).filter(id=>(PARTS[id]||NT[id])&&!n.rs.own.includes(id)&&!(NT[id]&&ntForkLock(G,x,id))).slice(0,40);return}
   if(k==='fq'){n.fq=(a.q||[]).filter(id=>(FOC[x]||[]).some(f=>f[0]===id)).slice(0,30);return}
   if(k==='bpset'){const ch=a.ch;if(!UT[ch]||!buildableS(G,x).includes(ch))return'쓸 수 없는 차체입니다';const K=UT[ch].k;const L=n.bp[K]=n.bp[K]||[];const pt={};
@@ -2964,8 +2930,8 @@ function act(x,a){
     if(old){if(old.ch!==ch)return'차체는 바꿀 수 없습니다 (새 설계도로 만드세요)';old.pt=pt;old.nm=nm;old.nw=1;lg(`📐 설계도 수정: ${nm}`,x);return}
     if(L.length>=BP_MAX)return`${PK[K]} 설계도는 ${BP_MAX}개까지입니다`;n.bpN=(n.bpN||0)+1;L.push({id:'d'+n.bpN,ch,pt,nm,nw:1});lg(`📐 새 설계도: ${nm} (첫 생산 때 재정비 비용 +${BP_NEW})`,x);return}
   if(k==='bpdel'){for(const K in n.bp){const i=n.bp[K].findIndex(d=>d.id===a.id);if(i<0)continue;const d=n.bp[K][i];if(n.bp[K].filter(q=>q.ch===d.ch).length<=1)return'차체마다 설계도가 하나는 있어야 합니다';n.bp[K].splice(i,1);lg(`📐 설계도 삭제: ${d.nm} (이미 생산한 부대는 그대로)`,x);return}return'없는 설계도'}
-  if(k==='abp'){const t=a.t;if(!AIR[t])return'없는 기종';const w={};for(const sl of['frame','eng','wpn']){const id=(a.pt||{})[sl]||'air.'+sl+'.A1';const P=PARTS[id];if(!P||P.K!=='air'||P.sl!==sl)return'부품이 칸과 맞지 않습니다';if(!n.rs.own.includes(id))return`${P.n}은(는) 아직 연구하지 않았습니다`;w[sl]=id}
-    if(w.frame==='air.frame.A3'&&t!=='fighter')return'제트기는 전투기만 쓸 수 있습니다';n.abp[t]=w;lg(`📐 ${AIR[t].n} 설계 변경: ${Object.values(w).map(id=>PARTS[id].n).join(' · ')}`,x);return}
+  if(k==='abp'){const t=a.t;if(!AIR[t])return'없는 기종';const w={};for(const sl of['doc']){const id=(a.pt||{})[sl]||'air.'+sl+'.A1';const P=PARTS[id];if(!P||P.K!=='air'||P.sl!==sl)return'부품이 칸과 맞지 않습니다';if(!n.rs.own.includes(id))return`${P.n}은(는) 아직 연구하지 않았습니다`;w[sl]=id}
+    if(w.frame==='air.doc.A4'&&t!=='fighter')return'제트기는 전투기만 쓸 수 있습니다';n.abp[t]=w;lg(`📐 ${AIR[t].n} 설계 변경: ${Object.values(w).map(id=>PARTS[id].n).join(' · ')}`,x);return}
   if(k==='refit'){const T=G.T[a.t];if(!T||T.o!==x||!T.f)return'내 공장이 있는 땅에서만 개조할 수 있습니다';const d=bpFind(G,x,a.id);if(!d)return'설계도를 고르세요';
     const us=T.u.filter(u=>u.t===d.ch&&u.b!==d.id);if(!us.length)return'개조할 부대가 없습니다 (같은 차체만)';const nc=UT[d.ch].c+bpStat(d).dc;let paid=0,c=0;
     for(const u of us){const pay=Math.max(1,Math.round((nc-(u.bc||UT[u.t].c))/2)+2);if(n.r<pay)break;n.r-=pay;paid+=pay;const lost=maxHp(G,x,u.t,u)-u.hp;bpStamp(u,d);u.hp=Math.max(1,maxHp(G,x,u.t,u)-lost);u.mv=0;c++}
@@ -3915,9 +3881,8 @@ function* aiUboat(x){if(!buildable(x).includes('uboat'))return;const n=G.N[x];co
   for(const k of simOwn(x).filter(k=>G.T[k].f&&CS[k].length)){if(n.r<unitCost(G,x,'uboat')+10)break;const z=CS[k].find(z=>{const S=G.S[z];return(!S.o||S.o===x)&&S.u.length<STACK});if(!z)continue;
     if(!act(x,{k:'build',u:'uboat',t:k,sea:z})){yield `🌊 U보트 진수 · ${z}`;break}}}
 /* AI 택1 선호 · 국가 기술 가중(낮을수록 먼저) */
-const AI_FORK={DE:{ind:'nt.prec',air:'nt.tac',eco2:'nt.total',wpn:'nt.rocket'},GB:{ind:'nt.mass',air:'nt.strat',eco2:'nt.welfare',wpn:'nt.rocket'},FR:{ind:'nt.prec',air:'nt.tac',eco2:'nt.welfare',wpn:'nt.rocket'},
-  IT:{ind:'nt.mass',air:'nt.tac',eco2:'nt.total',wpn:'nt.rocket'},SU:{ind:'nt.mass',air:'nt.tac',eco2:'nt.total',wpn:'nt.rocket'}};
-const AI_NTW={'nt.prop':.5,'nt.cipher':.6,'nt.decode':.5,'nt.city':.2,'nt.atom':9};
+const AI_FORK={DE:{g1:'nt.prec',g2:'nt.blitz',g3:'nt.army',g4:'nt.econ',g5:'nt.rocket'},GB:{g1:'nt.mass',g2:'nt.deep',g3:'nt.navair',g4:'nt.sci',g5:'nt.rocket'},FR:{g1:'nt.prec',g2:'nt.deep',g3:'nt.army',g4:'nt.sci',g5:'nt.rocket'},
+  IT:{g1:'nt.mass',g2:'nt.blitz',g3:'nt.navair',g4:'nt.econ',g5:'nt.rocket'},SU:{g1:'nt.mass',g2:'nt.deep',g3:'nt.army',g4:'nt.econ',g5:'nt.rocket'}};
 /* AI 로켓: 공장 > 연구소 > 허브 순으로 가치 높은 표적 */
 function* aiRocket(x){const n=G.N[x];if(!rfx(G,x).v2||n.v2r===G.rd||(n.science||0)<V2_SC+4)return;
   const t=v2Targets(G,x).map(k=>({k,v:(G.T[k].f?5:0)+(G.T[k].lab?4:0)+(G.T[k].hub?3:0)+(G.T[k].rail?1:0)+(NAT[G.T[k].o]&&NAT[G.T[k].o].cap===k?2:0)})).filter(e=>e.v>0).sort((a,b)=>b.v-a.v)[0];
@@ -3956,7 +3921,7 @@ function* simTurn(x){const D=DOCT[x];const n=G.N[x];if(!D||!n)return;const nm=k=
   function* research(){if(!n.rs||!tutOn(G,'air'))return;   // 계획 대기열이 끝나면: 강점 계열 → 낮은 단계 순으로 아무 연구나
     for(let i=0;i<4&&n.rs.sl.length<rsSlots(G,x);i++){if(n.rs.q.length){rsFill(x);if(n.rs.sl.length>=rsSlots(G,x))break}
       // 국가 기술도 함께: 단계가 낮을수록 · 국가 기술 · 강점 계열 · 유레카 먼저. 택1은 나라별 선호(AI_FORK)만 고른다
-      const sc=id=>{const T=tInfo(id);return T.tr-(T.nt?.6:0)-(!T.nt&&rsStrong(x,id)?1.5:0)-(euHas(G,x,id)?.8:0)+(!T.nt&&T.K==='sea'&&!D.fleet?.4:0)+(T.nt?(AI_NTW[id]||0):0)};
+      const sc=id=>{const T=tInfo(id);return T.tr-(T.nt?.6:0)-(!T.nt&&rsStrong(x,id)?1.5:0)+(!T.nt&&T.K==='sea'&&!D.fleet?.4:0)};
       const cand=Object.keys(PARTS).concat(Object.keys(NT)).filter(id=>!rsWhy(G,x,id)&&!(NT[id]&&NT[id].f&&(AI_FORK[x]||{})[NT[id].f]&&AI_FORK[x][NT[id].f]!==id)).sort((a,b)=>sc(a)-sc(b));
       const id=cand.find(id=>(n.science||0)>=rsCost(x,id).sc+(D.air?6:0));if(!id||act(x,{k:'rs',id}))break;yield `🔬 연구 시작: ${tName(id)}`}
     if(G.rd%4===0)for(const t of Object.keys(D.mix).filter(t=>buildable(x).includes(t))){const K=UT[t].k;const pt={};
@@ -4257,10 +4222,10 @@ function pickCard(i){if(!V||V.ph!=='draw')return;sendAct({k:'draw',i})}
 const HPLANS={};let planX=null,planTab='deck',planK='arm',planBp=null,PLAN_SENT=false;
 function planSan(x,p){if(!p||typeof p!=='object'||!NAT[x])return null;const ids=a=>(Array.isArray(a)?a:[]).filter(id=>typeof id==='string');
   const o={deck:ids(p.deck).filter(d=>deckPool(x).includes(d)).slice(0,DECK_N),rq:ids(p.rq).filter(id=>PARTS[id]).slice(0,40),fq:ids(p.fq).filter(id=>(FOC[x]||[]).some(f=>f[0]===id)).slice(0,30),ln:{},bp:[],abp:{}};
-  if(o.deck.length!==DECK_N)o.deck=plan0(x).deck;for(const k in p.ln||{})if(PLINE[k]&&['A','B'].includes(p.ln[k]))o.ln[k]=p.ln[k];
+  if(o.deck.length!==DECK_N)o.deck=plan0(x).deck;for(const k in p.ln||{})if(PLINE[k]&&PLINE[k]['ABC'.indexOf(p.ln[k])])o.ln[k]=p.ln[k];
   for(const d of(Array.isArray(p.bp)?p.bp:[]).slice(0,12))if(d&&UT[d.ch]&&PSLOT[UT[d.ch].k]&&(!UT[d.ch].only||UT[d.ch].only===x)){const pt={};for(const[sl]of PSLOT[UT[d.ch].k])if(d.pt&&PARTS[d.pt[sl]]&&PARTS[d.pt[sl]].sl===sl&&PARTS[d.pt[sl]].K===UT[d.ch].k)pt[sl]=d.pt[sl];o.bp.push({ch:d.ch,nm:String(d.nm||'').slice(0,16),pt})}
   o.bp=o.bp.filter(d=>!UT[d.ch].only||o.deck.includes(d.ch));
-  for(const t of Object.keys(AIR))if(p.abp&&p.abp[t]){const w={};for(const sl of['frame','eng','wpn'])if(PARTS[p.abp[t][sl]]&&PARTS[p.abp[t][sl]].sl===sl&&PARTS[p.abp[t][sl]].K==='air')w[sl]=p.abp[t][sl];o.abp[t]=w}
+  for(const t of Object.keys(AIR))if(p.abp&&p.abp[t]){const w={};for(const sl of['doc'])if(PARTS[p.abp[t][sl]]&&PARTS[p.abp[t][sl]].sl===sl&&PARTS[p.abp[t][sl]].K==='air')w[sl]=p.abp[t][sl];o.abp[t]=w}
   return o}
 function planFor(s,x){const pid=s.seats&&s.seats[x];return(pid&&pid!=='ai'&&HPLANS[pid]&&HPLANS[pid][x])||(s.plans&&s.plans[x])||null}
 function planGet(x){let p=null;try{p=JSON.parse(localStorage.getItem('eu_plan_'+x)||'null')}catch(e){}return planSan(x,p)||planSan(x,plan0(x))}
@@ -4284,7 +4249,7 @@ function planSheet(){const mine=V&&V.seats?mySeats():[];if(!planX||!NAT[planX])p
   if(planTab==='rs'){h+=`<span class="lab">연구 대기열 (위에서부터 · 연구 칸이 비면 자동 시작)</span>${li(p.rq,'rq',id=>`${PARTS[id].n} <span class="note">${PK[PARTS[id].K]} ${PARTS[id].tr}단계${rsStrong(x,id)?' · 강점':''}</span> ${partFx(PARTS[id])}`)}
     <div class="tabs" style="margin-top:8px">${Object.keys(PSLOT).map(K=>`<button class="sm ${planK===K?'act':''}" onclick="planK='${K}';render()">${PK[K]}</button>`).join('')}</div>`;
     for(const[sl,sn]of PSLOT[planK]){const key=planK+'.'+sl;const lines=PLINE[key];const ln=p.ln[key]||'A';
-      h+=`<div class="fo" style="display:block"><div class="row" style="justify-content:space-between"><b>${sn}</b>${lines[1]?`<span class="row" style="gap:3px">${['A','B'].map(L=>`<button class="sm ${ln===L?'act':'ghost'}" onclick="planEdit(p=>{p.ln['${key}']='${L}';p.rq=p.rq.filter(id=>!(id.startsWith('${key}.')&&PARTS[id].tr>=2&&PARTS[id].L!=='${L}'))})">${lines[L==='A'?0:1]}</button>`).join('')}</span>`:''}</div>
+      h+=`<div class="fo" style="display:block"><div class="row" style="justify-content:space-between"><b>${sn}</b>${lines[1]?`<span class="row" style="gap:3px">${'ABC'.slice(0,lines.length).split('').map(L=>`<button class="sm ${ln===L?'act':'ghost'}" onclick="planEdit(p=>{p.ln['${key}']='${L}';p.rq=p.rq.filter(id=>!(id.startsWith('${key}.')&&PARTS[id].tr>=2&&PARTS[id].L!=='${L}'))})">${PLINE_I[L]} ${lines['ABC'.indexOf(L)]}</button>`).join('')}</span>`:''}</div>
         <div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${partsOf(planK,sl).filter(P=>P.tr>=2&&P.L===ln).map(P=>{const c=rsCost(x,P.id);const inQ=p.rq.includes(P.id);
           return`<div onclick="${inQ?`planEdit(p=>{p.rq=p.rq.filter(q=>q!=='${P.id}')})`:`planAdd('rq','${P.id}')`}" style="cursor:pointer;flex:1 1 200px;min-width:180px;border:2px solid ${inQ?'var(--gold)':'var(--line)'};border-radius:8px;padding:5px 7px">
             <div class="row" style="justify-content:space-between"><b style="font-size:13px">${inQ?'✓ ':''}${P.tr}단계 ${P.n}${c.st?' <span style="color:var(--gold)">★</span>':''}</b><span class="note">🔬${c.sc} · ${c.t}턴</span></div><div style="margin-top:3px">${partFx(P)}</div></div>`}).join('')}</div></div>`}
@@ -4299,7 +4264,7 @@ function planSheet(){const mine=V&&V.seats?mySeats():[];if(!planX||!NAT[planX])p
         ${PSLOT[K].map(([sl,sn])=>`<div class="row" style="gap:6px;margin:3px 0;flex-wrap:nowrap"><span class="note" style="min-width:56px">${sn}</span><select style="flex:1;min-width:0" onchange="planBp.pt['${sl}']=this.value;render()">${partsOf(K,sl).filter(okP).map(P=>`<option value="${P.id}" ${d.pt[sl]===P.id?'selected':''}>${P.tr}단계 ${P.n} — ${esc(partTip(P))}</option>`).join('')}</select></div>`).join('')}
         <div class="col" style="gap:2px;margin:6px 0">${PSLOT[K].map(([sl,sn])=>`<div><span class="note" style="display:inline-block;min-width:56px">${sn}</span>${partFx(PARTS[d.pt[sl]])}</div>`).join('')}</div>
         <p style="margin:6px 0"><b>파워 ${u.p+st.dp} · 이동 ${u.m+st.dm} · 비용 ${u.c+st.dc}</b> <span class="note">(${u.n} 기본 ${u.p}·${u.m}·${u.c})</span></p><div class="row"><button class="sm" onclick="planEdit(p=>{p.bp.push({ch:planBp.ch,nm:planBp.nm||'${''}'+UT[planBp.ch].n+' 개량형',pt:Object.assign({},planBp.pt)});for(const id of Object.values(planBp.pt)){const P=PARTS[id];if(P.tr<2)continue;p.ln[P.K+'.'+P.sl]=P.L;for(let t=2;t<=P.tr;t++){const q=P.K+'.'+P.sl+'.'+P.L+t;if(PARTS[q]&&!p.rq.includes(q))p.rq.push(q)}}});planBp=null">계획에 추가 (필요 연구·계열도 대기열에)</button><button class="sm ghost" onclick="planBp=null;render()">취소</button></div></div>`}
-    h+=`<span class="lab" style="margin-top:8px">항공기 설계 계획</span>${Object.keys(AIR).map(t=>{const w=Object.assign(abpDefault(),p.abp[t]||{});return`<div class="row" style="flex-wrap:wrap;gap:4px;margin:3px 0"><b style="min-width:70px">${AIR[t].n}</b>${PSLOT.air.map(([sl,sn])=>`<select title="${sn}" onchange="planEdit(p=>{p.abp['${t}']=Object.assign(abpDefault(),p.abp['${t}']||{},{'${sl}':this.value})})">${partsOf('air',sl).filter(P=>(P.tr===1||P.L===(p.ln['air.'+sl]||'A'))&&!(P.id==='air.frame.A3'&&t!=='fighter')).map(P=>`<option value="${P.id}" ${w[sl]===P.id?'selected':''}>${P.n}</option>`).join('')}</select>`).join('')}</div>`}).join('')}`}
+    h+=`<span class="lab" style="margin-top:8px">항공기 설계 계획</span>${Object.keys(AIR).map(t=>{const w=Object.assign(abpDefault(),p.abp[t]||{});return`<div class="row" style="flex-wrap:wrap;gap:4px;margin:3px 0"><b style="min-width:70px">${AIR[t].n}</b>${PSLOT.air.map(([sl,sn])=>`<select title="${sn}" onchange="planEdit(p=>{p.abp['${t}']=Object.assign(abpDefault(),p.abp['${t}']||{},{'${sl}':this.value})})">${partsOf('air',sl).filter(P=>(P.tr===1||P.L===(p.ln['air.'+sl]||'A'))&&!(P.id==='air.doc.A4'&&t!=='fighter')).map(P=>`<option value="${P.id}" ${w[sl]===P.id?'selected':''}>${P.n}</option>`).join('')}</select>`).join('')}</div>`}).join('')}`}
   const pre=planPresets().map((q,i)=>[q,i]).filter(([q])=>q.x===x);
   h+=`<div class="row" style="flex-wrap:wrap;gap:4px;margin-top:10px;border-top:1px solid var(--line);padding-top:8px"><button class="sm ghost" onclick="planPut('${x}',plan0('${x}'))">역사 교리로 초기화</button><input id="planPreNm" maxlength="20" placeholder="프리셋 이름" style="width:110px"><button class="sm ghost" onclick="planPresetSave('${x}')">프리셋 저장</button>
     ${pre.map(([q,i])=>`<span class="pill"><a href="#" onclick="event.preventDefault();planPut('${x}',planPresets()[${i}].p)">${esc(q.nm)}</a> <a href="#" onclick="event.preventDefault();planPresetDel(${i})">✕</a></span>`).join('')}</div></section>`;
@@ -5348,66 +5313,66 @@ function rsPanel(x,myT){const s=V,n=s.N[x];if(!n.rs)return'<p class="note">이 �
    ${n.rs.sl.map(q=>rsCurRow(x,q)).join('')||'<p class="note" style="margin:6px 0">진행 중인 연구가 없습니다.</p>'}
    ${n.rs.q.length?`<p class="note" style="margin:6px 0 0">대기열: ${n.rs.q.map((id,i)=>`<span class="pill">${i+1}. ${esc(tName(id))}${myT?` <a href="#" onclick="event.preventDefault();sendAct({k:'rsq',q:V.N['${x}'].rs.q.filter(q=>q!=='${id}')})">✕</a>`:''}</span>`).join(' ')}</p>`:''}
    <button class="ttopen" onclick="techOpen=techOpen||'nt';render()">🌳 기술 트리 열기 <span class="note">T</span></button></div>`;
-  const eu=Object.keys(NT).concat(Object.keys(PARTS)).filter(id=>!rsWhy(s,x,id)).slice(0,400);const got=eu.filter(id=>euHas(s,x,id)),near=eu.filter(id=>!euHas(s,x,id)&&euText(id)).slice(0,5);
-  if(got.length)h+=`<span class="lab" style="margin-top:10px">💡 유레카 (과학 50%)</span><div class="row" style="flex-wrap:wrap;gap:4px">${got.slice(0,10).map(id=>`<span class="pill" style="border-color:var(--gold)">${esc(tName(id))}</span>`).join('')}</div>`;
-  if(near.length)h+=`<span class="lab" style="margin-top:10px">다음 유레카 조건</span>${near.map(id=>`<p class="note" style="margin:2px 0">○ <b>${esc(tName(id))}</b> — ${esc(euText(id))}</p>`).join('')}`;
+  h+=`<span class="lab" style="margin-top:10px">내 노선</span><div class="rpath">${Object.keys(NT_FORK).map(f=>{const L=Object.values(NT).filter(T=>T.f===f);const c=L.find(T=>n.rs.own.includes(T.id)||n.rs.sl.some(q=>q.id===T.id));
+     return`<span class="${c?'on':''}" title="${NT_FORK[f]}: ${L.map(T=>T.dir).join(' / ')}">${c?c.ic+' '+c.dir:'? '+L.map(T=>T.dir).join('/')}</span>`}).join('<i>›</i>')}</div>
+   <div class="rpath" style="margin-top:4px">${Object.keys(PSLOT).map(K=>{const ln=n.rs.ln[K+'.doc'];return`<span class="${ln?'on':''}">${PK[K]} ${ln?PLINE_I[ln]+' '+PLINE[K+'.doc']['ABC'.indexOf(ln)]:'—'}</span>`}).join('')}</div>`;
   const sp=(SPX[x]||[]).filter(t=>UT[t].need);
   if(sp.length)h+=`<span class="lab" style="margin-top:10px">특수 유닛 해금</span>${sp.map(t=>`<p class="note" style="margin:2px 0">${spOk(s,x,t)?'✓':deckHas(s,x,t)?'🔒':'—'} <b>${UT[t].n}</b> · ${spNeedTxt(t)}${deckHas(s,x,t)?'':' · 덱에 없음'}</p>`).join('')}`;
   return h}
 /* ================= 기술 트리 (문명6식) =================
-   지도 위 전체 화면 창. 탭: 국가 기술 · 병종별 부품. 열 = 단계, 선 = 선행 기술, 붉은 점선 묶음 = 택1, 💡 = 유레카 */
+   국가 기술: 단계마다 두 방향 중 하나(갈림길 사다리). 병종: 기본에서 세 방향(⚔ 공격형 · 🛡 방어형 · ➜ 기동형)으로 갈라져 한 방향을 올린다 */
 let techOpen=null;
 const TT_W=232,TT_H=82,TT_GX=64,TT_TOP=46;
-function rsCurRow(x,q){const T=tInfo(q.id);const t0=q.t0||RS_TURN[T.tr]||1;const pc=Math.round((t0-q.left)/t0*100);
-  return`<div class="rcur"><span class="ric">${T.nt?T.ic:ttIcon(T.K)}</span><span style="flex:1;min-width:0"><b>${esc(T.n)}</b><span class="rbar2"><i style="width:${Math.max(6,pc)}%"></i></span></span><span class="note">${q.left}턴</span></div>`}
+const TT_KC={inf:'#6b7a4a',art:'#8a5a3a',arm:'#5b6a78',sea:'#2c5f86',air:'#3d6f9a'},TT_LC={A:'#B44A3A',B:'#3F6E9E',C:'#4D8A4F'};
 function ttIcon(K){return{inf:'🪖',art:'💥',arm:'🛡',sea:'⚓',air:'✈'}[K]||'🔬'}
-const TT_SLI={'inf.rifle':'🎯','inf.sup':'💥','inf.trans':'🚚','inf.gear':'🧥','art.cal':'💥','art.tow':'🚜','art.fc':'🔭','arm.hull':'🛡','arm.gun':'🎯','arm.eng':'⚙','arm.armor':'🧱','arm.radio':'📻','sea.hull':'🚢','sea.gun':'💥','sea.det':'📡','air.frame':'✈','air.eng':'⚙','air.wpn':'💣'};
-const TT_KC={inf:'#6b7a4a',art:'#8a5a3a',arm:'#5b6a78',sea:'#2c5f86',air:'#3d6f9a'};
-function ttState(s,x,id){const n=s.N[x];if(n.rs.own.includes(id))return'own';const q=n.rs.sl.find(q=>q.id===id);if(q)return'cur';if(NT[id]&&ntForkLock(s,x,id))return'fork';return rsWhy(s,x,id)?'lock':'avail'}
+function rsCurRow(x,q){const T=tInfo(q.id);const t0=q.t0||tCost(T)[1]||1;const pc=Math.round((t0-q.left)/t0*100);
+  return`<div class="rcur"><span class="ric">${T.nt?T.ic:ttIcon(T.K)}</span><span style="flex:1;min-width:0"><b>${esc(T.n)}</b><span class="rbar2"><i style="width:${Math.max(6,pc)}%"></i></span></span><span class="note">${q.left}턴</span></div>`}
+function ttState(s,x,id){const n=s.N[x];if(n.rs.own.includes(id))return'own';const q=n.rs.sl.find(q=>q.id===id);if(q)return'cur';if(NT[id]&&ntForkLock(s,x,id))return'fork';
+  const P=PARTS[id];if(P&&P.tr>=2){const ln=n.rs.ln[P.K+'.'+P.sl];if(ln&&ln!==P.L)return'off'}return rsWhy(s,x,id)?'lock':'avail'}
 function ttNode(s,x,id,X,Y,myT){const T=tInfo(id),st=ttState(s,x,id),n=s.N[x];const c=rsCost(x,id);const q=n.rs.sl.find(q=>q.id===id);const qi=n.rs.q.indexOf(id);
-  const eu=euHas(s,x,id),eut=euText(id);const why=st==='lock'||st==='fork'?rsWhy(s,x,id):'';
-  const fxTxt=T.nt?T.d:partTip(T);const tip=`<div class="th">${T.nt?T.ic+' ':''}${esc(T.n)}</div>${esc(fxTxt)}${eut?`<div style="margin-top:4px">💡 유레카: ${esc(eut)} ${eu?'<b style="color:var(--ok)">달성</b>':'<span class="tm">미달성</span>'}</div>`:''}${why?`<div class="tbad" style="margin-top:4px">${esc(why)}</div>`:''}${st==='avail'||st==='lock'?`<div class="tm" style="margin-top:4px">클릭: ${st==='avail'?'연구 시작 (칸이 없거나 과학이 모자라면 대기열)':'대기열에 넣기/빼기'}</div>`:''}`;
-  const bot=st==='own'?'<span class="ok">✓ 완료</span>':st==='cur'?`<span class="cu">⏳ ${q.left}턴 남음</span>`:st==='fork'?'<span class="bad">🔒 택1로 잠김</span>':`<span>🔬 <b${eu?' style="color:var(--gold)"':''}>${c.sc}</b> · ${c.t}턴${c.st?' <span style="color:var(--gold)">★</span>':''}</span>`;
-  const pc=q?Math.round(((q.t0||c.t)-q.left)/(q.t0||c.t)*100):0;
-  const click=myT&&(st==='avail'||st==='lock')?`onclick="ttClick('${x}','${id}')"`:'';
-  return`<div class="tn ${st}${qi>=0?' inq':''}${T.nt&&T.f?' frk':''}" style="left:${X}px;top:${Y}px" data-tip="${esc(tip)}" ${click}>
-    <span class="tic" style="--tc:${T.nt?NT_CAT[T.cat][1]:TT_KC[T.K]}">${T.nt?T.ic:(TT_SLI[T.K+'.'+T.sl]||ttIcon(T.K))}</span>
-    <span class="tb"><b>${esc(T.n)}</b><small>${esc(T.nt?T.d:partTip(T))}</small><span class="tf">${bot}</span></span>
-    ${eut?`<span class="teu${eu?' on':''}">💡</span>`:''}${qi>=0?`<span class="tq">${qi+1}</span>`:''}${q?`<span class="tpr"><i style="width:${Math.max(4,pc)}%"></i></span>`:''}</div>`}
+  const why=st==='lock'||st==='fork'||st==='off'?rsWhy(s,x,id):'';const fxTxt=T.nt?T.d:partTip(T);
+  const tip=`<div class="th">${T.nt?T.ic+' ':''}${esc(T.n)}${T.nt?` <span class="tsub">${esc(T.dir)}</span>`:''}</div>${esc(fxTxt)}${why?`<div class="tbad" style="margin-top:4px">${esc(why)}</div>`:''}${st==='avail'||st==='lock'||st==='off'?`<div class="tm" style="margin-top:4px">클릭: ${st==='avail'?'연구 시작 (칸이 없거나 과학이 모자라면 대기열)':'대기열에 넣기/빼기'}</div>`:''}`;
+  const bot=st==='own'?'<span class="ok">✓ 완료</span>':st==='cur'?`<span class="cu">⏳ ${q.left}턴 남음</span>`:st==='fork'?'<span class="bad">🔒 다른 길을 골랐음</span>':`<span>🔬 <b>${c.sc}</b> · ${c.t}턴${c.st?' <span style="color:var(--gold)">★</span>':''}</span>`;
+  const pc=q?Math.round(((q.t0||c.t)-q.left)/(q.t0||c.t)*100):0;const click=myT&&(st==='avail'||st==='lock'||st==='off')?`onclick="ttClick('${x}','${id}')"`:'';
+  const col=T.nt?(T.id===Object.values(NT).find(o=>o.f===T.f).id?'#B8862B':'#3F6E9E'):T.tr===1?TT_KC[T.K]:TT_LC[T.L];
+  const ic=T.nt?T.ic:T.tr===1?ttIcon(T.K):PLINE_I[T.L];
+  return`<div class="tn ${st}${qi>=0?' inq':''}" style="left:${X}px;top:${Y}px" data-tip="${esc(tip)}" ${click}>
+    <span class="tic" style="--tc:${col}">${ic}</span>
+    <span class="tb"><b>${esc(T.n)}</b><small>${esc(fxTxt)}</small><span class="tf">${bot}</span></span>
+    ${qi>=0?`<span class="tq">${qi+1}</span>`:''}${q?`<span class="tpr"><i style="width:${Math.max(4,pc)}%"></i></span>`:''}</div>`}
 function ttClick(x,id){const s=V,n=s.N[x];if(!myTurn())return;const st=ttState(s,x,id);const c=rsCost(x,id);
-  if(st==='avail'&&n.rs.sl.length<rsSlots(s,x)&&(n.science||0)>=c.sc){if(NT[id]&&NT[id].f){const o=Object.values(NT).filter(o=>o.f===NT[id].f&&o.id!==id).map(o=>o.n).join('·');if(!confirm(`「${NT[id].n}」을(를) 고르면 ${o}은(는) 이 게임 내내 연구할 수 없습니다. 진행할까요?`))return}sendAct({k:'rs',id});return}
+  if(st==='avail'&&n.rs.sl.length<rsSlots(s,x)&&(n.science||0)>=c.sc){if(NT[id]){const o=Object.values(NT).filter(o=>o.f===NT[id].f&&o.id!==id).map(o=>`「${o.n}」`).join('·');if(!confirm(`${NT_FORK[NT[id].f]}: 「${NT[id].dir}」 노선을 고릅니다.\n${o}은(는) 이 게임 내내 연구할 수 없습니다. 진행할까요?`))return}sendAct({k:'rs',id});return}
   const q=n.rs.q.includes(id)?n.rs.q.filter(q=>q!==id):n.rs.q.concat(id);sendAct({k:'rsq',q})}
 function ttEdge(x1,y1,x2,y2,cls){const mx=(x1+x2)/2;return`<path class="${cls}" d="M${x1} ${y1}C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}"/>`}
-function ttBody(s,x,tb,myT){const n=s.N[x];let nodes='',edges='',deco='',W=0,H=0,cols=[];const pos={};
-  const colX=t=>TT_GX/2+(t-(tb==='nt'?2:1))*(TT_W+TT_GX)+(tb==='nt'?0:150);
-  if(tb==='nt'){const cats=Object.keys(NT_CAT);let row=0;const tiers=[2,3,4,5];
-    for(const cat of cats){const per=tiers.map(t=>Object.values(NT).filter(T=>T.cat===cat&&T.tr===t));const mx=Math.max(...per.map(l=>l.length));if(!mx)continue;
-      deco+=`<div class="tcat" style="top:${TT_TOP+row*(TT_H+18)-4}px;height:${mx*(TT_H+18)-10}px;--tc:${NT_CAT[cat][1]}"><span>${NT_CAT[cat][0]}</span></div>`;
-      per.forEach((L,ti)=>L.forEach((T,j)=>{pos[T.id]=[colX(tiers[ti]),TT_TOP+(row+j)*(TT_H+18)]}));row+=mx}
-    H=TT_TOP+row*(TT_H+18)+10;W=colX(5)+TT_W+TT_GX/2;cols=tiers;
-    for(const T of Object.values(NT))for(const r of T.req){const alts=r.split('|');for(const q of alts){if(!pos[q])continue;const[a1,b1]=pos[q],[a2,b2]=pos[T.id];edges+=ttEdge(a1+TT_W,b1+TT_H/2,a2,b2+TT_H/2,(n.rs.own.includes(q)?'eo':'')+(alts.length>1?' ea':''))}}
-    for(const f in NT_FORK){const L=Object.values(NT).filter(T=>T.f===f).map(T=>pos[T.id]);const y0=Math.min(...L.map(p=>p[1])),y1=Math.max(...L.map(p=>p[1]))+TT_H;const x0=L[0][0];const lk=Object.values(NT).find(T=>T.f===f&&(n.rs.own.includes(T.id)||n.rs.sl.some(q=>q.id===T.id)));
-      deco+=`<div class="tfork${lk?' done':''}" style="left:${x0-8}px;top:${y0-8}px;width:${TT_W+16}px;height:${y1-y0+16}px"><span>⚖ 택1 · ${NT_FORK[f]}${lk?` — ${esc(lk.n)}`:''}</span></div>`}
-    for(const id in pos)nodes+=ttNode(s,x,id,pos[id][0],pos[id][1],myT)}
-  else{const K=tb;let row=0;cols=[1,2,3,4,5];
-    for(const[sl,sn]of PSLOT[K]){const key=K+'.'+sl;const lines=PLINE[key]||[];const two=!!lines[1];const ln=n.rs.ln[key];
-      const y=TT_TOP+row*(TT_H+18);const hh=(two?2:1)*(TT_H+18)-10;
-      deco+=`<div class="tslot" style="top:${y-4}px;height:${hh}px"><b>${sn}</b>${lines.map((nm,i)=>{const L=i?'B':'A';const on=ln===L;return`<button class="tln${on?' on':''}" ${myT&&!on?'':'disabled'} title="${ln?`계열 전환: 과학 ${RS_SWITCH}`:'계열 고르기 (무료)'}" onclick="sendAct({k:'rsln',key:'${key}',L:'${L}'})">${i?'B':'A'} ${esc(nm)}</button>`}).join('')}${two?'<small>2단계부터 한 계열만</small>':''}</div>`;
-      for(const P of partsOf(K,sl)){const r=P.L==='B'?row+1:row;pos[P.id]=[colX(P.tr),TT_TOP+r*(TT_H+18)]}
-      for(const P of partsOf(K,sl)){if(P.tr<2)continue;const prev=P.tr===2?key+'.A1':key+'.'+P.L+(P.tr-1);if(!pos[prev])continue;const[a1,b1]=pos[prev],[a2,b2]=pos[P.id];edges+=ttEdge(a1+TT_W,b1+TT_H/2,a2,b2+TT_H/2,n.rs.own.includes(prev)?'eo':'')}
-      row+=two?2:1}
-    H=TT_TOP+row*(TT_H+18)+10;W=colX(5)+TT_W+TT_GX/2;
-    for(const id in pos)nodes+=ttNode(s,x,id,pos[id][0],pos[id][1],myT)}
+function ttBody(s,x,tb,myT){const n=s.N[x];let nodes='',edges='',deco='',W=0,H=0,cols=[];const pos={};const RH=TT_H+18;
+  if(tb==='nt'){const colX=t=>40+(t-1)*(TT_W+TT_GX);cols=[1,2,3,4,5];
+    for(const T of Object.values(NT)){const j=Object.values(NT).filter(o=>o.f===T.f).indexOf(T);pos[T.id]=[colX(T.tr),TT_TOP+30+j*(RH+40)]}
+    H=TT_TOP+30+2*(RH+40)+10;W=colX(5)+TT_W+40;
+    for(const T of Object.values(NT))if(T.tr>1)for(const q of T.req[0].split('|')){const[a1,b1]=pos[q],[a2,b2]=pos[T.id];const on=n.rs.own.includes(q);if(!on&&Object.values(NT).some(o=>o.f===NT[q].f&&o.id!==q&&n.rs.own.includes(o.id)))continue;edges+=ttEdge(a1+TT_W,b1+TT_H/2,a2,b2+TT_H/2,on?'eo':'')}
+    for(const f in NT_FORK){const L=Object.values(NT).filter(T=>T.f===f);const p0=pos[L[0].id],p1=pos[L[1].id];const lk=L.find(T=>n.rs.own.includes(T.id)||n.rs.sl.some(q=>q.id===T.id));
+      deco+=`<div class="tfork${lk?' done':''}" style="left:${p0[0]-8}px;top:${p0[1]-26}px;width:${TT_W+16}px;height:${p1[1]-p0[1]+TT_H+34}px"><span>⚖ ${NT_FORK[f]} · ${L[0].dir} 또는 ${L[1].dir}</span><em style="top:${(p1[1]-p0[1]+TT_H)/2+13}px">${lk?'✓ '+esc(lk.dir):'또는'}</em></div>`}
+    for(const id in pos)nodes+=ttNode(s,x,id,pos[id][0],pos[id][1],myT);
+    const hdr=cols.map(t=>`<div class="tcol" style="left:${colX(t)}px;width:${TT_W}px">${t}단계 <span>🔬 ${NT_COST[t]} · ${NT_TURN[t]}턴</span></div>`).join('');
+    return`<div class="tcanvas" style="width:${W}px;height:${H}px">${hdr}${deco}<svg class="tedges" width="${W}" height="${H}">${edges}</svg>${nodes}</div>`}
+  const K=tb,key=K+'.doc',lines=PLINE[key],ln=n.rs.ln[key];const colX=t=>190+(t-1)*(TT_W+TT_GX);cols=[1,2,3,4];
+  const P1=PARTS[key+'.A1'];pos[P1.id]=[colX(1),TT_TOP+RH];
+  for(const P of partsOf(K,'doc'))if(P.tr>1)pos[P.id]=[colX(P.tr),TT_TOP+'ABC'.indexOf(P.L)*RH];
+  H=TT_TOP+3*RH+10;W=colX(4)+TT_W+40;
+  deco+=lines.map((nm,i)=>{const L='ABC'[i];const on=ln===L;return`<div class="tlane${on?' on':''}" style="top:${TT_TOP+i*RH-6}px;height:${TT_H+12}px;left:${colX(2)-20}px;width:${colX(4)+TT_W-colX(2)+40}px;--lc:${TT_LC[L]}"></div>
+    <button class="tln${on?' on':''}" style="top:${TT_TOP+i*RH+TT_H/2-15}px;--lc:${TT_LC[L]}" ${myT&&!on?'':'disabled'} title="${ln?`방향 전환: 과학 ${RS_SWITCH} (이미 연구한 부품은 그대로)`:'방향 고르기 (무료)'}" onclick="sendAct({k:'rsln',key:'${key}',L:'${L}'})">${PLINE_I[L]} ${esc(nm)}${on?' ✓':''}</button>`}).join('');
+  for(const P of partsOf(K,'doc')){if(P.tr<2)continue;const prev=P.tr===2?key+'.A1':key+'.'+P.L+(P.tr-1);const[a1,b1]=pos[prev],[a2,b2]=pos[P.id];edges+=ttEdge(a1+TT_W,b1+TT_H/2,a2,b2+TT_H/2,n.rs.own.includes(prev)&&(!ln||ln===P.L)?'eo':'')}
+  for(const id in pos)nodes+=ttNode(s,x,id,pos[id][0],pos[id][1],myT);
   const hdr=cols.map(t=>`<div class="tcol" style="left:${colX(t)}px;width:${TT_W}px">${t}단계 <span>🔬 ${RS_COST[t]||'기본'}${RS_TURN[t]?' · '+RS_TURN[t]+'턴':''}</span></div>`).join('');
-  return`<div class="tcanvas" style="width:${W}px;height:${H}px">${hdr}${deco}<svg class="tedges" width="${W}" height="${H}">${edges}</svg>${nodes}</div>`}
+  return`<div class="tcanvas" style="width:${W}px;height:${H}px">${hdr}${deco}<svg class="tedges" width="${W}" height="${H}">${edges}</svg>${nodes}</div>
+    <p class="tnote">${PK[K]}은(는) 2단계부터 <b>한 방향</b>만 올립니다. 왼쪽 버튼으로 방향을 고르세요(처음은 무료, 바꾸면 과학 ${RS_SWITCH}). 설계도에는 연구한 부품 하나를 답니다.</p>`}
 function techModal(){if(!techOpen||!V)return'';const s=V,x=myNat();if(!x||!s.N[x]||!s.N[x].rs){techOpen=null;return''}const n=s.N[x];const myT=myTurn()&&s.cur===x;
-  const tabs=[['nt','🏛 국가 기술']].concat(Object.keys(PSLOT).map(K=>[K,ttIcon(K)+' '+PK[K]]));
-  const cnt=k=>k==='nt'?Object.keys(NT).filter(id=>n.rs.own.includes(id)).length+'/'+Object.keys(NT).length:Object.values(PARTS).filter(P=>P.K===k&&P.tr>1&&n.rs.own.includes(P.id)).length+'/'+Object.values(PARTS).filter(P=>P.K===k&&P.tr>1).length;
+  const tabs=[['nt','🏛 국가 노선']].concat(Object.keys(PSLOT).map(K=>[K,ttIcon(K)+' '+PK[K]]));
+  const sub=k=>{if(k==='nt')return Object.keys(NT).filter(id=>n.rs.own.includes(id)).length+'/5';const ln=n.rs.ln[k+'.doc'];return ln?PLINE_I[ln]+' '+PLINE[k+'.doc']['ABC'.indexOf(ln)]:''};
   return`<div class="modal techm" onclick="if(event.target===this){techOpen=null;render()}"><div class="sheet">
    <div class="thead"><h2>🌳 기술 트리</h2><span class="tsci">🔬 <b>${n.science||0}</b> <span class="note">+${sciIncome(s,x)}/턴</span></span><span class="note">연구 칸 <b>${n.rs.sl.length}/${rsSlots(s,x)}</b></span>
     <span class="tcurs">${n.rs.sl.map(q=>rsCurRow(x,q)).join('')}</span><span style="flex:1"></span><button class="ghost sm" onclick="techOpen=null;render()">닫기 ✕</button></div>
-   <div class="ttabs">${tabs.map(([k,l])=>`<button class="${techOpen===k?'on':''}" onclick="techOpen='${k}';render()">${l} <small>${cnt(k)}</small></button>`).join('')}
-    <span class="tleg"><i class="lg own"></i>완료 <i class="lg cur"></i>연구 중 <i class="lg avail"></i>가능 <i class="lg lock"></i>선행 필요 · 💡 유레카(과학 50%) · <b style="color:#B42A1F">⚖</b> 택1</span></div>
+   <div class="ttabs">${tabs.map(([k,l])=>`<button class="${techOpen===k?'on':''}" onclick="techOpen='${k}';render()">${l} <small>${sub(k)}</small></button>`).join('')}
+    <span class="tleg"><i class="lg own"></i>완료 <i class="lg cur"></i>연구 중 <i class="lg avail"></i>가능 <i class="lg lock"></i>선행 필요</span></div>
    <div class="ttree">${ttBody(s,x,techOpen,myT)}</div>
    ${myT?'':'<p class="note" style="margin:6px 0 0">내 차례에 연구를 고를 수 있습니다.</p>'}</div></div>`}
 function bpPanel(x,myT){const s=V,n=s.N[x];if(!n.bp)return'<p class="note">이 게임에는 설계도가 없습니다.</p>';
@@ -5419,7 +5384,7 @@ function bpPanel(x,myT){const s=V,n=s.N[x];if(!n.bp)return'<p class="note">이 �
       ${myT&&L.length<BP_MAX?`<button class="sm" style="margin-top:4px" onclick="bpEd={K:'${K}',id:null,ch:'${buildable(x).find(t=>UT[t].k===K)||''}',pt:{},nm:''};render()">＋ 새 ${PK[K]} 설계도</button>`:''}`;
     if(bpEd&&bpEd.K===K)h+=bpEditor(x,K)}
   h+=`<span class="lab" style="margin-top:10px">항공기 설계 (기종마다 하나 · 바로 적용)</span>${Object.keys(AIR).map(t=>{const w=n.abp[t]||abpDefault();const sp=airSpec(x,t);
-    return`<div class="fo" style="display:block"><b>${sp.n}</b> <span class="note">자원 ${sp.r} · 과학 ${sp.sc} · 재출격 ${sp.cd}턴</span><div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${PSLOT.air.map(([sl,sn])=>`<label class="note">${sn} <select ${myT?'':'disabled'} onchange="const w=Object.assign({},V.N['${x}'].abp['${t}']);w['${sl}']=this.value;sendAct({k:'abp',t:'${t}',pt:w})">${partsOf('air',sl).filter(P=>n.rs.own.includes(P.id)&&!(P.id==='air.frame.A3'&&t!=='fighter')).map(P=>`<option value="${P.id}" ${w[sl]===P.id?'selected':''}>${P.n}</option>`).join('')}</select></label>`).join('')}</div></div>`}).join('')}`;
+    return`<div class="fo" style="display:block"><b>${sp.n}</b> <span class="note">자원 ${sp.r} · 과학 ${sp.sc} · 재출격 ${sp.cd}턴</span><div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${PSLOT.air.map(([sl,sn])=>`<label class="note">${sn} <select ${myT?'':'disabled'} onchange="const w=Object.assign({},V.N['${x}'].abp['${t}']);w['${sl}']=this.value;sendAct({k:'abp',t:'${t}',pt:w})">${partsOf('air',sl).filter(P=>n.rs.own.includes(P.id)&&!(P.id==='air.doc.A4'&&t!=='fighter')).map(P=>`<option value="${P.id}" ${w[sl]===P.id?'selected':''}>${P.n}</option>`).join('')}</select></label>`).join('')}</div></div>`}).join('')}`;
   return h}
 function eraPanel(x){const s=V,n=s.N[x];const xs=Object.keys(s.N).filter(y=>['on','puppet'].includes(s.N[y].st));const ei=eraOf(s.rd);const pool=s.gpPool||{sci:GP_ORDER.sci,eng:GP_ORDER.eng};
   const bar=v=>`<div class="bar2" style="margin:2px 0 6px"><i style="width:${v}%;background:${v>=APP_GOLD?'var(--gold)':v<=APP_DARK?'var(--hot)':''}"></i></div>`;
