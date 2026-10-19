@@ -420,7 +420,7 @@ header.top .sp{flex:1}
 .mapbox.tex .lake{fill:rgba(30,60,70,.35);stroke:none}
 .mapbox.tex .off{fill:rgba(60,50,35,.35)}
 .mapbox.tex .ter.neu{fill-opacity:.1}
-.mapbox.flagm .ter:not(.neu):not(.void):not(.plain){fill-opacity:.88!important;mix-blend-mode:normal!important}.mapbox.tex .ter{fill-opacity:.62;mix-blend-mode:multiply;stroke:rgba(25,20,12,.6)}
+.mapbox.flagm .ter:not(.neu):not(.void):not(.plain):not(.fnot){fill-opacity:.88!important;mix-blend-mode:normal!important}.mapbox.tex .ter{fill-opacity:.62;mix-blend-mode:multiply;stroke:rgba(25,20,12,.6)}
 .mapbox.tex .ter.void{fill-opacity:.75;mix-blend-mode:normal}
 .mapbox.tex .rv1{opacity:.25}.mapbox.tex .rv2{opacity:.55}
 .mapbox.tex.night .ter{mix-blend-mode:screen;fill-opacity:.32}.mapbox.tex.night .nshade{opacity:.25}.mapbox.tex.night .dimg{opacity:.25}
@@ -2499,8 +2499,8 @@ function surrenderNow(v,by,why){G.pend={v,by,adv:0,[why]:1};lg(`🏳 ${NAT[v].n}
 /* 중립국 수도를 점령하면 그 나라가 항복: 남은 땅을 모두 얻고, 전리품(공업력 = 나라 가치×5)과 수비대 절반(최대 8, 보유 한도 안)을 보병으로 편입 */
 function capture(x,to,units,prev,how){if(G.N[x]){achG(x,'@tile',1);if(prev&&NAT[prev]&&NAT[prev].cap===to)achG(x,'@capc',1)}const T0=G.T[to];const nc0=prev==='N'&&!T0.reb&&CTRY_OF[to]&&CTRY[CTRY_OF[to]].t[0]===to?CTRY_OF[to]:null;const v0=nc0?ctryValue(G,nc0):0;
   capture0(x,to,units,prev,how);if(nc0&&G.N[x]&&G.T[to].o===x)neuSurrender(nc0,x,to,v0)}
-function neuSurrender(c,x,to,v0){const L=CTRY[c].t.filter(k=>k!==to&&G.T[k]&&G.T[k].o==='N'&&!G.T[k].reb);const n=G.N[x];
-  const gar=L.reduce((a,k)=>a+G.T[k].u.length,0);for(const k of L){const T=G.T[k];T.o=x;T.u=[];T.reb=null;T.cr=G.rd;G.vul=G.vul.filter(e=>e.t!==k)}
+function neuSurrender(c,x,to,v0){const L=CTRY[c].t.filter(k=>k!==to&&G.T[k]&&G.T[k].o==='N').concat(Object.keys(G.T).filter(k=>k!==to&&G.T[k].o==='N'&&(G.T[k].nco===c||(!G.T[k].nco&&!G.T[k].reb&&!CTRY_OF[k]&&ADJ[k].some(v=>CTRY[c].t.includes(v))))&&!CTRY[c].t.includes(k)));const n=G.N[x];
+  const gar=L.reduce((a,k)=>a+G.T[k].u.length,0);for(const k of L){const T=G.T[k];T.o=x;T.u=[];T.reb=null;T.nco=null;T.cr=G.rd;G.vul=G.vul.filter(e=>e.t!==k)}
   const loot=v0*5;n.r+=loot;const room=Math.max(0,unitCap(G,x)-unitCount(G,x));const ab=Math.min(Math.floor(gar/2),8,room);
   const T=G.T[to];const D=T.u.filter(u=>u.d);for(let i=0;i<ab;i++){const u=nu(G,x,'inf');u.mv=0;u.a=1;if(D.length&&D[0].t!=='inf')u.d=0;T.u.push(u)}
   const nc=G.nc&&G.nc[c];if(nc){nc.mem=null;nc.hit={};nc.hy=null}
@@ -2515,7 +2515,7 @@ function capture0(x,to,units,prev,how){
   if(to==='스탈린그라드'){if(x==='DE'&&prev==='SU'){if(G.mtr===2){achG(x,'matryoshka');G.mtr=3}else if(!G.mtr)G.mtr=1}else if(x==='SU'&&prev==='DE'&&G.mtr===1)G.mtr=2}
   if(G.N[x]&&G.N[x].ls&&NAT[x].cap===to){achG(x,'revive');if(x==='FR')achG(x,'resist')}
   if(prev!==x&&prev!=='X'){qc(x,'cap');if(G.N[prev]&&keyList(G,prev).includes(to))qc(x,'key');if(LN[to].o0===x)qc(x,'retake');if(how==='상륙')qc(x,'amph')}
-  const T=G.T[to];if(prev==='N'&&!T.reb&&CTRY_OF[to]&&evOn(G)){G.ncap=G.ncap||{};(G.ncap[x]=G.ncap[x]||[]).push(G.rd)}if(x!=='SU'&&mudOn(G,to))achG(x,'ev_mud');T.o=x;T.u=units;T.reb=null;T.cr=G.rd;if(T.rail&&prev!==x){T.rw=G.rd+(prev==='SU'?2:1);if(prev==='SU')lg(`🚂 ${to}: 소련 철도는 궤간이 달라 ${T.rw}라운드부터 쓸 수 있습니다`,x)}G.vul=G.vul.filter(e=>e.t!==to);
+  const T=G.T[to];if(prev==='N'&&!T.reb&&CTRY_OF[to]&&evOn(G)){G.ncap=G.ncap||{};(G.ncap[x]=G.ncap[x]||[]).push(G.rd)}if(x!=='SU'&&mudOn(G,to))achG(x,'ev_mud');T.o=x;T.u=units;T.reb=null;T.nco=null;T.cr=G.rd;if(T.rail&&prev!==x){T.rw=G.rd+(prev==='SU'?2:1);if(prev==='SU')lg(`🚂 ${to}: 소련 철도는 궤간이 달라 ${T.rw}라운드부터 쓸 수 있습니다`,x)}G.vul=G.vul.filter(e=>e.t!==to);
   if(G.N[x]&&G.N[x].ls&&NAT[x].cap===to){G.N[x].ls=null;lg(`수도 탈환! ${NAT[x].n}의 결사항전이 성공했습니다`,x);fx({k:'ls',x,t:to,ok:1})}
   lg(`${NAT[x].n}이(가) ${to} 점령${how?' ('+how+')':''}`,x);hl(NAT[prev]&&NAT[prev].cap===to?'capc':'cap',x);if(how==='반격 점령')fx({k:'cap',x,t:to});
   const n=G.N[x];if(n.b15){n.b15=0;n.r+=15;lg('대독 동맹 결성: 공업력 +15',x)}
@@ -2576,7 +2576,8 @@ function trTidy(v,team){const own=()=>Object.keys(G.T).filter(k=>G.T[k].o===v);l
     const T=G.T[k];T.o=to;T.u=[];T.reb=null;T.cr=G.rd;G.vul=G.vul.filter(e=>e.t!==k);moved.push(k)}
   return moved}
 /* 조약 이행 */
-function doCap(m,tr){const P=G.pend;const{v,by,adv}=P;const pts=trPts(G,P);if(!tr||!trValid(G,P,tr))tr=m==='annex'&&trAnnexCost(G,P)<=pts?{st:'annex',cl:{},cede:[]}:aiTreaty(P);
+function doCap(m,tr){const P=G.pend;const{v,by,adv}=P;
+  {const rb=Object.keys(G.T).filter(k=>G.T[k].o==='N'&&G.T[k].reb===v);for(const k of rb){const T=G.T[k];T.o=v;T.u=[];T.reb=null;G.vul=(G.vul||[]).filter(e=>e.t!==k)}if(rb.length)lg(`🔥 ${NAT[v].n} 항복 — 반군이 해산했습니다 (${rb.join('·')})`,by)}   // 반군 땅도 항복한 나라에 돌려 조약에 함께 들어가게const pts=trPts(G,P);if(!tr||!trValid(G,P,tr))tr=m==='annex'&&trAnnexCost(G,P)<=pts?{st:'annex',cl:{},cede:[]}:aiTreaty(P);
   G.pend=null;qc(by,'surr');achG(by,'@surr',1);pol(by,20,0,`${NAT[v].n} 항복`);const M=topOf(G,by);const nv=G.N[v];const team=trTeam(G,by);const sum=[];
   if(tr.st==='annex'){for(const k in G.T)if(G.T[k].o===v){G.T[k].o=by;G.T[k].u=[]}
     for(const k in G.S)if(G.S[k].o===v){G.S[k].o=null;G.S[k].u=[]}
@@ -2720,7 +2721,7 @@ function neuStrike(from,v,att,A,Dp){const T=G.T[from],D=G.T[v],prev=D.o;const c=
   if(!dS.length&&rest.length&&aS.length){const c2={tr:LN[v].tr,river:RIV.has(ek(from,v)),land:v};const A2=stackPow(G,'N',aS,'att',{...c2,foe:rest}).p,D2=stackPow(G,prev,rest,'def',{...c2,foe:aS}).p;const a2=hurt(aS,D2);dS=hurt(rest,A2);aS=a2;D.u=dS}
   else D.u=rest.concat(dS);polLoss(prev,Dg.length+rest.length-D.u.length,1);fx({k:'atk',x:'N',f:from,t:v,a:A,d:Dp,c:!dS.length&&aS.length?1:0});
   const who=c?CTRY[c].n:'중립국';
-  if(!D.u.length&&aS.length){D.o='N';D.u=aS.map(u=>Object.assign(u,{mv:0,a:1}));G.vul=G.vul.filter(e=>e.t!==v);
+  if(!D.u.length&&aS.length){D.o='N';D.nco=c;D.u=aS.map(u=>Object.assign(u,{mv:0,a:1}));G.vul=G.vul.filter(e=>e.t!==v);
     lg(`중립국 반격: ${who}(${from})이(가) ${NAT[prev].n}의 ${v}을(를) 점령 (${A} vs ${Dp})`,prev);if(['더블린','골웨이'].includes(from)&&v==='북아일랜드')achAll('ireland');if(v==='파리'&&prev==='FR'&&G.N.FR)G.N.FR.nfLost=1;
     if(NAT[prev].cap===v)lg(`${NAT[prev].n}의 수도가 중립군에게 넘어갔습니다! 되찾으세요`,prev);
     if(!landCount(G,prev))eliminate(prev,'중립국 봉기로 모든 영토 상실')}
@@ -4930,7 +4931,7 @@ function supSVG(s){if(!supView)return'';const me=myNat();if(!me||!s.N[me])return
    영토를 그 나라 국기 무늬로 칠하고(나라 영토 전체에 걸쳐 국기 한 장), 부대 칩의 병과 그림을 국기로 바꾼다 */
 let flagView=false,flagMine=false;try{const f=localStorage.getItem('eu-flag');flagView=f==='1'||f==='2';flagMine=f==='2'}catch(e){}
 /* 국기를 칠할 나라인가: '내 나라만'이면 내가 조종하는 나라(와 그 괴뢰국)만 */
-function flagOn(o){if(!flagView||!FLAG_SVG[o])return false;if(!flagMine)return true;const s=V;if(!s||!s.N)return true;const me=new Set(mySeats());const mn=myNat();if(mn)me.add(mn);return me.has(o)||(s.N[o]&&me.has(topOf(s,o)))}
+function flagOn(o){if(!flagView||!FLAG_SVG[o])return false;if(!flagMine)return true;const s=V;if(!s||!s.N)return true;let ms=mySeats();const alive=ORDER.filter(y=>s.N[y]&&['on','puppet'].includes(s.N[y].st));if(ms.length>1&&alive.every(y=>ms.includes(y)))ms=[s.cur||myNat()].filter(Boolean);const me=new Set(ms);const mn=myNat();if(mn&&ms.length<=1)me.add(mn);return me.has(o)||(s.N[o]&&me.has(topOf(s,o)))}
 const FLAG_SVG={
  DE:'<rect width="30" height="20" fill="#111"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#D52B1E"/>',
  IT:'<rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#CE2B37"/><rect x="12.6" y="6" width="4.8" height="6.4" rx=".6" fill="#2C4FA0"/><rect x="13.1" y="6.5" width="3.8" height="5.4" rx=".4" fill="#D52B1E"/><rect x="14.55" y="6.9" width=".9" height="4.6" fill="#fff"/><rect x="13.5" y="8.75" width="3" height=".9" fill="#fff"/>',
@@ -4956,11 +4957,11 @@ function toggleStrat(){strat=!strat;try{localStorage.setItem('eu-strat',strat?'1
 function stratLeg(s){const c={};let tot=0;for(const k in s.T){const o=s.T[k].o;if(o==='X')continue;tot++;c[o]=(c[o]||0)+1}
   const rows=ORDER.filter(y=>s.N[y]&&c[y]).sort((a,b)=>c[b]-c[a]).map(y=>`<div class="r"><span class="sw" style="background:${MAPC[y]}"></span><b>${NAT[y].n}</b><span style="margin-left:auto">${c[y]}곳 · ${Math.round(c[y]/tot*100)}%</span></div><div class="bar" style="width:${Math.max(2,Math.round(c[y]/tot*120))}px;background:${MAPC[y]}"></div>`).join('');
   return`<div style="font-weight:700;margin-bottom:2px">전략 보기 · ${s.rd||1}라운드</div>${rows}${c.N?`<div class="r"><span class="sw" style="background:var(--neu)"></span>중립·반군<span style="margin-left:auto">${c.N}곳</span></div>`:''}`}
-function flagBtnSet(){const b=document.getElementById('flagBtn');if(!b)return;b.style.fontWeight=flagView?'700':'';b.textContent=flagMine?'내 국기':'국기';b.title=flagView?(flagMine?'국기 보기: 내 나라만 (누르면 끔)':'국기 보기: 모든 나라 (누르면 내 나라만)'):'국기 보기: 영토와 부대를 나라 국기로'}
+function flagBtnSet(){const b=document.getElementById('flagBtn');if(!b)return;b.style.fontWeight=flagView?'700':'';b.textContent=flagMine?'내 국기':'국기';b.style.whiteSpace='nowrap';b.style.fontSize=flagMine?'10.5px':'';b.title=flagView?(flagMine?'국기 보기: 내 나라만 (누르면 끔)':'국기 보기: 모든 나라 (누르면 내 나라만)'):'국기 보기: 영토와 부대를 나라 국기로'}
 function applyNight(){const b=document.querySelector('.mapbox');if(b){b.classList.toggle('night',night);b.classList.toggle('strat',strat);b.classList.toggle('flagm',flagView)}flagBtnSet();{const sb=document.getElementById('stratBtn');if(sb){sb.textContent=strat?'일반':'전략';sb.style.fontWeight=strat?'700':'';sb.title=strat?'일반 지도로 보기':'전략 보기: 토큰·지명 없이 나라 색만'}}const btn=document.getElementById('nightBtn');if(btn){btn.textContent=night?'☀':'☾';btn.setAttribute('aria-label',night?'낮으로 보기':'야경 보기');btn.title=night?'낮으로 보기':'야경 켜기'}}
 function updateMap(opts){setTimeout(()=>{resLegSync();lensSync()},0);const s=V;if(!document.getElementById('gmap'))return;
   {const st=statSVG(s);if(st!==statStr){statStr=st;document.getElementById('gStat').innerHTML=st}{const r=railSVG(s);const g=document.getElementById('gRail');if(g&&g.innerHTML!==r)g.innerHTML=r;const sv=supSVG(s);const g2=document.getElementById('gSup');if(g2&&g2.innerHTML!==sv)g2.innerHTML=sv}const n=nightSVG(s);if(n!==nightStr){nightStr=n;document.getElementById('gNight').innerHTML=n}const w=wonderSVG(s);if(w!==wonStr){wonStr=w;document.getElementById('gWon').innerHTML=w}}
-  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#flg-${o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);{const tp=s.pend&&trMine()?trUIget(s.pend):null;const ce=tp&&(tp.st==='puppet'||tp.st==='truce');p.classList.toggle('trsel',!!(ce&&tp.cede.includes(a[0])));p.classList.toggle('trok',!!(tp&&o===s.pend.v&&a[0]!==NAT[s.pend.v].cap&&!(ce&&tp.cede.includes(a[0]))))}p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
+  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#flg-${o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.classList.toggle('fnot',!strat&&flagView&&flagMine&&!flagOn(o));p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);{const tp=s.pend&&trMine()?trUIget(s.pend):null;const ce=tp&&(tp.st==='puppet'||tp.st==='truce');p.classList.toggle('trsel',!!(ce&&tp.cede.includes(a[0])));p.classList.toggle('trok',!!(tp&&o===s.pend.v&&a[0]!==NAT[s.pend.v].cap&&!(ce&&tp.cede.includes(a[0]))))}p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
   SEA.forEach((z,i)=>{const p=document.getElementById('sp'+i);if(!p)return;const S=s.S[z[0]];p.style.stroke=S.o?MAPC[S.o]:'';p.classList.toggle('ctl',!!S.o)});
   let h='';const nm=selName();
   if(nm&&MAP.sh[nm])h+=`<path class="hl-sel" d="${MAP.sh[nm]}"/>`;
