@@ -192,6 +192,10 @@ button.ldcard:hover{border-color:var(--ink)}.ldcard.on{border:2px solid var(--go
 .seatpl{margin:6px 0;padding:6px 9px;border-radius:8px;background:color-mix(in srgb,var(--gold) 12%,transparent);font-size:13px}.seatpl a{margin-left:4px}
 .supt.ok{fill:#d8ffe4}.supt.w{fill:#FFD27A}
 .airq{margin:10px 0 0;padding:8px 10px;border:1px solid #2E8FD0;border-radius:10px;background:color-mix(in srgb,#2E8FD0 7%,var(--sheet))}.airops{display:inline-flex;gap:3px;align-items:center;flex-wrap:wrap}
+.trdock{position:fixed;right:16px;top:86px;width:min(430px,calc(100vw - 32px));max-height:calc(100vh - 110px);overflow:auto;z-index:41;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.trdock>.sheet{margin:0;border:2px solid var(--gold)}
+.ter.trsel{fill:#E2B54A!important;fill-opacity:.88!important;stroke:#fff!important;stroke-width:2.2px!important;mix-blend-mode:normal!important}
+.ter.trok{stroke:#E2B54A!important;stroke-width:2px!important;stroke-dasharray:5 3;cursor:pointer}
 *{box-sizing:border-box}
 html{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body)}
@@ -2395,13 +2399,27 @@ function doCap(m,tr){const P=G.pend;const{v,by,adv}=P;const pts=trPts(G,P);if(!t
 let trUI=null;
 function trUIget(p){const key=p.v+'|'+p.by+'|'+V.rd;if(!trUI||trUI.key!==key)trUI={key,st:'puppet',cl:{},cede:[]};return trUI}
 function trSet(f){f(trUI);render()}
+/* 지도에서 진 나라 땅을 누르면 할양에 넣고/뺀다. 우리 편과 안 맞닿은 땅이면 가장 짧은 길로 이어지는 땅들을 함께 넣는다 */
+function trMine(){const p=V&&V.pend;return!!(p&&V.ph==='play'&&myCtl(p.by))}
+function trFix(p,t){const keep=[];let left=t.cede.slice();let ch=true;while(ch){ch=false;for(const k of left.slice()){if(trCedeOk(V,p,keep).includes(k)){keep.push(k);left=left.filter(q=>q!==k);ch=true}}}t.cede=keep;return left}
+function trMapClick(nm){const p=V.pend;const t=trUIget(p);const T=V.T[nm];if(!T)return false;
+  if(T.o!==p.v){if(!t.cede.includes(nm))return false}
+  if(nm===NAT[p.v].cap){toast('수도는 할양할 수 없습니다 — 병합이나 분할 점령을 고르세요');return true}
+  if(t.st==='annex'||t.st==='split'){t.st='puppet';t.cl={}}
+  if(t.cede.includes(nm)){t.cede=t.cede.filter(k=>k!==nm);const lost=trFix(p,t);if(lost.length)toast(`이어지지 않게 된 ${lost.join('·')}도 함께 뺐습니다`);render();return true}
+  const tm=new Set(trTeam(V,p.by));const start=k=>ADJ[k].some(e=>tm.has(V.T[e].o)||t.cede.includes(e));const cap=NAT[p.v].cap;
+  // 할양 쪽에서 nm까지 진 나라 땅으로만 가는 최단 경로
+  const prev={},q=[];for(const k in V.T)if(V.T[k].o===p.v&&k!==cap&&!t.cede.includes(k)&&start(k)){prev[k]=null;q.push(k)}
+  while(q.length&&!(nm in prev)){const u=q.shift();for(const w of ADJ[u])if(!(w in prev)&&V.T[w].o===p.v&&w!==cap&&!t.cede.includes(w)){prev[w]=u;q.push(w)}}
+  if(!(nm in prev)){toast('우리 편 땅과 이어지지 않는 곳입니다');return true}
+  const path=[];for(let k=nm;k!=null;k=prev[k])path.unshift(k);t.cede.push(...path);render();return true}
 function trPanel(p){const t=trUIget(p);const pts=trPts(V,p),cost=trCost(V,p,t),ok=cost<=pts&&trValid(V,p,t);const ann=trAnnexCost(V,p);
   const st=Object.entries(TR_ST).map(([id,[n,d]])=>{const c=id==='annex'?ann:0;const dis=id==='annex'&&ann>pts||id==='split'&&trTeam(V,p.by).filter(y=>atWar(V,y,p.v)||y===p.by).length<2;
     return`<button class="sm ${t.st===id?'':'ghost'}" ${dis?'disabled':''} title="${d}" onclick="trSet(t=>{t.st='${id}';if('${id}'==='annex'||'${id}'==='split'){t.cl={};t.cede=[]}})">${n}${c?` (${c}점)`:''}</button>`}).join('');
   const part=t.st==='puppet'||t.st==='truce';
   const cls=part?Object.entries(TR_CL).map(([id,[n,c,d]])=>`<label class="note" style="display:block;margin:2px 0"><input type="checkbox" ${t.cl[id]?'checked':''} onchange="trSet(t=>{t.cl['${id}']=this.checked?1:0})"> <b>${n}</b> ${c}점 · ${d}</label>`).join(''):'';
   const okC=part?trCedeOk(V,p,t.cede):[];
-  const ced=part?`<p class="note" style="margin:6px 0 2px">할양할 땅 (우리 편 땅과 맞닿은 곳부터 고를 수 있음)</p><div class="row" style="flex-wrap:wrap;gap:4px">${t.cede.map((k,i)=>`<button class="sm" onclick="trSet(t=>{t.cede=t.cede.slice(0,${i})})">✓ ${k} ${trTileCost(V,p.v,k)}점</button>`).join('')}${okC.map(k=>`<button class="sm ghost" onclick="trSet(t=>{t.cede.push('${k}')})">${k} ${trTileCost(V,p.v,k)}점</button>`).join('')}</div>`:'';
+  const ced=part?`<p class="note" style="margin:6px 0 2px">할양할 땅 — <b>🗺 지도에서 ${NAT[p.v].n} 땅을 누르면 바로 넣고 뺍니다</b> (떨어진 땅은 이어지는 땅까지 함께)</p><div class="row" style="flex-wrap:wrap;gap:4px">${t.cede.map((k,i)=>`<button class="sm" onclick="trSet(t=>{t.cede=t.cede.slice(0,${i})})">✓ ${k} ${trTileCost(V,p.v,k)}점</button>`).join('')}${okC.map(k=>`<button class="sm ghost" onclick="trSet(t=>{t.cede.push('${k}')})">${k} ${trTileCost(V,p.v,k)}점</button>`).join('')}</div>`:'';
   return`<p>조약 점수 <b>${pts}</b>점 · 사용 <b style="color:${cost>pts?'var(--hot)':'inherit'}">${cost}</b>점 <span class="note">(수도 함락 10 + 점령한 그 나라 땅 2씩 + 점령한 핵심 도시 4씩)</span></p>
    <p class="note" style="margin:4px 0">지위</p><div class="row" style="flex-wrap:wrap">${st}</div><p class="note">${TR_ST[t.st][1]}</p>${cls}${ced}
    <div class="row" style="margin-top:8px"><button ${ok?'':'disabled'} onclick="sendAct({k:'cap',t:{st:trUI.st,cl:trUI.cl,cede:trUI.cede}})">조약 체결</button><button class="ghost" onclick="trUI=Object.assign(aiTreaty(V.pend),{key:trUI.key});render()">추천 조약</button></div>`}
@@ -4650,7 +4668,7 @@ function flagBtnSet(){const b=document.getElementById('flagBtn');if(!b)return;b.
 function applyNight(){const b=document.querySelector('.mapbox');if(b){b.classList.toggle('night',night);b.classList.toggle('strat',strat);b.classList.toggle('flagm',flagView)}flagBtnSet();{const sb=document.getElementById('stratBtn');if(sb){sb.textContent=strat?'일반':'전략';sb.style.fontWeight=strat?'700':'';sb.title=strat?'일반 지도로 보기':'전략 보기: 토큰·지명 없이 나라 색만'}}const btn=document.getElementById('nightBtn');if(btn){btn.textContent=night?'☀':'☾';btn.setAttribute('aria-label',night?'낮으로 보기':'야경 보기');btn.title=night?'낮으로 보기':'야경 켜기'}}
 function updateMap(opts){const s=V;if(!document.getElementById('gmap'))return;
   {const st=statSVG(s);if(st!==statStr){statStr=st;document.getElementById('gStat').innerHTML=st}{const r=railSVG(s);const g=document.getElementById('gRail');if(g&&g.innerHTML!==r)g.innerHTML=r;const sv=supSVG(s);const g2=document.getElementById('gSup');if(g2&&g2.innerHTML!==sv)g2.innerHTML=sv}const n=nightSVG(s);if(n!==nightStr){nightStr=n;document.getElementById('gNight').innerHTML=n}const w=wonderSVG(s);if(w!==wonStr){wonStr=w;document.getElementById('gWon').innerHTML=w}}
-  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#flg-${o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
+  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#flg-${o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);{const tp=s.pend&&trMine()?trUIget(s.pend):null;const ce=tp&&(tp.st==='puppet'||tp.st==='truce');p.classList.toggle('trsel',!!(ce&&tp.cede.includes(a[0])));p.classList.toggle('trok',!!(tp&&o===s.pend.v&&a[0]!==NAT[s.pend.v].cap&&!(ce&&tp.cede.includes(a[0]))))}p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
   SEA.forEach((z,i)=>{const p=document.getElementById('sp'+i);if(!p)return;const S=s.S[z[0]];p.style.stroke=S.o?MAPC[S.o]:'';p.classList.toggle('ctl',!!S.o)});
   let h='';const nm=selName();
   if(nm&&MAP.sh[nm])h+=`<path class="hl-sel" d="${MAP.sh[nm]}"/>`;
@@ -5188,7 +5206,7 @@ function curOpts(){if(airMode||nukeMode)return null;if(!myTurn()||!sel)return nu
   const S=V.S[nm];if(S.o!==x)return null;return seaOpts(V,x,nm,effCnt(S.u,pickMv))}
 function eligible(us){return us.filter(u=>u.mv>0).length}
 function effCnt(us){const e=eligible(us);if(!e)return 1;return cnt>0?Math.min(cnt,e):e}
-function clkL(i){if(!V||V.ph==='lobby')return;const nm=LAND[i][0];if(fdraw&&fdrawClick(nm))return;if(arrowMode&&arrowClick(nm))return;if(airClick(nm))return;const o=curOpts();
+function clkL(i){if(!V||V.ph==='lobby')return;const nm=LAND[i][0];if(trMine()&&trMapClick(nm))return;if(fdraw&&fdrawClick(nm))return;if(arrowMode&&arrowClick(nm))return;if(airClick(nm))return;const o=curOpts();
   if(o&&o[nm]&&sel[0]==='L'){const k=o[nm].k;if(k==='mv'||k==='amv'||k==='vul'){const f=selName();const n=effCnt(V.T[f].u);sendAct({k:'go',f,to:nm,n});if(n>=eligible(V.T[f].u))sel='L:'+nm;cnt=0;tgt=null;render();return}
     tgt=nm;sfx(tileSnd(V.T[nm].u));render();return}
   if(sel==='L:'+nm){sel=null;tgt=null;render();return}
@@ -5268,7 +5286,7 @@ function endSheet(){const e=V.end;if(!e)return'';const simB=V.sim?`<p class="not
   return`<section class="sheet" style="border:2px solid var(--gold)"><span class="lab">종전</span><h2>${esc(e.name)} 승리</h2><p>${esc(e.why)} · ${e.rd}라운드</p>
   <p class="mute">${e.mem.map(x=>NAT[x].n).join(', ')}</p>${V.sim?simB:mode==='host'?`<button onclick="hostRestart()">대기실로 돌아가기</button>`:''}</section>`}
 function capModal(){const p=V.pend;if(!p||V.ph!=='play')return'';const mine=myCtl(p.by);
-  return`<div class="modal"><div class="sheet"><span class="lab">${p.spy?'🕵 기적의 첩보':p.nk?'☢ 무조건 항복':p.lc?'체제 붕괴':p.k3?'핵심 도시 전부 함락':p.ls?'결사항전 실패':'수도 함락'}</span><h2>${p.spy?`${NAT[p.by].n}의 스파이가 ${NAT[p.v].n}의 항복을 받아냈습니다`:p.nk?`핵 공격으로 ${NAT[p.v].n}이(가) 전의를 상실했습니다`:p.lc?`결속도가 낮은 ${NAT[p.v].n}이(가) 수도를 잃자마자 항복합니다`:p.k3?`${NAT[p.v].n}이(가) 핵심 도시 ${keyLost(V,p.v)}곳(${keyList(V,p.v).filter(k=>V.T[k].o!==p.v).join('·')})을 잃고 항복합니다`:p.ls?`${NAT[p.v].n}이(가) 수도 ${NAT[p.v].cap}을(를) 되찾지 못하고 항복합니다`:`${NAT[p.v].n}의 수도 ${NAT[p.v].cap} 함락`}</h2>
+  return`<div class="${mine?'trdock':'modal'}"><div class="sheet"><span class="lab">${p.spy?'🕵 기적의 첩보':p.nk?'☢ 무조건 항복':p.lc?'체제 붕괴':p.k3?'핵심 도시 전부 함락':p.ls?'결사항전 실패':'수도 함락'}</span><h2>${p.spy?`${NAT[p.by].n}의 스파이가 ${NAT[p.v].n}의 항복을 받아냈습니다`:p.nk?`핵 공격으로 ${NAT[p.v].n}이(가) 전의를 상실했습니다`:p.lc?`결속도가 낮은 ${NAT[p.v].n}이(가) 수도를 잃자마자 항복합니다`:p.k3?`${NAT[p.v].n}이(가) 핵심 도시 ${keyLost(V,p.v)}곳(${keyList(V,p.v).filter(k=>V.T[k].o!==p.v).join('·')})을 잃고 항복합니다`:p.ls?`${NAT[p.v].n}이(가) 수도 ${NAT[p.v].cap}을(를) 되찾지 못하고 항복합니다`:`${NAT[p.v].n}의 수도 ${NAT[p.v].cap} 함락`}</h2>
   ${mine?trPanel(p)
   :`<p class="mute">${NAT[p.by].n}이(가) 항복 조건을 정하는 중입니다.</p>`}</div></div>`}
 function sidePanel(opts){
