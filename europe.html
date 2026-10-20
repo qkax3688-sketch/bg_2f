@@ -792,6 +792,8 @@ const UT={
    부품 id = 병종.칸.계열+단계 (예: arm.gun.A3). 1단계는 처음부터 가진 기본 부품(A 계열). B 계열은 2단계부터.
    2단계부터는 칸마다 고른 계열(n.rs.ln[병종.칸])만 연구할 수 있다. 계열 전환은 기술력 RS_SWITCH.
    설계도: n.bp[병종] = [{id,nm,ch(차체 유닛),pt:{칸:부품id}}] (병종마다 BP_MAX개). 생산할 때 설계 스탯을 유닛에 새겨 둔다(u.b 설계 이름 · u.bp 파워 · u.bm 이동 · u.bc 비용 · u.bt 특성). */
+/* 보병 계열이 아닌 부대는 생산 비용 ×1.5 (보병이 싼 기본 병력, 기갑·포병·함대는 귀한 전력) */
+const UNIT_MUL=1.5;for(const t in UT)if(UT[t].k!=='inf')UT[t].c=Math.round(UT[t].c*UNIT_MUL);
 const SPX={DE:['panz','uboat','tiger'],GB:['dread','cmdo','matilda'],FR:['magi','char','legion'],IT:['mari','decima','alpini'],SU:['coss','t34','katyu']};
 const PK={inf:'보병',art:'포병',arm:'기갑',sea:'함대',air:'항공기'};
 const PSLOT={inf:[['doc','방향']],art:[['doc','방향']],arm:[['doc','방향']],sea:[['doc','방향']],air:[['doc','방향']]};
@@ -1393,7 +1395,7 @@ const WONDER_AT={};for(const id in WONDERS)WONDER_AT[WONDERS[id].t]=id;
 /* ---- DLC 2: 기술력 · 공군 · 핵 ---- */
 const BUILD_MUL=3.5;   // 영토가 3~4배로 잘게 나뉘어 건물 비용도 3.5배
 const FORT_RES=10,MEFO_T=3,HUB_RES=35;const LAB_RES=Math.round(5*BUILD_MUL),LAB_CAP=Math.round(5*BUILD_MUL),NUKE_COST=80,FALLOUT_T=3,AIR_MAX=12;
-const AIR={fighter:{n:'전투기',r:5,sc:3,cd:1},cas:{n:'공중지원기',r:5,sc:4,cd:1},bomber:{n:'폭격기',r:8,sc:8,cd:2}};
+const AIR={fighter:{n:'전투기',r:8,sc:3,cd:1},cas:{n:'공중지원기',r:8,sc:4,cd:1},bomber:{n:'폭격기',r:12,sc:8,cd:2}};
 const SKILL={sup:{n:'제공권 장악',p:'fighter',d:'범위 안 영토/바다에 이번 턴 제공권. 그 땅·바다(함대 또는 해안)를 지키는 적 전투기가 대기 중이면 요격당함'},
  naval:{n:'해상 타격',p:'fighter',dmg:3,d:'제공권 있는 바다의 적 함대에 피해 3'},
  ground:{n:'지상 타격',p:'cas',dmg:4,d:'제공권 있는 영토의 적 지상군에 피해 4 (기갑·판저가 있으면 +1)'},
@@ -1520,8 +1522,10 @@ function income0(s,x){let r=hasWonder(s,x,'parthenon')?1:0;if(polOn(s)&&s.N[x]&&
   if(x==='SU')r+=1;if(has(s,x,'fouryear'))r+=1;if(has(s,x,'mare'))for(const k in s.S)if(s.S[k].o===x)r+=1;r+=ldResInc(s,x);r+=railInc(s,x);if(subBlock(s,x))r=Math.floor(r/2);return r}
 function typePow(s,x,t,tr,role,foeArm,cx,uu){const u=UT[t];let p=x==='N'?u.p:maxHp(s,x,t,uu);const pr=[[uu&&uu.bn&&!/기본형$/.test(uu.bn)?`${u.n}「${uu.bn}」`:u.n,p]];const add=(l,v)=>{p+=v;pr.push([l,v])};const nt=role==='def'&&cx&&cx.noTer;if(x!=='N'&&s&&s.N&&s.N[x]){const tf=rfx(s,x);if(role==='att'&&tf.atkB)add('전격전 교리',tf.atkB);if(role==='def'&&tf.defB)add('종심 방어',tf.defB)}
   if(tr==='p'&&u.k==='arm'&&role==='att'){if(cx&&cx.noPlain)pr.push(['평원 기갑(파편 폭풍으로 상실)',0]);else add('평원 기갑',2);if(x==='DE')add('전격전',1)}
+  if(u.k==='arm'){if(role==='att')add('🛡 기갑 돌파',2);else add('기갑: 수비에 약함',-1)}
+  if(u.k==='inf'&&role==='def')add('🪖 보병 참호 방어',1);
   if(tr==='h'&&u.k==='inf'&&!nt)add('언덕 보병',2);
-  if(u.k==='art'&&foeArm)add('대전차 포격',cx&&cx.foe&&cx.foe.every(v=>v.t==='matilda')?1:2);
+  if(u.k==='art'&&foeArm){const half=cx&&cx.foe&&cx.foe.every(v=>v.t==='matilda');add(role==='def'?'🎯 대전차 방어':'대전차 포격',role==='def'?(half?2:4):1)}
   if(tr==='m'&&u.k==='art'&&!nt){add('산악 포병',2);if(x==='IT'&&has(s,'IT','alps'))add('알프스 방벽',1)}
   if(tr&&(tr==='h'||tr==='m')&&x==='IT'&&!nt)add('이탈리아 산악',1);
   if(role==='def'&&(tr==='h'||tr==='m')&&x==='FR'&&!nt)add('난공불락',2);
@@ -2578,7 +2582,8 @@ function trTidy(v,team){const own=()=>Object.keys(G.T).filter(k=>G.T[k].o===v);l
   return moved}
 /* 조약 이행 */
 function doCap(m,tr){const P=G.pend;const{v,by,adv}=P;
-  {const rb=Object.keys(G.T).filter(k=>G.T[k].o==='N'&&G.T[k].reb===v);for(const k of rb){const T=G.T[k];T.o=v;T.u=[];T.reb=null;G.vul=(G.vul||[]).filter(e=>e.t!==k)}if(rb.length)lg(`🔥 ${NAT[v].n} 항복 — 반군이 해산했습니다 (${rb.join('·')})`,by)}   // 반군 땅도 항복한 나라에 돌려 조약에 함께 들어가게const pts=trPts(G,P);if(!tr||!trValid(G,P,tr))tr=m==='annex'&&trAnnexCost(G,P)<=pts?{st:'annex',cl:{},cede:[]}:aiTreaty(P);
+  {const rb=Object.keys(G.T).filter(k=>G.T[k].o==='N'&&G.T[k].reb===v);for(const k of rb){const T=G.T[k];T.o=v;T.u=[];T.reb=null;G.vul=(G.vul||[]).filter(e=>e.t!==k)}if(rb.length)lg(`🔥 ${NAT[v].n} 항복 — 반군이 해산했습니다 (${rb.join('·')})`,by)}   /* 반군 땅도 항복한 나라에 돌려 조약에 함께 들어가게 */
+ const pts=trPts(G,P);if(!tr||!trValid(G,P,tr))tr=m==='annex'&&trAnnexCost(G,P)<=pts?{st:'annex',cl:{},cede:[]}:aiTreaty(P);
   G.pend=null;qc(by,'surr');achG(by,'@surr',1);pol(by,20,0,`${NAT[v].n} 항복`);const M=topOf(G,by);const nv=G.N[v];const team=trTeam(G,by);const sum=[];
   if(tr.st==='annex'){for(const k in G.T)if(G.T[k].o===v){G.T[k].o=by;G.T[k].u=[]}
     for(const k in G.S)if(G.S[k].o===v){G.S[k].o=null;G.S[k].u=[]}
@@ -3662,33 +3667,75 @@ const ACT_SND={lab:'place',school:'place',hub:'place',fort:'place',port:'place',
 function tileSnd(us){if(!us||!us.length)return'terr';const c={};for(const u of us){const k=(UT[u.t]||{}).k;if(k)c[k]=(c[k]||0)+1}
   let best=null;for(const k of['arm','art','inf','sea'])if(c[k]&&(!best||c[k]>c[best]))best=k;return best?{arm:'arm',art:'art',inf:'inf',sea:'ship'}[best]:'terr'}
 function sndLabel(){const b=document.getElementById('snd');if(b){b.textContent=soundOn?'♪ 소리 켜짐':'소리 꺼짐';b.setAttribute('aria-pressed',soundOn?'true':'false')}}
-/* ---- 배경음악: 파일 없이 Web Audio로 합성하는 군악풍 긴장 테마 (D단조, 104bpm) ---- */
-const BGM={on:false,timer:null,next:0,step:0,out:null,noise:null};
+/* ---- 배경음악 (리메이크): 파일 없이 Web Audio로 합성하는 오케스트라풍 군악 — D단조 96bpm ----
+   악기: 금관(톱니파 2겹 + 필터 열림 + 비브라토) · 현악 패드 · 종(글로켄슈필) · 콘트라베이스 · 팀파니 · 작은북 · 심벌, 모두 잔향(합성 리버브)을 거친다.
+   곡: A(행진 주제 8마디) → A'(대선율 추가) → B(긴장, 현악 선율) → A → … 32마디 반복
+   분위기: 로비 = 잔잔(종 + 현악, 북 없음) · 게임 = 행진(금관 + 작은북) · 전쟁 중 = 전투(북 연타 · 저음 오스티나토 · 팀파니 강하게) */
+const BGM={on:false,timer:null,next:0,step:0,out:null,noise:null,rev:null,dry:null};
 const mf=m=>440*Math.pow(2,(m-69)/12);
-const PROG=[[38,0],[38,0],[34,1],[33,1],[38,0],[43,0],[34,1],[33,1]]; // [근음 MIDI, 장조?]
-function bgmVoice(type,f,t,dur,vol,cut,slide){const a=AC;const o=a.createOscillator(),g=a.createGain(),fl=a.createBiquadFilter();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
-  fl.type='lowpass';fl.frequency.setValueAtTime(cut||2000,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(fl);fl.connect(g);g.connect(BGM.out);o.start(t);o.stop(t+dur+.05)}
-function bgmPad(f,t,dur,vol){const a=AC;const g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=900;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+dur*.35);g.gain.linearRampToValueAtTime(.0001,t+dur);
-  for(const d of[-6,6]){const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=d;o.connect(fl);o.start(t);o.stop(t+dur+.05)}fl.connect(g);g.connect(BGM.out)}
-function bgmNoise(t,dur,vol,freq){const a=AC;const src=a.createBufferSource();src.buffer=BGM.noise;const fl=a.createBiquadFilter();fl.type='bandpass';fl.frequency.value=freq||1800;fl.Q.value=.9;const g=a.createGain();
-  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(fl);fl.connect(g);g.connect(BGM.out);src.start(t,Math.random()*.5);src.stop(t+dur+.02)}
-function bgmSched(){const a=AC;if(!a||!BGM.on)return;const spb=60/104/4;const hot=!!(V&&V.ph==='play'&&Object.keys(V.war||{}).length);const inGame=!!(V&&V.ph==='play');
-  while(BGM.next<a.currentTime+.35){const t=BGM.next,st=BGM.step%16,bar=Math.floor(BGM.step/16)%8;const[root,maj]=PROG[bar];const third=maj?4:3;
-    if(st===0){bgmPad(mf(root+24),t,spb*16,.022);bgmPad(mf(root+24+third),t,spb*16,.016);bgmPad(mf(root+31),t,spb*16,.016)}
-    if(st%2===0){const pat=[0,12,0,7,0,12,third,7];bgmVoice('sawtooth',mf(root+12+pat[st/2]),t,spb*1.6,.05,650)}
-    if(st===0||st===8)bgmVoice('sine',mf(root)*2.2,t,.6,.32,400,mf(root));
-    if((bar===3||bar===7)&&(st===12||st===14))bgmVoice('sine',mf(root+7)*2,t,.35,.22,400,mf(root+7));
-    if(inGame){if(st===4||st===12)bgmNoise(t,.16,.14);if(st===14&&bar%2)bgmNoise(t,.08,.07);
-      if(bar===7&&st>=8)bgmNoise(t,.07,.04+.012*(st-8));
-      if(hot&&st%2===1)bgmNoise(t,.03,.025,6500)}
-    if(st===0&&bar%4===0){for(const iv of[12,12+third,19])bgmVoice('sawtooth',mf(root+iv+12),t,.5,.03,1400)}
-    if(bar>=4&&st%4===2&&inGame)bgmVoice('triangle',mf(root+36+[0,third,7,third][(st>>2)%4]),t,spb*1.8,.018,3000);
-    BGM.next+=spb;BGM.step++}}
-function synthStart(){if(!soundOn||BGM.on)return;const a=actx();if(!a)return;
-  if(!BGM.out){BGM.out=a.createGain();BGM.out.gain.value=0;const comp=a.createDynamicsCompressor();BGM.out.connect(comp);comp.connect(a.destination);
-    const n=a.sampleRate;BGM.noise=a.createBuffer(1,n,n);const d=BGM.noise.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1}
-  BGM.on=true;BGM.out.gain.cancelScheduledValues(a.currentTime);BGM.out.gain.setTargetAtTime(.55,a.currentTime,.6);BGM.next=a.currentTime+.08;BGM.timer=setInterval(bgmSched,100);bgmSched()}
+const BPM=96;
+/* 화음: [근음 MIDI, 3도(3=단·4=장), 5도 위 음 추가?] 마디마다 */
+const CH_A=[[50,3],[50,3],[46,4],[45,4],[50,3],[43,3],[45,4],[50,3]],CH_B=[[43,3],[43,3],[50,3],[50,3],[39,4],[46,4],[45,4],[45,4]];
+/* 선율: [MIDI, 길이(16분음표)] — null은 쉼표 */
+const MEL_A=[[[57,4],[62,3],[62,1],[62,4],[64,4]],[[65,6],[64,2],[62,4],[60,4]],[[58,4],[62,4],[65,4],[70,4]],[[69,8],[67,2],[65,2],[64,4]],
+  [[62,3],[62,1],[65,4],[69,4],[74,4]],[[72,4],[70,4],[67,4],[70,4]],[[69,4],[67,2],[65,2],[64,4],[61,4]],[[62,12],[null,4]]];
+const CTR_A=[[[69,8],[72,8]],[[69,8],[65,8]],[[65,8],[62,8]],[[61,8],[64,8]],[[65,8],[69,8]],[[67,8],[62,8]],[[61,8],[64,8]],[[65,8],[61,8]]];
+const MEL_B=[[[67,8],[70,8]],[[69,8],[67,4],[65,4]],[[65,12],[64,4]],[[62,16]],[[63,8],[67,8]],[[65,8],[62,8]],[[64,8],[69,8]],[[67,4],[65,4],[64,8]]];
+const FORM=['A','A2','B','A'];
+function bgmBus(a){if(BGM.out)return;BGM.out=a.createGain();BGM.out.gain.value=0;const comp=a.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=3;BGM.out.connect(comp);comp.connect(a.destination);
+  const n=a.sampleRate;BGM.noise=a.createBuffer(1,n,n);const d=BGM.noise.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+  /* 합성 리버브: 2.6초 감쇠 잡음 임펄스 */
+  const len=Math.floor(n*2.6),ir=a.createBuffer(2,len,n);for(let c=0;c<2;c++){const q=ir.getChannelData(c);for(let i=0;i<len;i++)q[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
+  BGM.rev=a.createConvolver();BGM.rev.buffer=ir;const rg=a.createGain();rg.gain.value=.38;BGM.rev.connect(rg);rg.connect(BGM.out);BGM.dry=a.createGain();BGM.dry.gain.value=.8;BGM.dry.connect(BGM.out)}
+function bgmOut(g,wet){g.connect(BGM.dry);if(wet){const s=AC.createGain();s.gain.value=wet;g.connect(s);s.connect(BGM.rev)}}
+function env(g,t,v,at,dur,rel){g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+at);g.gain.setValueAtTime(v,t+Math.max(at,dur));g.gain.exponentialRampToValueAtTime(.0001,t+Math.max(at,dur)+rel)}
+/* 금관 */
+function inBrass(t,m,d,v){const a=AC,f=mf(m);const g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.Q.value=1.2;fl.frequency.setValueAtTime(450,t);fl.frequency.linearRampToValueAtTime(2600,t+.07);fl.frequency.exponentialRampToValueAtTime(1300,t+.35);
+  const lfo=a.createOscillator(),lg=a.createGain();lfo.frequency.value=5.4;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*.006,t+Math.min(.45,d));lfo.connect(lg);
+  for(const dt of[-7,7]){const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=dt;lg.connect(o.frequency);o.connect(fl);o.start(t);o.stop(t+d+.3)}
+  lfo.start(t);lfo.stop(t+d+.3);env(g,t,v,.035,d*.92,.16);fl.connect(g);bgmOut(g,.5)}
+/* 현악 패드 */
+function inStr(t,m,d,v){const a=AC,f=mf(m);const g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=1500;
+  for(const dt of[-11,0,11]){const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=dt;o.connect(fl);o.start(t);o.stop(t+d+.9)}env(g,t,v,Math.min(.5,d*.4),d,.7);fl.connect(g);bgmOut(g,.9)}
+/* 종 */
+function inBell(t,m,d,v){const a=AC,f=mf(m);for(const[r,k,dec]of[[1,1,1.8],[2.76,.32,.9],[5.4,.12,.45]]){const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=f*r;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v*k,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+dec);o.connect(g);bgmOut(g,.8);o.start(t);o.stop(t+dec+.05)}}
+/* 콘트라베이스 */
+function inBass(t,m,d,v){const a=AC,f=mf(m);const g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=420;const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;const o2=a.createOscillator();o2.type='sine';o2.frequency.value=f;
+  o.connect(fl);o2.connect(fl);fl.connect(g);env(g,t,v,.02,d*.85,.12);bgmOut(g,.25);o.start(t);o2.start(t);o.stop(t+d+.2);o2.stop(t+d+.2)}
+/* 팀파니 */
+function inTimp(t,m,v){const a=AC,f=mf(m);const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.setValueAtTime(f*1.5,t);o.frequency.exponentialRampToValueAtTime(f,t+.06);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+1.1);o.connect(g);bgmOut(g,.6);o.start(t);o.stop(t+1.2);
+  inNoise(t,.09,v*.35,180,'lowpass')}
+function inNoise(t,dur,v,fq,type,q){const a=AC;const src=a.createBufferSource();src.buffer=BGM.noise;const fl=a.createBiquadFilter();fl.type=type||'bandpass';fl.frequency.value=fq||1800;fl.Q.value=q||.8;const g=a.createGain();
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(fl);fl.connect(g);bgmOut(g,.35);src.start(t,Math.random()*.6);src.stop(t+dur+.02)}
+function inSnare(t,v){inNoise(t,.13,v,2300,'bandpass',.7);inNoise(t,.06,v*.5,6000,'highpass');const a=AC,o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(150,t+.05);g.gain.setValueAtTime(v*.5,t);g.gain.exponentialRampToValueAtTime(.0001,t+.07);o.connect(g);bgmOut(g,.2);o.start(t);o.stop(t+.1)}
+function inCrash(t,v){inNoise(t,2.2,v,5200,'highpass',.5)}
+function bgmMood(){if(!V||V.ph!=='play')return'calm';const me=myNat();const war=me&&V.N&&V.N[me]?ORDER.some(y=>y!==me&&V.N[y]&&atWar(V,me,y)):Object.keys(V.war||{}).length>0;return war?'war':'march'}
+/* 한 16분음표 칸에서 울릴 것들 */
+function bgmStep(t,step){const sp=60/BPM/4;const st=step%16,bar=Math.floor(step/16)%32,sec=FORM[bar>>3],b=bar%8;const mood=bgmMood();const CH=sec==='B'?CH_B:CH_A;const[root,third]=CH[b];
+  const vl=mood==='calm'?.6:1;
+  /* 현악 화음: 마디 첫 박 */
+  if(st===0){for(const iv of[0,third,7])inStr(t,root+12+iv,sp*16,(mood==='calm'?.022:.016));if(mood!=='calm'||b%2===0)inStr(t,root+24,sp*16,.012)}
+  /* 선율 */
+  const L=sec==='B'?MEL_B[b]:MEL_A[b];let pos=0;for(const[m,len]of L){if(pos===st&&m!=null){const d=len*sp;
+      if(mood==='calm'){if(sec==='B')inStr(t,m,d,.03);else inBell(t,m+12,d,.07)}
+      else if(sec==='B')inStr(t,m,d,.034);else inBrass(t,m,d,.05)}pos+=len}
+  /* 대선율 (A') */
+  if(sec==='A2'&&mood!=='calm'){const C=CTR_A[b];let p2=0;for(const[m,len]of C){if(p2===st)inStr(t,m+12,len*sp,.02);p2+=len}}
+  /* 콘트라베이스 */
+  if(mood==='war'){if(st%2===0)inBass(t,root-12+([0,0,7,0,0,0,7,12][st/2]),sp*1.6,.09)}
+  else if(mood==='march'){if(st%4===0)inBass(t,root-12+(st===8?7:0),sp*3.4,.085)}
+  else if(st===0||st===8)inBass(t,root-12+(st===8?7:0),sp*7,.06);
+  /* 팀파니 */
+  if(st===0)inTimp(t,root-12+(root<45?12:0),mood==='war'?.32:mood==='march'?.2:.12*vl);
+  if(mood==='war'&&(st===8||(b===7&&st>=12)))inTimp(t,root-5,.22);
+  /* 작은북 */
+  if(mood==='march'){const SN={0:.08,2:.05,3:.04,4:.09,8:.08,10:.05,11:.04,12:.09};if(SN[st])inSnare(t,SN[st]);if(b===7&&st>=12)inSnare(t,.04+.015*(st-12))}
+  else if(mood==='war'){if(st%2===0)inSnare(t,st%4===0?.1:.06);else if(b%2===1)inSnare(t,.03);if(b===7&&st>=8)inSnare(t,.05+.012*(st-8))}
+  /* 심벌: 구간 시작 */
+  if(st===0&&b===0&&mood!=='calm')inCrash(t,mood==='war'?.09:.06)}
+function bgmSched(){const a=AC;if(!a||!BGM.on)return;const sp=60/BPM/4;while(BGM.next<a.currentTime+.4){bgmStep(BGM.next,BGM.step);BGM.next+=sp;BGM.step++}}
+function synthStart(){if(!soundOn||BGM.on)return;const a=actx();if(!a)return;bgmBus(a);
+  BGM.on=true;BGM.out.gain.cancelScheduledValues(a.currentTime);BGM.out.gain.setTargetAtTime(.6,a.currentTime,.8);BGM.next=a.currentTime+.1;BGM.timer=setInterval(bgmSched,100);bgmSched()}
 function synthStop(){if(!BGM.on)return;BGM.on=false;clearInterval(BGM.timer);if(AC&&BGM.out){BGM.out.gain.cancelScheduledValues(AC.currentTime);BGM.out.gain.setTargetAtTime(0,AC.currentTime,.15)}}
 /* ---- 녹음된 배경음악: europe.html 옆의 bgm_*.mp3. 파일이 없으면 위의 합성 테마로 대신 ----
    로비 = 공용 3·2 · 게임 중 = 내 나라 곡과 공용 2·3을 번갈아 · 관전/시뮬레이션 = 공용 2·3 */
