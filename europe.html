@@ -3190,7 +3190,7 @@ function act(x,a){supTick++;
     if(a.probe)return;if(n.r<LAB_RES+LAB_CAP)return`공업력 ${LAB_RES} + 경제력 ${LAB_CAP}이 필요합니다`;n.r-=LAB_RES;n.r-=LAB_CAP;T.lab=1;
     lg(`${a.t}에 연구소 건설 (공업력 -${LAB_RES}, 경제력 -${LAB_CAP})`,x);fx({k:'build',x,t:a.t,u:'연구소'});return}
   if(k==='air'){if(!AIR[a.u])return'없는 기종';const A=airSpec(x,a.u);n.airforce=n.airforce||[];if(n.airforce.length>=AIR_MAX)return`항공기는 ${AIR_MAX}대까지 보유할 수 있습니다`;
-    if(n.r<A.r||(n.r||0)<A.sc)return`공업력 ${A.r} + 경제력 ${A.sc}이 필요합니다`;n.r-=A.r;n.r-=A.sc;n.airforce.push({type:a.u,cd:1});achG(x,'@a_'+a.u,1);
+    if(n.r<A.r||(n.r||0)<A.sc)return`공업력 ${A.r} + 경제력 ${A.sc}이 필요합니다`;n.r-=A.r;n.r-=A.sc;n.airforce.push({type:a.u,cd:1});pstAdd(n,a.u);achG(x,'@a_'+a.u,1);
     lg(`${A.n} 배치 (공업력 -${A.r}, 경제력 -${A.sc}) · 다음 턴부터 출격`,x);fx({k:'focus',x,t:`${A.n} 배치`});hl('focus',x);return}
   if(k==='sortie'){const pl=(n.airforce||[])[int(a.i)];const sk=SKILL[a.sk];if(!pl||!sk)return'항공기를 고르세요';const sp=airSpec(x,pl.type);if(!airSkills(x,pl.type).includes(a.sk))return`${sp.n}은(는) 그 임무를 할 수 없습니다`;
     if(pl.cd>0)return`재출격까지 ${pl.cd}턴 남았습니다`;if(!airTargets(G,x,a.sk).includes(a.t))return'출격 범위 밖이거나 조건(제공권·적 존재)이 맞지 않습니다';
@@ -3252,7 +3252,7 @@ function act(x,a){supTick++;
     const hd=rfx(G,x).heal||0;for(const u of T.u){const need=maxHp(G,x,u.t,u)-u.hp;if(u.h||need<=0)continue;const pay=Math.max(0,need-hd)*(isL(G,x,'zhukov')?1+pm(G,x):1);if(n.r<pay)continue;n.r-=pay;paid+=pay;u.hp+=need;u.h=1;cnt++}
     if(!cnt)return'치료할 유닛이 없거나 공업력이 부족합니다';lg(`${a.t} ${cnt}부대 치료 (-${paid})`,x);return}
   if(k==='build'){const bd=a.b?bpFind(G,x,a.b):null;if(a.b&&!bd)return'없는 설계도';const t=bd?bd.ch:a.u;if(!UT[t]||!buildable(x).includes(t))return'생산할 수 없는 유닛';const d=bd||bpOf(G,x,t);const nmU=d&&!/기본형$/.test(d.nm)?`${UT[t].n}「${d.nm}」`:UT[t].n;if(capFull(G,x))return CAP_MSG;const T=G.T[a.t];if(!T||T.o!==x||!T.f)return'내 공장이 있는 영토에서만 생산합니다';
-    const c=unitCost(G,x,t,d);if(!a.probe&&n.r<c)return'경제력이 부족합니다';const done=()=>{if(d&&d.nw)delete d.nw;if(t==='t34')n.t34n=(n.t34n||0)+1};
+    const c=unitCost(G,x,t,d);if(!a.probe&&n.r<c)return'경제력이 부족합니다';const done=()=>{pstAdd(n,t);if(d&&d.nw)delete d.nw;if(t==='t34')n.t34n=(n.t34n||0)+1};
     if(UT[t].k==='sea'){if(!CS[a.t].includes(a.sea))return'인접한 바다를 고르세요';const S=G.S[a.sea];if(S.o&&S.o!==x)return'적 함대가 있는 바다입니다';if(S.u.length>=STACK)return'바다에 이미 5척이 있습니다';if(a.probe)return;
       n.r-=c;ecoBank(x);S.o=x;S.u.push(nu(G,x,t,d));done();achG(x,'@u_'+t,1);fx({k:'build',x,t:a.sea,u:UT[t].n});lg(`${a.sea}에 ${nmU} 진수 (-${c})`,x);return}
     if(!canStack(G,a.t,[{t}]))return'방어 부대는 한 영토에 한 종류만 둘 수 있습니다';if(a.probe)return;
@@ -4950,12 +4950,18 @@ function imgSyms(){const sy=(id,u,w,h,par)=>`<symbol id="${id}" viewBox="0 0 ${w
   return Object.keys(UT).map(t=>sy('ui-'+t,IU('img/unit/'+(UT[t].img||t)+'.png'),22,13)).join('')+sy('ui-star',IU('img/map/star.png'),16,16)+sy('ui-fac',IU('img/map/ter_factory.png'),14,14)+Object.keys(WONDERS).map(w=>sy('ui-w-'+w,IU('img/won/'+w+'.png'),34,34)).join('')}
 function flagSyms(){return Object.keys(FLAG_SVG).map(x=>`<symbol id="flgS-${x}" viewBox="0 0 30 20" preserveAspectRatio="none">${FLAG_SVG[x]}</symbol>`).join('')}
 const _tb={};function tileBox(k){if(_tb[k])return _tb[k];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const n=(MAP.sh[k]||'').match(/-?[\d.]+/g)||[];for(let i=0;i+1<n.length;i+=2){const x=+n[i],y=+n[i+1];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}return _tb[k]=[x0,y0,x1,y1]}
-/* 나라마다 수도와 땅으로 이어진 영토 덩어리를 감싸는 상자에 국기 한 장 (떨어진 땅도 같은 무늬가 이어짐) */
-function flagPatSVG(s){let o='';for(const x of Object.keys(FLAG_SVG)){const own=Object.keys(s.T).filter(k=>s.T[k].o===x);if(!own.length)continue;
-    let main=own;const cap=NAT[x].cap;if(s.T[cap]&&s.T[cap].o===x){const seen=new Set([cap]),q=[cap];while(q.length){const u=q.shift();for(const v of ADJ[u])if(!seen.has(v)&&s.T[v].o===x){seen.add(v);q.push(v)}}main=[...seen]}
-    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const k of main){const b=tileBox(k);x0=Math.min(x0,b[0]);y0=Math.min(y0,b[1]);x1=Math.max(x1,b[2]);y1=Math.max(y1,b[3])}
-    const w=Math.max(20,x1-x0),h=Math.max(14,y1-y0);
-    o+=`<pattern id="flg-${x}" patternUnits="userSpaceOnUse" x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"><svg width="${w.toFixed(1)}" height="${h.toFixed(1)}" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice"><use href="#flgS-${x}" width="30" height="20"/></svg></pattern>`}
+/* 나라마다 땅으로 이어진 영토 덩어리 하나에 국기 한 장 — 떨어진 땅(섬·고립지)도 자기 덩어리에 국기 한 장, 반복 없음 */
+let _flgC={},_flgKey='';
+function flagComps(s){const key=Object.keys(s.T).map(k=>s.T[k].o).join('');if(key===_flgKey)return _flgC;_flgKey=key;const C={},boxes={};
+  for(const x of Object.keys(FLAG_SVG)){const own=Object.keys(s.T).filter(k=>s.T[k].o===x);if(!own.length)continue;const cap=NAT[x].cap;
+    const seen=new Set();const comps=[];const order=s.T[cap]&&s.T[cap].o===x?[cap,...own]:own;
+    for(const st of order){if(seen.has(st))continue;const c=[st];seen.add(st);for(let i=0;i<c.length;i++)for(const v of ADJ[c[i]]||[])if(!seen.has(v)&&s.T[v]&&s.T[v].o===x){seen.add(v);c.push(v)}comps.push(c)}
+    comps.forEach((c,i)=>{const id=i?`flg-${x}-${i}`:`flg-${x}`;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const k of c){C[k]=id;const b=tileBox(k);x0=Math.min(x0,b[0]);y0=Math.min(y0,b[1]);x1=Math.max(x1,b[2]);y1=Math.max(y1,b[3])}boxes[id]=[x,x0,y0,x1,y1]})}
+  C._boxes=boxes;return _flgC=C}
+function flagPatSVG(s){let o='';const B=flagComps(s)._boxes;for(const id in B){const[x,x0,y0,x1,y1]=B[id];
+    /* 상자를 국기 비율(3:2)로 넓혀서 한 장이 덩어리를 다 덮게 — 잘리는 쪽 없이 반복 안 됨 */
+    let w=Math.max(20,x1-x0),h=Math.max(14,y1-y0);const cx=(x0+x1)/2,cy=(y0+y1)/2;if(w/h>1.5)h=w/1.5;else w=h*1.5;
+    o+=`<pattern id="${id}" patternUnits="userSpaceOnUse" x="${(cx-w/2).toFixed(1)}" y="${(cy-h/2).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"><use href="#flgS-${x}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"/></pattern>`}
   return o}
 function toggleFlag(){if(!flagView){flagView=true;flagMine=false}else if(!flagMine)flagMine=true;else{flagView=false;flagMine=false}   // 끔 → 모든 나라 → 내 나라만 → 끔
   try{localStorage.setItem('eu-flag',flagView?(flagMine?'2':'1'):'0')}catch(e){}flagBtnSet();applyNight();updateMap(curOpts());sfx('click')}
@@ -4968,7 +4974,7 @@ function flagBtnSet(){const b=document.getElementById('flagBtn');if(!b)return;b.
 function applyNight(){const b=document.querySelector('.mapbox');if(b){b.classList.toggle('night',night);b.classList.toggle('strat',strat);b.classList.toggle('flagm',flagView)}flagBtnSet();{const sb=document.getElementById('stratBtn');if(sb){sb.textContent=strat?'일반':'전략';sb.style.fontWeight=strat?'700':'';sb.title=strat?'일반 지도로 보기':'전략 보기: 토큰·지명 없이 나라 색만'}}const btn=document.getElementById('nightBtn');if(btn){btn.textContent=night?'☀':'☾';btn.setAttribute('aria-label',night?'낮으로 보기':'야경 보기');btn.title=night?'낮으로 보기':'야경 켜기'}}
 function updateMap(opts){setTimeout(()=>{resLegSync();lensSync()},0);const s=V;if(!document.getElementById('gmap'))return;
   {const st=statSVG(s);if(st!==statStr){statStr=st;document.getElementById('gStat').innerHTML=st}{const r=railSVG(s);const g=document.getElementById('gRail');if(g&&g.innerHTML!==r)g.innerHTML=r;const sv=supSVG(s);const g2=document.getElementById('gSup');if(g2&&g2.innerHTML!==sv)g2.innerHTML=sv}const n=nightSVG(s);if(n!==nightStr){nightStr=n;document.getElementById('gNight').innerHTML=n}const w=wonderSVG(s);if(w!==wonStr){wonStr=w;document.getElementById('gWon').innerHTML=w}}
-  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#flg-${o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.classList.toggle('fnot',!strat&&flagView&&flagMine&&!flagOn(o));p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);{const tp=s.pend&&trMine()?trUIget(s.pend):null;const ce=tp&&(tp.st==='puppet'||tp.st==='truce');p.classList.toggle('trsel',!!(ce&&tp.cede.includes(a[0])));p.classList.toggle('trok',!!(tp&&o===s.pend.v&&a[0]!==NAT[s.pend.v].cap&&!(ce&&tp.cede.includes(a[0]))))}p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
+  LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#${flagComps(s)[a[0]]||'flg-'+o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.classList.toggle('fnot',!strat&&flagView&&flagMine&&!flagOn(o));p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);{const tp=s.pend&&trMine()?trUIget(s.pend):null;const ce=tp&&(tp.st==='puppet'||tp.st==='truce');p.classList.toggle('trsel',!!(ce&&tp.cede.includes(a[0])));p.classList.toggle('trok',!!(tp&&o===s.pend.v&&a[0]!==NAT[s.pend.v].cap&&!(ce&&tp.cede.includes(a[0]))))}p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
   SEA.forEach((z,i)=>{const p=document.getElementById('sp'+i);if(!p)return;const S=s.S[z[0]];p.style.stroke=S.o?MAPC[S.o]:'';p.classList.toggle('ctl',!!S.o)});
   let h='';const nm=selName();
   if(nm&&MAP.sh[nm])h+=`<path class="hl-sel" d="${MAP.sh[nm]}"/>`;
@@ -5204,8 +5210,8 @@ function m3Chips(){if(!M3.ok||!V||!V.T)return;const box=M3.cv.parentElement;if(!
       const id='L:'+t;seen.add(id);let el=M3.chN[id];if(!el){el=document.createElement('div');M3.chEl.appendChild(el);M3.chN[id]=el}el.className='lb3 lv'+lv;el.textContent=vv>0?'+'+vv:'+0';el.title=A.parts.map(([l,v2])=>l+' +'+v2).join(' · ')||'인접 보너스 없음';
       const an=MAP.an[t];const h=M3.hAt?M3.hAt(an[0],an[1]):0;v.set(an[0]-W/2,h+6,an[1]-H/2).project(M3.cam);if(v.z>1||v.x<-1.05||v.x>1.05||v.y<-1.05||v.y>1.05){el.style.display='none';continue}
       el.style.display='';el.style.transform=`translate(${((v.x+1)/2*cw).toFixed(1)}px,${((1-v.y)/2*ch).toFixed(1)}px) translate(-50%,-100%)`}}
-  if(!buildLens&&!resView)for(const a of LAND){const T=s.T[a[0]];if(T&&T.o!=='X'&&(T.u.length||T.hid))one(a[0],T.u,T.o,T.hid,false)}
-  if(!buildLens&&!resView)for(const z in s.S){const S=s.S[z];if(S&&(S.u.length||S.hid))one(z,S.u,S.o,S.hid,true)}
+  if(!buildLens)for(const a of LAND){const T=s.T[a[0]];if(T&&T.o!=='X'&&(T.u.length||T.hid))one(a[0],T.u,T.o,T.hid,false)}
+  if(!buildLens)for(const z in s.S){const S=s.S[z];if(S&&(S.u.length||S.hid))one(z,S.u,S.o,S.hid,true)}
   for(const nm in M3.chN)if(!seen.has(nm)){M3.chN[nm].remove();delete M3.chN[nm]}}   // 이보다 가까이 확대해야 일반 땅 이름이 보임 (카메라 거리 140~1500)
 function m3Overlay(){const svg=document.getElementById('gmap');if(!svg||M3.ovlBusy)return;M3.ovlBusy=true;M3.dirty=false;
   const cl=svg.cloneNode(true);const src=svg.querySelectorAll('*'),dst=cl.querySelectorAll('*');
@@ -5780,7 +5786,7 @@ function pactPanel(x,myT,others){const s=V,n=s.N[x];const P=pactOf(s,x);const po
 function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=facOf(s,x);
   const LDx=ldOf(s,x);let h=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${emb(x)}${NAT[x].n}${LDx?` <span class="ldpill" data-tip="${esc(`<div class='th'>${LEAD_ICON[LDx]} ${LEAD[LDx].n}</div>`+ldTraits(LDx).map(t=>`<div class='${t.bad?'tbad':''}'>${t.bad?'▼':'▲'} <b>${t.n}</b> ${t.d}</div>`).join(''))}">${LEAD_ICON[LDx]} ${esc(LEAD[LDx].n)}</span>`:''}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?affName(s,x):n.st==='annexed'?'병합됨':'몰락'}</span></div>
   <p class="note">💰 경제력 ${n.r} · 🏭 공업력 +${income(s,x)}/턴 · 영토 ${landCount(s,x)}</p>${eraOn(s)?`<p class="note">🕰 ${eraName(eraOf(s.rd))} 시대 (${eraLeft(s.rd)}라운드 남음) · 지지율 <b>${n.app??APP0}</b>${n.age?` · ${AGE[n.age].i} <b>${AGE[n.age].n}</b>`:''}</p>`:''}${keyRule(s)&&KEYC[x]&&['on','puppet'].includes(n.st)?`<p class="note" title="결속도 30 미만: 수도 함락 즉시 항복 · 30~49: 결사항전, 수도(1곳)를 잃으면 항복 · 50~69: 2곳 · 70 이상: 3곳">🏛 핵심 도시 ${(KEYC[x].concat(x==='FR'&&has(s,'FR','freefr')?['알제']:[])).map(k=>`${s.T[k]&&s.T[k].o===x?'✓':'✗'} ${k}${NAT[x].cap===k?'★':''}`).join(' · ')} — ${lowConf(s,x)?'<b style="color:var(--hot)">결속도 30 미만: 수도를 잃으면 결사항전 없이 바로 항복</b>':`결속도 ${cfv(s,x)}: 결사항전 + 핵심 도시 <b>${keyNeed(s,x)}곳</b>을 잃으면 항복`}</p>`:''}${capMeter(s,x)}
-  <div class="tabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['trait','지도자·특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
+  <div class="tabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['stat','통계'],['trait','지도자·특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
   if(!tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[ntab]))ntab='dip';
   if(ntab==='focus'){const fp=n.fp||0,up=n.up||{};
     h+=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:var(--gold)"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">병기창 · 중점 포인트</span><span class="stat" style="font-size:18px;color:var(--gold)">${fp} FP</span></div>
@@ -5806,8 +5812,31 @@ function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=
   else if(ntab==='rs')h+=rsPanel(x,myT);
   else if(ntab==='bp')h+=bpPanel(x,myT);
   else if(ntab==='era')h+=eraPanel(x);
+  else if(ntab==='stat')h+=pstPanel(x);
   else h+=`${ldOf(s,x)?`<span class="lab">지도자</span>${ldCard(x,ldOf(s,x),false,null)}`:''}<span class="lab">나라 특성</span><ul>${traitsOf(x).filter(t=>!t.startsWith('지도자 후보')).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><p class="note">이번 게임 덱: <b>${deckOf(s,x).map(d=>esc(deckName(x,d))).join(' · ')}</b></p><p class="note">진영 보너스: 연합국 방어 +1 · 추축국 공격 +1 · 코민테른 기갑·판저 비용 -1</p>
     <span class="lab">현재 생산 비용</span><p class="note">${buildable(x).map(t=>UT[t].n+' '+unitCost(s,x,t)).join(' · ')} · 공장 ${facCost(s,x,NAT[x].cap)}${x==='GB'&&!has(s,'GB','counter')?' (대륙 '+facCost(s,x,'파리')+')':''}</p>`;
+  return h}
+/* ---- 생산 통계: 병종마다 생산한 부대 수를 육각형(레이더) 그래프로 ---- */
+const PST_AX=[['inf','보병'],['arm','기갑'],['art','포병'],['sea','함대'],['ftr','전투기'],['bmb','폭격기']];   /* 특수 부대는 제 병종에, 공중지원기는 폭격기에 센다 */
+function pstAdd(n,t){n.pst=n.pst||{};const k=t==='fighter'?'ftr':AIR[t]?'bmb':UT[t]?UT[t].k:null;if(k)n.pst[k]=(n.pst[k]||0)+1}
+function pstRadar(v,col,R,big){const N=PST_AX.length,mx=Math.max(1,...PST_AX.map(([k])=>v[k]||0));const pad=big?46:16,W=R*2+pad*2,c=W/2;
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/N;return[(c+Math.cos(a)*r).toFixed(1),(c+Math.sin(a)*r).toFixed(1)]};
+  let g='';for(const f of[.25,.5,.75,1])g+=`<polygon points="${PST_AX.map((_,i)=>pt(i,R*f).join(',')).join(' ')}" fill="${f===1?'rgba(120,100,70,.06)':'none'}" stroke="rgba(120,100,70,${f===1?.55:.25})" stroke-width="${f===1?1.2:.8}"/>`;
+  for(let i=0;i<N;i++){const[x,y]=pt(i,R);g+=`<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="rgba(120,100,70,.25)" stroke-width=".8"/>`}
+  const P=PST_AX.map(([k],i)=>pt(i,R*Math.sqrt((v[k]||0)/mx)));   /* 제곱근 눈금: 적게 만든 병종도 모양에 드러나게 */
+  g+=`<polygon points="${P.map(p=>p.join(',')).join(' ')}" fill="${col}" fill-opacity=".38" stroke="${col}" stroke-width="${big?2.2:1.6}" stroke-linejoin="round"/>`;
+  if(big){P.forEach(([x,y],i)=>{if(v[PST_AX[i][0]])g+=`<circle cx="${x}" cy="${y}" r="3.2" fill="${col}" stroke="#fff" stroke-width="1.2"/>`});
+    PST_AX.forEach(([k,l],i)=>{const[x,y]=pt(i,R+20);g+=`<text x="${x}" y="${(+y-2).toFixed(1)}" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink,#2b2418)">${l}</text><text x="${x}" y="${(+y+11).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="700" fill="${v[k]?col:'#9a8f7a'}">${v[k]||0}</text>`})}
+  return`<svg viewBox="0 0 ${W} ${W}" width="${W}" height="${W}" style="max-width:100%;display:block;margin:0 auto">${g}</svg>`}
+function pstPanel(x){const s=V,n=s.N[x];const v=n.pst||{};const tot=PST_AX.reduce((a,[k])=>a+(v[k]||0),0);const col=MAPC[x]||'#8a6d3b';
+  const top=PST_AX.filter(([k])=>v[k]).sort((a,b)=>v[b[0]]-v[a[0]]);
+  let h=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">생산 통계</span><span class="note">이번 게임 누적 ${tot}부대</span></div>
+    ${pstRadar(v,col,92,true)}
+    <p class="note" style="text-align:center;margin:4px 0 0">${tot?`주력: <b>${top[0][1]}</b> ${Math.round(v[top[0][0]]/tot*100)}%${top[1]?` · 다음 ${top[1][1]} ${Math.round(v[top[1][0]]/tot*100)}%`:''}`:'아직 생산한 부대가 없습니다. 부대·항공기를 생산하면 여기에 쌓입니다.'}</p></div>`;
+  const others=ORDER.filter(y=>y!==x&&s.N[y]&&['on','puppet'].includes(s.N[y].st));
+  if(others.length)h+=`<span class="lab">다른 나라</span><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px">${others.map(y=>{const w=s.N[y].pst||{};const t=PST_AX.reduce((a,[k])=>a+(w[k]||0),0);const tp=PST_AX.filter(([k])=>w[k]).sort((a,b)=>w[b[0]]-w[a[0]])[0];
+    return`<div class="sheet" style="margin:0;padding:6px 4px;text-align:center" title="${PST_AX.map(([k,l])=>l+' '+(w[k]||0)).join(' · ')}"><div style="font-size:12px;font-weight:700">${emb(y)}${NAT[y].n}</div>${pstRadar(w,MAPC[y]||'#888',30,false)}<div class="note" style="font-size:10.5px">${t}부대${tp?' · '+tp[1]:''}</div></div>`}).join('')}</div>
+    <p class="note" style="margin-top:6px">나라 특수 부대는 제 병종(카자크 → 보병, 판저 → 기갑 …)에, 공중지원기는 폭격기에 셉니다. 작은 그래프는 나라마다 가장 많이 만든 병종을 끝까지 채워 그립니다 (모양 = 생산 성향).</p>`;
   return h}
 /* ---- 상단 보급 칩 ---- */
 function supChip(s,x){const N=supNat(s,x);const n=s.N[x];const bad=[];for(const k in s.T){const T=s.T[k];if(T.o===x&&T.u.length){const st=supState(s,k);const lv=!st||st.cut?2:supLv(s,x,k);if(lv)bad.push([k,lv])}}
