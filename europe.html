@@ -612,7 +612,7 @@ header.top .sp{flex:1}
 .lensbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:7;display:flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:min(820px,calc(100% - 210px));flex-wrap:nowrap;background:rgba(246,238,215,.96);border:2px solid #6b4f2a;border-radius:14px;padding:6px 8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
 .lensbar{flex-wrap:wrap}.lensbar button{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:48px;padding:3px 4px;border-radius:9px;border:1px solid transparent;background:transparent;font-size:20px;cursor:pointer}.lensbar button span{font-size:11px;font-weight:700;color:#3a2410}
 .lensbar button.on{background:#ffd77a;border-color:#6b4f2a}.lensbar button:hover{background:rgba(255,215,122,.5)}.lensbar .lx{min-width:30px;font-size:14px}.lenshint{flex-basis:100%;text-align:center;font-size:11.5px;color:#5a4632;margin-top:2px}
-.lensno{fill:#000;fill-opacity:.32;pointer-events:none}.lensok{fill:#fff;fill-opacity:.06;stroke:#E8B33A;stroke-width:1.4;stroke-opacity:.7;pointer-events:none}.lensok.lv1{fill:#9fd27a;fill-opacity:.18}.lensok.lv2{fill:#5fbf4a;fill-opacity:.28}.lensok.lv3{fill:#2e9b3a;fill-opacity:.38}
+.lensno{fill:#000;fill-opacity:.32;pointer-events:none}.lensdes{fill:#7a7a7a;mix-blend-mode:saturation;pointer-events:none}.lenswash{fill:#d9d4c8;fill-opacity:.32;pointer-events:none}.lensok{fill:#fff;fill-opacity:.06;stroke:#E8B33A;stroke-width:1.4;stroke-opacity:.7;pointer-events:none}.lensok.lv1{fill:#9fd27a;fill-opacity:.18}.lensok.lv2{fill:#5fbf4a;fill-opacity:.28}.lensok.lv3{fill:#2e9b3a;fill-opacity:.38}
 .lensb{pointer-events:none}.lensb rect{fill:#f6efd9;stroke:#6b4f2a;stroke-width:1.4}.lensb text{font:800 12px var(--f-body);fill:#6b5c48}.lensb.lv1 rect{fill:#dff0c6}.lensb.lv2 rect{fill:#a8de84}.lensb.lv3 rect{fill:#4fae3c;stroke:#245c1c}.lensb.lv1 text,.lensb.lv2 text{fill:#1d4d18}.lensb.lv3 text{fill:#fff}
 .rgnm{font:700 16px var(--f-display);fill:rgba(60,40,20,.4);stroke:rgba(255,245,220,.35);stroke-width:2px;paint-order:stroke;letter-spacing:6px;pointer-events:none}
 .snm{font:italic 600 12px var(--f-body);fill:var(--seaink);letter-spacing:1.5px;stroke:var(--sea);stroke-width:3px;paint-order:stroke}
@@ -746,6 +746,7 @@ body.ingame.mob .mapwrap{max-height:none!important;height:100%!important}
 body.ingame.mob #side{display:none}
 body.ingame.mob.mobside #side{display:block;position:fixed;z-index:30;right:8px;top:calc(var(--mt) + 6px);bottom:calc(var(--mb) + 6px);width:min(440px,52vw);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--paper,#f4ecd8);border:1px solid rgba(201,162,77,.55);border-radius:14px;padding:12px 12px 10px;box-shadow:0 10px 40px rgba(0,0,0,.55);animation:mslide .18s ease-out}
 @keyframes mslide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+body.ingame.mob #side .stabs,body.ingame.mob #side .ntabs{display:none}body.ingame.mob:not(.mobtrait) #side .nathead{display:none}
 body.ingame.mob .mclose{position:sticky;top:-12px;float:right;z-index:2;width:30px;height:30px;padding:0;border-radius:50%;background:#2a2a2a;color:#fff;border:0;font-size:14px;margin:-4px -4px 0 6px}
 body.ingame.mob #banner{top:45%}
 body.ingame.mob .lensbar{bottom:calc(var(--mb) + 8px);left:12px;right:calc(clamp(120px,24vw,190px) + 76px);transform:none;max-width:none;z-index:21;padding:4px 6px;gap:2px;justify-content:center}
@@ -788,9 +789,17 @@ body.ingame.mob #hud{display:block;position:fixed;inset:0;z-index:20;pointer-eve
 #hud .mmflag{display:block;width:calc(var(--s) * .62);height:calc(var(--s) * .42);background:center/100% 100% no-repeat;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
 #hud .mright{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:calc(var(--mb) + 10px);display:flex;flex-direction:column;align-items:flex-end;gap:clamp(5px,1.6vh,10px)}
 body.mobside #hud .mright{display:none}body.mobfull #hud .mleft{display:none}
-body.ingame.mob.mobfull #side{left:0;right:0;top:var(--mt);bottom:var(--mb);width:auto;border-radius:0;border:0;box-shadow:none;padding:14px max(16px,calc((100vw - 1100px) / 2)) 12px;animation:mfull .16s ease-out}
+body.ingame.mob.mobfull #side{left:0;right:0;top:0;bottom:0;z-index:35;padding-top:0!important;width:auto;border-radius:0;border:0;box-shadow:none;padding:14px max(16px,calc((100vw - 1100px) / 2)) 12px;animation:mfull .16s ease-out}
 @keyframes mfull{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
-body.ingame.mob.mobfull .mclose{top:-14px}
+body.ingame.mob .mfhead{position:sticky;top:-12px;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-12px -12px 10px;padding:8px 12px;background:var(--paper,#f4ecd8);border-bottom:1px solid rgba(107,79,42,.25)}
+body.ingame.mob .mfhead b{font:700 16px var(--f-display,serif);letter-spacing:.04em;color:var(--ink,#2b2418)}
+body.ingame.mob .mfhead .mclose{position:static;float:none;margin:0;flex:none}
+body.ingame.mob.mobfull .mfhead{top:0;margin:0 calc(-1 * max(16px,(100vw - 1100px) / 2)) 12px;padding:10px max(16px,calc((100vw - 1100px) / 2));background:linear-gradient(180deg,#0b1018,#141d29);border-bottom:1px solid rgba(201,162,77,.45)}
+body.ingame.mob.mobfull .mfhead b{color:#f3ead6;font-size:19px}
+body.ingame.mob.mobfull .mfhead .mclose{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);width:36px;height:36px;font-size:16px}
+body.ingame.mob.mobfull #side .col:has(> .fo){display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px;align-items:stretch}body.ingame.mob.mobfull #side .col:has(> .fo)>.fo{margin:0}body.ingame.mob.mobfull #side .col:has(> .fo)>.fo>*:last-child{white-space:nowrap;flex:none}
+body.ingame.mob.mobfull #side .col:has(> .row > button[onclick*="k:'up'"]){display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 18px}
+body.ingame.mob.mobfull #side>section.sheet{border:0;box-shadow:none;background:none;padding:0}
 #hud .mqs{display:flex;flex-direction:column;align-items:flex-end;gap:clamp(5px,1.4vh,8px)}
 #hud .mq{position:relative;width:clamp(34px,9vh,44px);height:clamp(34px,9vh,44px);border-radius:50%;padding:0;border:1px solid rgba(255,255,255,.25);background:rgba(14,20,30,.82);color:#fff;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.45)}
 #hud .mq.on{background:#C9A24D;color:#1d1405}#hud .mq:disabled{opacity:.4}
@@ -798,6 +807,12 @@ body.ingame.mob.mobfull .mclose{top:-14px}
 #hud .mend b{font:800 clamp(20px,5.4vh,30px)/1 var(--f-display,serif);letter-spacing:.12em}
 #hud .mend span{font-size:11.5px;font-weight:700;margin-top:4px;opacity:.85}
 #hud .mend .mseal{position:absolute;right:-6px;bottom:-12px;font:900 clamp(48px,13vh,72px)/1 var(--f-display,serif);font-style:normal;color:rgba(178,24,24,.28);transform:rotate(-12deg)}
+#hud .mendw{position:relative}
+#hud .mend.task{background:linear-gradient(135deg,var(--a) 0%,var(--b) 70%,color-mix(in srgb,var(--b) 70%,#000) 100%);border-color:color-mix(in srgb,var(--a) 70%,#fff);color:var(--c);animation:mtask 1.6s ease-in-out infinite}
+#hud .mend.task span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:11px;line-height:1.25}
+#hud .mend.task .mseal{opacity:.22;filter:grayscale(1) brightness(1.8);color:#fff;font-size:clamp(40px,11vh,60px);transform:none;right:4px;bottom:-6px}
+@keyframes mtask{0%,100%{box-shadow:0 6px 18px rgba(0,0,0,.5),0 0 0 0 color-mix(in srgb,var(--a) 60%,transparent)}50%{box-shadow:0 6px 18px rgba(0,0,0,.5),0 0 0 6px color-mix(in srgb,var(--a) 0%,transparent)}}
+#hud .mskip{position:absolute;right:6px;top:-11px;border:1px solid rgba(255,255,255,.35);background:rgba(10,14,22,.88);color:#e8e2d2;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px}
 #hud .mend.wait{background:linear-gradient(135deg,#59616b,#2c3239);border-color:#8a939c;color:#e5e7ea}
 #hud .mbot{position:absolute;left:0;right:0;bottom:0;height:var(--mb);display:flex;padding:0 max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left));background:linear-gradient(180deg,#203038,#121c22);border-top:2px solid #2FA88A;box-shadow:0 -4px 14px rgba(0,0,0,.4);pointer-events:auto}
 #hud .mtab{position:relative;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:0;color:#e9efe9;padding:0;min-width:0}
@@ -807,6 +822,8 @@ body.ingame.mob.mobfull .mclose{top:-14px}
 #hud .mtab.on{color:#5BE3A0}#hud .mtab.on span{text-shadow:0 0 8px rgba(91,227,160,.5)}
 #hud .mhint{position:absolute;left:50%;top:calc(var(--mt) + clamp(26px,7.4vh,34px) + 14px);transform:translateX(-50%);background:rgba(10,14,22,.85);border:1px solid #C9A24D;color:#FFE7A3;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:14px;white-space:nowrap}
 #hud .mrot{display:none}
+#hud .mmenu{position:absolute;right:10px;top:calc(var(--mt) + 4px);z-index:5;display:flex;flex-direction:column;min-width:180px;background:#141d29;border:1px solid rgba(201,162,77,.5);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.55);pointer-events:auto}
+#hud .mmenu button{background:none;border:0;color:#eee;text-align:left;font-size:13.5px;font-weight:600;padding:9px 10px;border-radius:7px}#hud .mmenu button:active{background:rgba(255,255,255,.1)}
 @media (max-width:980px){#hud .mico span{display:none}#hud .mico{min-width:34px}#hud .mlv small{display:none}#hud .mtab i{display:none}#hud .mres em{display:none}#hud .mres{padding-right:7px}#hud .mres-row{gap:4px}#hud .mhelp{display:none}}
 @media (max-width:760px){#hud .mres em{display:none}#hud .micons{display:none}}
 @media (orientation:portrait) and (pointer:coarse){body.ingame.mob #hud .mrot{display:grid;place-items:center;position:fixed;inset:0;background:rgba(8,10,14,.94);font-size:20px;font-weight:700;pointer-events:auto;z-index:60}}
@@ -4961,9 +4978,12 @@ function lensOk(s,x,k,t){const T=s.T[t];const n=s.N[x];if(!T||T.o!==x)return'내
   if(k==='port'&&!CS[t].length)return'해안 아님';if(k==='school'&&!eraOn(s))return'학교 없음';if(k==='lab'&&!tutOn(s,'air'))return'연구소 없음';
   if(eraOn(s)){const qn=BL.filter(q=>q.t===t&&BQ[q.k].fl&&FACK.some(f=>f[0]===BQ[q.k].fl)).length;if(facN(T)+qn>=facCap(T))return'시설 칸 없음'}return''}
 function lensBase(k,t){return{fac:'공업력 +1',lab:'기술력 +20',school:'위인 점수',hub:'주 보급 +10',fort:'방어 +1',port:'바다 보급',farm:'보급력 +2'+(BREAD.has(t)?' (+2 비옥토)':''),mine:COAL_T.has(t)?'공업력 +2':'철광석 ×2',well:'석유 '+(OIL_T2[t]||0)}[k]}
-function lensSVG(s){if(!buildLens)return'';const x=myNat();if(!x||!s.N[x])return'';let o='';
+function lensSVG(s){if(buildLens===null)return'';const x=myNat();if(!x||!s.N[x])return'';let o='';
+  /* 인구가 모자라 시설 칸이 없는 땅은 채도를 빼서 비활성화처럼 */
+  const des=t=>`<path d="${MAP.sh[t]}" class="lensdes"/><path d="${MAP.sh[t]}" class="lenswash"/>`;
+  if(!buildLens){if(eraOn(s))for(const t in s.T){const T=s.T[t];if(T.o===x&&MAP.an[t]&&facN(T)>=facCap(T))o+=des(t)}return o}
   for(const t in s.T){const T=s.T[t];if(T.o!==x||!MAP.an[t])continue;const why=lensOk(s,x,buildLens,t);const[ax,ay]=MAP.an[t];
-    if(why){o+=`<path d="${MAP.sh[t]}" class="lensno"/>`;continue}
+    if(why){o+=why==='시설 칸 없음'?des(t):`<path d="${MAP.sh[t]}" class="lensno"/>`;continue}
     const A=adjOf(s,x,t,buildLens,Object.assign({},T,{[LENS_FL[buildLens]||buildLens]:1}));const v=A.v;const lv=v<=0?0:buildLens==='lab'?(v>=20?3:v>=10?2:1):(v>=3?3:v>=2?2:1);
     o+=`<path d="${MAP.sh[t]}" class="lensok lv${lv}"/>`;if(typeof m3On!=='undefined'&&m3On)continue;o+=`<g transform="translate(${ax},${ay-20})" class="lensb lv${lv}"><rect x="-19" y="-11" width="38" height="20" rx="10"/><text y="4" text-anchor="middle">${v>0?'+'+v:'+0'}</text></g>`}
   return o}
@@ -5224,7 +5244,7 @@ function m3Terrain(hi,ci){const W=MAP.W,H=MAP.H;const c=document.createElement('
      .replace('#include <map_fragment>','#include <map_fragment>\n{float ma=texture2D(meshT,vMapUv).a;diffuseColor.rgb=mix(vec3(.50,.43,.28),diffuseColor.rgb,smoothstep(.25,.75,ma));vec4 o=texture2D(ownT,vMapUv);float l=dot(diffuseColor.rgb,vec3(.3,.59,.11));diffuseColor.rgb=mix(diffuseColor.rgb,o.rgb*(0.62+0.62*l),o.a);diffuseColor.a=texture2D(maskT,vMapUv).a;vec4 hq=texture2D(hlT,vMapUv);diffuseColor.rgb=mix(diffuseColor.rgb,mix(hq.rgb,vec3(1.),hlP*.6),hq.a*(.45+.15*hlP));}')};
   const t=new THREE.Mesh(g,m);t.castShadow=t.receiveShadow=true;M3.S.add(t);M3.ter=t;m3City(true);m3Units(true)}
 /* 2D SVG → 그림. 화면용 장식(바탕 그림·바다 물결·구름·야간 그늘·2D 산 그림)은 빼고, 보이는 모양은 원본에서 계산된 스타일을 그대로 옮긴다 */
-const M3_PROPS=['fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','display','font-size','font-weight','font-family','text-anchor','dominant-baseline','paint-order','letter-spacing'];
+const M3_PROPS=['mix-blend-mode','fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','display','font-size','font-weight','font-family','text-anchor','dominant-baseline','paint-order','letter-spacing'];
 const M3_DROP='.vpn,text.nm,.nosup,.uico,.uicoS,.uicoB,.flgc,.facg,.won,.porti,.fort,.hubi,.labi,.hl-mv,.hl-atk,.cart,.mapD,.mapN,.wvbg,.shore1,.shore2,.clouds,#nightShade,#gNight,.grat,.decor,.compass,.compI,.grainr,.lakes,[fill="url(#oc)"]';
 function m3Hl(){const svg=document.getElementById('gmap');if(!svg||!M3.hc)return;const x=M3.hc.getContext('2d');x.clearRect(0,0,M3.hc.width,M3.hc.height);let n=0;
   for(const e of svg.querySelectorAll('#gHl .hl-mv,#gHl .hl-atk')){x.fillStyle=e.classList.contains('hl-atk')?'#FF4B3E':'#3FD07A';x.fill(new Path2D(e.getAttribute('d')));n++}
@@ -5631,7 +5651,8 @@ function renderGame(app){
     ${myT?`<button class="ghost" title="적과 맞닿은 내 영토(전선)에 후방 병력을 고르게 나눠 방어 부대로 보냅니다. 병력이 적은 곳 → 수도 → 공장 → 해안 순으로 먼저 채웁니다. 수도에는 2부대를 남기고, 이번 턴에 움직인 부대는 그대로 둡니다." onclick="sendAct({k:'spread'})">🛡 전선 배치</button><button class="${arrowMode?'':'ghost'}" title="공세 화살표: 출발지(내 땅) → 목표 땅 순서로 누르기. 턴을 끝낼 때 그 방향으로 진격" onclick="arrowMode=arrowMode?null:{};airMode=null;nukeMode=false;render()">➹ 공세 화살표</button><button class="ghost" title="전선별 명령(방어·신중 진격·총공세) 설정" onclick="tab='nat';ntab='front';render()">🧭 전선</button>${arrowMode?`<span class="pill">${arrowMode.f?`➹ ${arrowMode.f} → 목표 땅을 누르세요 (같은 땅 = 다시 고르기)`:'➹ 출발지(내 땅)를 누르세요'}</span>`:''}<button class="ghost" ${s.undoN?'':'disabled'} title="${s.undoN?`이번 차례의 직전 행동 되돌리기 (${s.undoN}번 가능) · Ctrl+Z`:'되돌릴 행동이 없습니다 (전투·공습·첩보·선전포고·지원·거래 이후에는 그 전으로 돌아갈 수 없음)'}" onclick="undoTurn()">↩ 실행 취소${s.undoN?` <span class="note">${s.undoN}</span>`:''}</button><button class="red" onclick="endTurn()">턴 종료</button>`:''}
     ${mode==='host'&&s.ph==='play'&&!s.on[x]&&s.seats[x]&&s.seats[x]!=='ai'?`<button class="ghost sm" onclick="sendAct({k:'auto'})">자동 진행</button>`:''}</div><div class="order">${strip}</div>`;
   mobRender(s,mn,myT);
-  $('#side').innerHTML=`${mobOn()?`<button class="mclose" onclick="mobClose()" aria-label="닫기">✕</button>`:''}${s.ph==='end'?endSheet():''}${tutSheet()}${simSheet()}${campPanel()}${sidePanel(opts)}${logSheet()}${hostPanel()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button>`;
+  $('#side').innerHTML=mobOn()?`<div class="mfhead"><b>${mobTitle()}</b><button class="mclose" onclick="mobClose()" aria-label="닫기">✕</button></div>${s.ph==='end'?endSheet():''}${tutSheet()}${simSheet()}${campPanel()}${sidePanel(opts)}${tab==='world'?hostPanel():''}`
+    :`${s.ph==='end'?endSheet():''}${tutSheet()}${simSheet()}${campPanel()}${sidePanel(opts)}${logSheet()}${hostPanel()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button>`;
   if(!myTurn()){airMode=null;nukeMode=false;nukeTgt=null;arrowMode=null;fdraw=null}
   {const tt=document.querySelector('#gmodal .ttree');const sl=tt?[tt.scrollLeft,tt.scrollTop]:null;$('#gmodal').innerHTML=capModal()+nukeModal()+techModal();const t2=document.querySelector('#gmodal .ttree');if(t2&&sl){t2.scrollLeft=sl[0];t2.scrollTop=sl[1]}}
   updateMap(opts);bindHost();bindChat();try{eraSplash()}catch(e){}}
@@ -5646,20 +5667,29 @@ function toggleSide(){sideOff=!sideOff;try{localStorage.setItem('eu-side',sideOf
 /* ================= 모바일 화면: 지도 전체 + 위 프로필·재화 · 왼쪽 지도 모드 · 아래 메뉴 · 오른쪽 결재 =================
    휴대폰(터치)에서 자동으로 켜지고, PC에서는 📱 버튼이나 M 키로 바꿔 볼 수 있다. 패널은 오른쪽에서 밀려 나오는 서랍(#side). */
 let mobUI=null;try{const v=localStorage.getItem('eu-mob');mobUI=v==null?null:v==='1'}catch(e){}
-let mobSheet=null,mobLastSel=null;const MOB_FULL=new Set(['rs','focus','bp','gov','era','dip','trade','stat','trait']);
+let mobSheet=null,mobLastSel=null,mobMenu=false;const MOB_FULL=new Set(['rs','focus','bp','gov','era','dip','trade','stat','trait']);
 function mobOn(){return mobUI!=null?mobUI:matchMedia('(pointer:coarse)').matches}
 function toggleMob(){mobUI=!mobOn();try{localStorage.setItem('eu-mob',mobUI?'1':'0')}catch(e){}mobSheet=null;sfx('click');if(typeof M3!=='undefined')M3.cw=0;render();setTimeout(()=>{if(typeof m3On!=='undefined'&&m3On&&M3.ok){M3.cw=0;M3.dirty=true;m3Kick()}},60)}
 function mobScroll(f){requestAnimationFrame(()=>{const sd=document.getElementById('side');if(!sd)return;const t=f(sd);sd.scrollTop=t?Math.max(0,t.getBoundingClientRect().top-sd.getBoundingClientRect().top+sd.scrollTop-6):0})}
-function mobOpen(t,nt){if(mobSheet&&tab===t&&(!nt||ntab===nt)){mobSheet=null}else{tab=t;if(nt)ntab=nt;mobSheet=t}sfx('click');render();if(mobSheet)mobScroll(sd=>nt&&nt!=='trait'?sd.querySelectorAll('.tabs')[1]:null)}
+function mobOpen(t,nt){if(mobSheet&&tab===t&&(!nt||ntab===nt)){mobSheet=null}else{tab=t;if(nt)ntab=nt;mobSheet=t}sfx('click');render();if(mobSheet)mobScroll(()=>null)}
+function mobTitle(){if(tab==='act')return sel?esc(sel.slice(2)):'지역';if(tab==='staff')return'📋 참모';if(tab==='world')return'🌍 세계';return{rs:'🔬 연구',focus:'🎯 중점',bp:'📐 설계도',gov:'🏛 내정',air:'✈ 공군',front:'🧭 전선',dip:'🤝 외교',trade:'📦 거래',era:'🕰 시대',stat:'📊 통계',trait:'지도자 · 나라 특성'}[ntab]||''}
 function mobClose(){mobSheet=null;if(tab==='act'){sel=null;tgt=null}render()}
 function mobProd(){const x=myNat();if(!x||!V.N[x])return;const cap=NAT[x].cap;const k=V.T[cap]&&V.T[cap].o===x&&V.T[cap].f?cap:Object.keys(V.T).find(t=>V.T[t].o===x&&V.T[t].f);if(!k){toast('공장이 있는 땅이 없습니다');return}sel='L:'+k;tgt=null;mobLastSel=sel;tab='act';mobSheet='act';sfx('click');render();mobScroll(sd=>[...sd.querySelectorAll('.lab')].find(e=>/^생산/.test(e.textContent.trim())))}
+/* 결재 카드: 꼭 할 일이 남아 있으면 결재 대신 그 일을 보여 준다 (누르면 그 화면으로) */
+const MOB_TASK={bq0:['건설','#F2A33A','#C25E12','#6b2f05'],rs:['연구','#4FA8E8','#1F5FA8','#06223f'],fo:['중점','#A98BE0','#5B3BA8','#1e0f40'],sup:['보급','#E8C24F','#B07A12','#3b2a04'],cut:['보급','#F07A5A','#B42A1F','#3a0905'],pact:['외교','#4FD1C5','#16827A','#05302c'],trade:['거래','#4FD1C5','#16827A','#05302c'],conf:['내정','#C77DDB','#7B2E99','#2a0a36'],ls:['탈환','#FF6B5A','#9E1B12','#fff']};
+function mobTask(s,x){return staffItems(s,x).find(i=>i.lv==='must')}
+function mobTaskGo(){const x=myNat();if(!x||!V.N[x])return;const it=mobTask(V,x);if(!it)return;sfx('note');
+  if(it.id==='bq0'){mobSheet=null;if(buildLens===null)lensToggle();render();return}
+  if(it.id==='rs'){mobOpen('nat','rs');return}if(it.id==='fo'){mobOpen('nat','focus');return}
+  try{(new Function(it.go))()}catch(e){}if(sel){mobLastSel=sel;mobSheet='act'}else mobSheet=tab;render();if(tab==='nat')mobScroll(()=>null)}
+function mobSkip(){const x=myNat();const it=mobTask(V,x);if(!it)return;if(staffSkip.rd!==V.rd||staffSkip.x!==x)staffSkip={rd:V.rd,x,ids:[]};staffSkip.ids.push(it.id);sfx('click');render()}
 function mobRes(ic,v,d,tip,bad,on){return`<span class="mres${bad?' bad':''}" ${tip?`data-tip="${esc(tip)}"`:''} ${on?`onclick="${on}"`:''}><i>${ic}</i><b>${v}</b>${d!=null&&d!==''?`<em>${d}</em>`:''}</span>`}
 function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mobOn();document.body.classList.toggle('mob',on);
   if(!on){if(H&&H.innerHTML)H.innerHTML='';document.body.classList.remove('mobside');return}
   /* 땅을 누르면 지역 서랍이 열리고, 선택을 풀면 닫힌다 */
   if(sel&&sel!==mobLastSel){mobSheet='act';tab='act'}else if(!sel&&mobLastSel&&mobSheet==='act')mobSheet=null;mobLastSel=sel;
   if(s.ph==='end'&&!mobSheet)mobSheet='nat';
-  document.body.classList.toggle('mobside',!!mobSheet);
+  document.body.classList.toggle('mobside',!!mobSheet);document.body.classList.toggle('mobtrait',!!mobSheet&&tab==='nat'&&ntab==='trait');
   /* 지도가 필요 없는 화면(연구·중점·설계도·내정·외교·통계…)은 전체 화면으로 */
   document.body.classList.toggle('mobfull',!!mobSheet&&(tab==='world'||(tab==='nat'&&MOB_FULL.has(ntab))));
   const n=mn&&s.N[mn];const live=n&&s.ph==='play';
@@ -5669,7 +5699,7 @@ function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mob
   /* 위 가운데: 아이콘 메뉴 */
   const sm=live?staffMust(s,mn):0;const pi=live&&typeof pactIn==='function'?pactIn().length+incoming().length:0;
   const ic=(k,i,l,cl,b)=>`<button class="mico${cl?' on':''}" onclick="${k}"><i>${i}</i><span>${l}</span>${b?`<s>${b}</s>`:''}</button>`;
-  const icons=ic(`mobOpen('staff')`,'📋','참모',mobSheet==='staff',sm)+ic(`mobOpen('world')`,'🌍','세계',mobSheet==='world')+(mn?ic(`mobOpen('nat','dip')`,'🤝','외교',mobSheet==='nat'&&ntab==='dip',pi):'')+(mn?ic(`mobOpen('nat','stat')`,'📊','통계',mobSheet==='nat'&&ntab==='stat'):'');
+  const icons=ic(`mobOpen('staff')`,'📋','참모',mobSheet==='staff',sm)+ic(`mobOpen('world')`,'🌍','세계',mobSheet==='world')+(mn?ic(`mobOpen('nat','dip')`,'🤝','외교',mobSheet==='nat'&&ntab==='dip',pi):'')+(mn?ic(`mobOpen('nat','trade')`,'📦','거래',mobSheet==='nat'&&ntab==='trade',live?incoming().length:0):'')+(mn&&eraOn(s)?ic(`mobOpen('nat','era')`,'🕰','시대',mobSheet==='nat'&&ntab==='era'):'')+(mn?ic(`mobOpen('nat','stat')`,'📊','통계',mobSheet==='nat'&&ntab==='stat'):'');
   /* 위 오른쪽: 재화 */
   let res='';if(n){const q=bqOn(s)?(n.bq||[]):null;
     res+=bqOn(s)?mobRes('🏭','+'+bqRate(s,mn),q.length?bqEta(s,mn,0)+'턴':'비었음',incTip(s,mn),!q.length,'mobProd()'):mobRes('🏭',n.r,'+'+income(s,mn),incTip(s,mn));
@@ -5678,7 +5708,7 @@ function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mob
     if(supOn(s)){const N=supNat(s,mn);res+=mobRes('🌾',N.thru,'','',false,'toggleSup()')}
     if(live&&!s.tut){const o=oilBal(s,mn);res+=mobRes(resImg('oil','mresimg'),o.have,'/'+o.need,'',o.have<o.need)}
     if(polOn(s))res+=mobRes('⚖',n.pp||0,'','',(n.conf??POL.conf0)<POL.low,`mobOpen('nat','gov')`)}
-  const sys=`<button class="mico sm" onclick="document.getElementById('snd').click();render()" title="소리"><i>${soundOn?'🔊':'🔇'}</i></button><button class="mico sm mhelp" onclick="helpOpen()" title="도움말"><i>❔</i></button><button class="mico sm" onclick="toggleMob()" title="PC 화면으로 (M)"><i>🖥</i></button>`;
+  const sys=`<button class="mico sm" onclick="document.getElementById('snd').click();render()" title="소리"><i>${soundOn?'🔊':'🔇'}</i></button><button class="mico sm${mobMenu?' on':''}" onclick="mobMenu=!mobMenu;render()" title="설정"><i>⚙</i></button>`+(mobMenu?`<div class="mmenu"><button onclick="mobMenu=false;helpOpen();render()">❔ 도움말 · 단축키</button><button onclick="mobMenu=false;achOpen();render()">🏆 도전과제</button><button onclick="mobMenu=false;toggleMob()">🖥 PC 화면으로</button><button onclick="mobMenu=false;if(confirm('방을 나갈까요?'))leaveRoom();else render()">🚪 방 나가기</button></div>`:'');
   /* 왼쪽: 지도 모드 */
   const md=(f,i,l,a)=>`<button class="mmode${a?' on':''}" onclick="${f};render()"><i>${i}</i><span>${l}</span></button>`;
   const modes=md('toggleRes()',resImg('oil','mresimg'),'자원',resView)+md('toggleSup()','📦','보급',supView)+md('toggleFlag()',mn?`<span class="mmflag" style="background-image:url('${flagURL(mn)}')"></span>`:'🚩',flagView?(flagMine?'내 국기':'국기'):'국기',flagView)+md('toggleStrat()','♟','전략',strat)+md('m3Toggle()','⛰','3D',typeof m3On!=='undefined'&&m3On)+md('toggleNight()',night?'☀':'☾',night?'낮':'야경',night);
@@ -5689,7 +5719,8 @@ function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mob
   /* 오른쪽 아래: 결재(턴 종료) 카드 + 빠른 명령 */
   const cur=s.cur;const turnN=s.ph!=='play'?'':myT?'':`${NAT[cur].n} 차례${s.seats[cur]==='ai'?' · 컴퓨터':''}`;
   const quick=myT&&s.ph==='play'?`<button class="mq" title="전선 배치" onclick="sendAct({k:'spread'})">🛡</button><button class="mq${arrowMode?' on':''}" title="공세 화살표" onclick="arrowMode=arrowMode?null:{};airMode=null;nukeMode=false;render()">➹</button><button class="mq" ${s.undoN?'':'disabled'} title="실행 취소" onclick="undoTurn()">↩${s.undoN?`<s>${s.undoN}</s>`:''}</button>`:'';
-  const end=s.ph!=='play'?'':myT?`<button class="mend" onclick="staffEnd()"><b>결재</b><span>${sm?`할 일 ${sm}개 남음`:'턴 종료'}</span><i class="mseal">印</i></button>`:`<div class="mend wait"><b>대기</b><span>${turnN}</span></div>`;
+  const task=myT&&s.ph==='play'?mobTask(s,mn):null;const TK=task&&(MOB_TASK[task.id]||['할 일','#F2A33A','#C25E12','#3b2205']);
+  const end=s.ph!=='play'?'':task?`<div class="mendw"><button class="mend task" style="--a:${TK[1]};--b:${TK[2]};--c:${TK[3]}" onclick="mobTaskGo()"><b>${TK[0]}</b><span>${esc(task.t)}</span><i class="mseal">${task.ic}</i></button><button class="mskip" onclick="mobSkip()" title="이번 턴엔 넘기기">${sm>1?`할 일 ${sm} · `:''}넘기기 ›</button></div>`:myT?`<button class="mend" onclick="staffEnd()"><b>결재</b><span>턴 종료</span><i class="mseal">印</i></button>`:`<div class="mend wait"><b>대기</b><span>${turnN}</span></div>`;
   const hint=arrowMode?`<div class="mhint">${arrowMode.f?`➹ ${arrowMode.f} → 목표 땅을 누르세요`:'➹ 출발지(내 땅)를 누르세요'}</div>`:buildLens!==null?'<div class="mhint">🏗 건설 렌즈 — 아래 「건설」을 다시 누르면 닫힘</div>':'';
   H.innerHTML=`<div class="mtop">${prof}<div class="micons">${icons}</div><div class="mres-row">${res}</div><div class="msys">${sys}</div></div>
     <div class="mleft">${modes}</div>${hint}
@@ -5791,7 +5822,7 @@ function sidePanel(opts){
   const sm=mn&&s.ph==='play'&&s.N[mn]?staffMust(s,mn):0;const tabs=[['act','지역'],['nat',s.sim?'나라':'내 나라'],['staff',`📋 참모${sm?` <i class="stfbadge">${sm}</i>`:''}`],['world','세계']];
   let body='';
   if(tab==='act')body=regionPanel(opts);else if(tab==='nat')body=mn?natPanel(mn):'<p class="mute">맡은 나라가 없습니다.</p>';else if(tab==='staff')body=mn&&s.N[mn]?staffPanel(mn):'<p class="mute">맡은 나라가 없습니다.</p>';else body=worldPanel();
-  return`<section class="sheet"><div class="tabs">${tabs.map(([k,l])=>`<button class="sm ${tab===k?'act':''}" onclick="tab='${k}';render()">${l}</button>`).join('')}</div>${body}</section>`}
+  return`<section class="sheet"><div class="tabs stabs">${tabs.map(([k,l])=>`<button class="sm ${tab===k?'act':''}" onclick="tab='${k}';render()">${l}</button>`).join('')}</div>${body}</section>`}
 function unitRows(us,x){const grp=new Map();for(const u of us){const k=[u.t,u.d?1:0,u.hp,u.mv,u.a?1:0,u.goal||''].join('|');if(!grp.has(k))grp.set(k,{u,n:0});grp.get(k).n++}
   return`<div class="units">${[...grp.values()].map(({u,n})=>{const mh=x==='N'?UT[u.t].p:maxHp(V,x,u.t,u);const gl=u.goal?` <span class="pill">→ ${u.goal}</span>`:'';return`<div class="unit"><span><img class="uimg" src="${IU('img/unit/'+(UT[u.t].img||u.t)+'.png')}" alt="" onerror="this.remove()">${UT[u.t].n}${n>1?` <b>×${n}</b>`:''}${x!=='N'&&UT[u.t].k!=='sea'?(u.d?' <span class="pill">방어</span>':' <span class="pill bad">공격</span>'):''}${gl}</span><span class="note">체력 ${u.hp}/${mh} <span class="hpbar"><i style="width:${Math.round(u.hp/mh*100)}%"></i></span> · 이동 ${u.mv}${u.a?' · 공격함':''}</span></div>`}).join('')}</div>`}
 function ownerName(o){return o==='N'?'중립국':o==='X'?'참전하지 않은 나라':NAT[o].n+(V.N[o]&&V.N[o].st==='puppet'?' (괴뢰국)':'')}
@@ -5920,9 +5951,9 @@ function pactPanel(x,myT,others){const s=V,n=s.N[x];const P=pactOf(s,x);const po
   h+=myT&&n.st==='on'?(cand.length?`<div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px">${cand.map(y=>`<button class="sm" onclick="sendAct({k:'pact',from:'${x}',to:'${y}'})">${CAPN[x]}-${CAPN[y]} 연합군 제안</button>`).join('')}</div>`:'<p class="note">지금 제안할 수 있는 나라가 없습니다 (전쟁 중이거나, 괴뢰국이거나, 이미 연합군 소속).</p>'):'<p class="note">내 차례에 제안할 수 있습니다. 받은 제안은 언제든 수락할 수 있습니다.</p>';
   return h+'</div>'}
 function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=facOf(s,x);
-  const LDx=ldOf(s,x);let h=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${emb(x)}${NAT[x].n}${LDx?` <span class="ldpill" data-tip="${esc(`<div class='th'>${LEAD_ICON[LDx]} ${LEAD[LDx].n}</div>`+ldTraits(LDx).map(t=>`<div class='${t.bad?'tbad':''}'>${t.bad?'▼':'▲'} <b>${t.n}</b> ${t.d}</div>`).join(''))}">${LEAD_ICON[LDx]} ${esc(LEAD[LDx].n)}</span>`:''}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?affName(s,x):n.st==='annexed'?'병합됨':'몰락'}</span></div>
+  const LDx=ldOf(s,x);let h=`<div class="nathead"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${emb(x)}${NAT[x].n}${LDx?` <span class="ldpill" data-tip="${esc(`<div class='th'>${LEAD_ICON[LDx]} ${LEAD[LDx].n}</div>`+ldTraits(LDx).map(t=>`<div class='${t.bad?'tbad':''}'>${t.bad?'▼':'▲'} <b>${t.n}</b> ${t.d}</div>`).join(''))}">${LEAD_ICON[LDx]} ${esc(LEAD[LDx].n)}</span>`:''}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?affName(s,x):n.st==='annexed'?'병합됨':'몰락'}</span></div>
   <p class="note">💰 경제력 ${n.r} · 🏭 공업력 +${income(s,x)}/턴 · 영토 ${landCount(s,x)}</p>${eraOn(s)?`<p class="note">🕰 ${eraName(eraOf(s.rd))} 시대 (${eraLeft(s.rd)}라운드 남음) · 지지율 <b>${n.app??APP0}</b>${n.age?` · ${AGE[n.age].i} <b>${AGE[n.age].n}</b>`:''}</p>`:''}${keyRule(s)&&KEYC[x]&&['on','puppet'].includes(n.st)?`<p class="note" title="결속도 30 미만: 수도 함락 즉시 항복 · 30~49: 결사항전, 수도(1곳)를 잃으면 항복 · 50~69: 2곳 · 70 이상: 3곳">🏛 핵심 도시 ${(KEYC[x].concat(x==='FR'&&has(s,'FR','freefr')?['알제']:[])).map(k=>`${s.T[k]&&s.T[k].o===x?'✓':'✗'} ${k}${NAT[x].cap===k?'★':''}`).join(' · ')} — ${lowConf(s,x)?'<b style="color:var(--hot)">결속도 30 미만: 수도를 잃으면 결사항전 없이 바로 항복</b>':`결속도 ${cfv(s,x)}: 결사항전 + 핵심 도시 <b>${keyNeed(s,x)}곳</b>을 잃으면 항복`}</p>`:''}${capMeter(s,x)}
-  <div class="tabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['stat','통계'],['trait','지도자·특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
+  </div><div class="tabs ntabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['stat','통계'],['trait','지도자·특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
   if(!tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[ntab]))ntab='dip';
   if(ntab==='focus'){const fp=n.fp||0,up=n.up||{};
     h+=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:var(--gold)"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">병기창 · 중점 포인트</span><span class="stat" style="font-size:18px;color:var(--gold)">${fp} FP</span></div>
@@ -6168,7 +6199,7 @@ function polSheet(x,myT){const s=V,n=s.N[x];if(!polOn(s))return'';const cf=cfv(s
   const ts=Object.keys(s.N).filter(y=>y!==x&&['on','puppet'].includes(s.N[y].st));if(!ts.includes(polTo))polTo=ts[0];const okS=myT&&(n.r||0)>=spyCost(s,x)&&ts.length;
   const cd=n.regRd&&s.rd-n.regRd<POL.regCD;
   return`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:${low?'var(--hot)':'#5B4A8A'}"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">🏛 정치</span><span class="stat" style="font-size:18px;color:#5B4A8A">정치력 ${pp} <span class="note">(+${ppGain(s,x)}/턴)</span></span></div>
-   <p style="margin:6px 0 4px">체제 <b>${REG[regOf(s,x)].i} ${REG[regOf(s,x)].n}</b> <span class="note">· ${REG[regOf(s,x)].d}${regMul(s,x)>1?` <b style="color:var(--ok)">×2 (같은 체제 ${NAT[regMate(s,x)].n}와 동맹)</b>`:''}</span></p>
+   ${REG[regOf(s,x)]?`<p style="margin:6px 0 4px">체제 <b>${REG[regOf(s,x)].i} ${REG[regOf(s,x)].n}</b> <span class="note">· ${REG[regOf(s,x)].d}${regMul(s,x)>1?` <b style="color:var(--ok)">×2 (같은 체제 ${NAT[regMate(s,x)].n}와 동맹)</b>`:''}</span></p>`:''}
    <p style="margin:8px 0 4px">결속도 <b style="font-size:18px;color:${low?'var(--hot)':'inherit'}">${cf}</b> <span class="note">→ 매 턴 정치력 +${ppGain(s,x)} · ${unityTier(cf)}</span></p>${unityBar(cf)}
    <p class="note" style="margin:6px 0">오르는 것: 매 턴 +1 · 결속 캠페인 +1 · 중점 완료 +10 · 땅 점령 +4 · 항복시킴 +10 · 인구·요새·공장 +1.5. 떨어지는 것: 전투 -3 · 병력 손실 1부대당 -1 · 땅 상실 -2.5 · 폭격 -2.5(수도 -5) · 스파이 -1 · 핵 -50.</p>
    <div class="row"><button class="sm ${n.ccamp?'':'ghost'}" ${myT?'':'disabled'} onclick="sendAct({k:'ccamp'})">${n.ccamp?'✅ 결속 캠페인 진행 중 (끄기)':'결속 캠페인 시작'}</button><span class="note">매 턴 정치력 ${campCost(s,x)}(수입의 절반) → 결속도 +1 추가 (합쳐서 매 턴 +2)</span></div>
