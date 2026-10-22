@@ -733,6 +733,83 @@ header.top .sp{flex:1}
 .fx-bld{fill:none;stroke-width:3;opacity:0;animation:rip 1s ease-out forwards;transform-box:fill-box;transform-origin:center}
 .fx-plus{font:700 14px var(--f-body);stroke:#fff;stroke-width:3.5px;paint-order:stroke;animation:rise 1.6s ease-out forwards}
 @media (prefers-reduced-motion:reduce){.city .sprawl,.fly,.nk-rise,.nk-cap circle,.cloud,.bob,.smoke circle,.capstar,.rv2,.ter.now,.oc.now,.hl-sel,.hl-mv,.hl-atk,.amph,.xhair,.shake{animation:none}}
+
+/* ================= 모바일 화면 ================= */
+#hud{display:none}
+body.ingame.mob{--mt:clamp(46px,13vh,64px);--mb:clamp(42px,12vh,58px);overflow:hidden;height:100vh;height:100dvh}
+body.ingame.mob header.top,body.ingame.mob #gbar,body.ingame.mob .ztools,body.ingame.mob .bigbuild,body.ingame.mob .sidetog,body.ingame.mob .game>div:first-child>.note{display:none!important}
+body.ingame.mob #app{position:fixed!important;inset:0;max-width:none;margin:0;padding:0!important;display:block!important;height:auto!important}
+body.ingame.mob .game{display:block!important}
+body.ingame.mob .game>div:first-child{position:fixed;inset:0;display:block}
+body.ingame.mob .mapbox,body.ingame.mob .mapbox.m3{position:absolute!important;inset:0;height:auto!important;border-radius:0!important;border:0;box-shadow:none}
+body.ingame.mob .mapwrap{max-height:none!important;height:100%!important}
+body.ingame.mob #side{display:none}
+body.ingame.mob.mobside #side{display:block;position:fixed;z-index:30;right:8px;top:calc(var(--mt) + 6px);bottom:calc(var(--mb) + 6px);width:min(440px,52vw);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--paper,#f4ecd8);border:1px solid rgba(201,162,77,.55);border-radius:14px;padding:12px 12px 10px;box-shadow:0 10px 40px rgba(0,0,0,.55);animation:mslide .18s ease-out}
+@keyframes mslide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+body.ingame.mob .mclose{position:sticky;top:-12px;float:right;z-index:2;width:30px;height:30px;padding:0;border-radius:50%;background:#2a2a2a;color:#fff;border:0;font-size:14px;margin:-4px -4px 0 6px}
+body.ingame.mob #banner{top:45%}
+body.ingame.mob .lensbar{bottom:calc(var(--mb) + 8px);left:12px;right:calc(clamp(120px,24vw,190px) + 76px);transform:none;max-width:none;z-index:21;padding:4px 6px;gap:2px;justify-content:center}
+body.ingame.mob .lensbar button{min-width:40px;font-size:17px;padding:2px 3px}body.ingame.mob .lensbar button span{font-size:10px}body.ingame.mob .lenshint{font-size:10.5px;margin-top:0}
+body.ingame.mob .mapbox{z-index:auto}
+body.ingame.mob .resleg{left:auto!important;right:calc(min(46vw,190px) + 10px)!important;bottom:calc(var(--mb) + 8px)!important;top:auto!important}
+body.ingame.mob #hud{display:block;position:fixed;inset:0;z-index:20;pointer-events:none;font-family:var(--f-sans,sans-serif);color:#fff}
+#hud button{outline:none;pointer-events:auto;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#hud .mtop{position:absolute;left:0;right:0;top:0;height:var(--mt);display:flex;align-items:center;gap:10px;padding:0 12px 0 max(10px,env(safe-area-inset-left));background:linear-gradient(180deg,#0b1018,#141d29);border-bottom:1px solid rgba(201,162,77,.35);box-shadow:0 4px 14px rgba(0,0,0,.45);pointer-events:none}
+#hud .mprof{pointer-events:auto;display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:#fff;text-align:left;flex:none}
+#hud .mflag{width:calc(var(--mt) - 14px);aspect-ratio:1;border-radius:6px;background:center/cover no-repeat;box-shadow:0 0 0 2px #C9A24D,0 2px 8px rgba(0,0,0,.6)}
+#hud .mpi{display:flex;flex-direction:column;gap:3px;min-width:0}
+#hud .mpi>b{font:700 clamp(15px,3.6vh,21px)/1 var(--f-display,serif);letter-spacing:.04em;text-shadow:0 2px 4px rgba(0,0,0,.7)}
+#hud .mlv{display:flex;align-items:center;gap:6px}
+#hud .mlv i{font-style:normal;font-weight:800;font-size:11px;background:#3FBF4A;color:#0b1a0c;padding:1px 5px;border-radius:3px}
+#hud .mxp{width:62px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}#hud .mxp em{display:block;height:100%;background:linear-gradient(90deg,#3FBF4A,#C8F05A)}
+#hud .mlv small{font-size:11px;color:#d9d4c6;white-space:nowrap}
+#hud .micons{display:flex;gap:2px;pointer-events:none;flex:none}
+#hud .mico{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:46px;height:calc(var(--mt) - 10px);background:none;border:0;color:#fff;padding:0 4px;border-radius:8px}
+#hud .mico i{font-style:normal;font-size:clamp(17px,4.4vh,24px);line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+#hud .mico span{font-size:10.5px;font-weight:600;color:#e8e2d2}
+#hud .mico.on{background:rgba(201,162,77,.25)}
+#hud .mico.sm{min-width:36px}
+#hud .mico s,#hud .mtab s,#hud .mq s{position:absolute;top:2px;right:4px;text-decoration:none;background:#E5483B;color:#fff;font-size:10px;font-weight:800;min-width:16px;height:16px;line-height:16px;border-radius:8px;text-align:center;padding:0 3px}
+#hud .mres-row{flex:1;display:flex;justify-content:flex-end;gap:6px;min-width:0;overflow:hidden;pointer-events:auto}
+#hud .mres{display:flex;align-items:center;gap:4px;padding:3px 9px 3px 4px;background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.12);border-radius:16px;white-space:nowrap;cursor:default}
+#hud .mres i{font-style:normal;font-size:16px;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.1)}
+#hud .mresimg{width:18px;height:18px;object-fit:contain;vertical-align:middle}
+#hud .mres b{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+#hud .mres em{font-style:normal;font-size:10.5px;color:#b8d98f}
+#hud .mres.bad em,#hud .mres.bad b{color:#FF8A7A}
+#hud .msys{display:flex;gap:0;flex:none;pointer-events:none}
+#hud .mleft{position:absolute;left:max(10px,env(safe-area-inset-left));top:calc(var(--mt) + 6px);display:flex;flex-direction:row;gap:5px;max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none;pointer-events:auto}
+#hud .mleft::-webkit-scrollbar{display:none}
+#hud .mmode{--s:clamp(26px,7.4vh,34px);height:var(--s);display:flex;flex-direction:row;align-items:center;gap:5px;padding:0 11px 0 8px;border-radius:calc(var(--s) / 2);color:#fff;background:linear-gradient(160deg,rgba(38,68,92,.94),rgba(16,30,46,.94));border:1px solid rgba(120,190,230,.45);box-shadow:0 2px 8px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);flex:none}
+#hud .mmode i{font-style:normal;font-size:calc(var(--s) * .5);line-height:1;display:grid;place-items:center}
+#hud .mmode i .mresimg{width:calc(var(--s) * .56);height:calc(var(--s) * .56)}
+#hud .mmode span{font-size:clamp(11px,3.2vh,13px);font-weight:700;white-space:nowrap}
+#hud .mmode.on{background:linear-gradient(160deg,#E9C46A,#B8862E);color:#2a1a05;border-color:#FFE7A3;box-shadow:0 0 10px rgba(233,196,106,.6)}
+#hud .mmflag{display:block;width:calc(var(--s) * .62);height:calc(var(--s) * .42);background:center/100% 100% no-repeat;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+#hud .mright{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:calc(var(--mb) + 10px);display:flex;flex-direction:column;align-items:flex-end;gap:clamp(5px,1.6vh,10px)}
+body.mobside #hud .mright{display:none}body.mobfull #hud .mleft{display:none}
+body.ingame.mob.mobfull #side{left:0;right:0;top:var(--mt);bottom:var(--mb);width:auto;border-radius:0;border:0;box-shadow:none;padding:14px max(16px,calc((100vw - 1100px) / 2)) 12px;animation:mfull .16s ease-out}
+@keyframes mfull{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+body.ingame.mob.mobfull .mclose{top:-14px}
+#hud .mqs{display:flex;flex-direction:column;align-items:flex-end;gap:clamp(5px,1.4vh,8px)}
+#hud .mq{position:relative;width:clamp(34px,9vh,44px);height:clamp(34px,9vh,44px);border-radius:50%;padding:0;border:1px solid rgba(255,255,255,.25);background:rgba(14,20,30,.82);color:#fff;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+#hud .mq.on{background:#C9A24D;color:#1d1405}#hud .mq:disabled{opacity:.4}
+#hud .mend{position:relative;width:clamp(120px,24vw,190px);height:clamp(62px,18vh,96px);border-radius:12px;padding:8px 12px;border:1px solid #9ff0a6;background:linear-gradient(135deg,#34D27A 0%,#139E58 55%,#0B6E3E 100%);color:#062814;text-align:left;display:flex;flex-direction:column;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.35);overflow:hidden;pointer-events:auto}
+#hud .mend b{font:800 clamp(20px,5.4vh,30px)/1 var(--f-display,serif);letter-spacing:.12em}
+#hud .mend span{font-size:11.5px;font-weight:700;margin-top:4px;opacity:.85}
+#hud .mend .mseal{position:absolute;right:-6px;bottom:-12px;font:900 clamp(48px,13vh,72px)/1 var(--f-display,serif);font-style:normal;color:rgba(178,24,24,.28);transform:rotate(-12deg)}
+#hud .mend.wait{background:linear-gradient(135deg,#59616b,#2c3239);border-color:#8a939c;color:#e5e7ea}
+#hud .mbot{position:absolute;left:0;right:0;bottom:0;height:var(--mb);display:flex;padding:0 max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left));background:linear-gradient(180deg,#203038,#121c22);border-top:2px solid #2FA88A;box-shadow:0 -4px 14px rgba(0,0,0,.4);pointer-events:auto}
+#hud .mtab{position:relative;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:0;color:#e9efe9;padding:0;min-width:0}
+#hud .mtab+.mtab::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:1px;background:rgba(255,255,255,.16)}
+#hud .mtab i{font-style:normal;font-size:clamp(16px,4.4vh,22px)}
+#hud .mtab span{font-size:clamp(12px,3.4vh,17px);font-weight:700;white-space:nowrap}
+#hud .mtab.on{color:#5BE3A0}#hud .mtab.on span{text-shadow:0 0 8px rgba(91,227,160,.5)}
+#hud .mhint{position:absolute;left:50%;top:calc(var(--mt) + clamp(26px,7.4vh,34px) + 14px);transform:translateX(-50%);background:rgba(10,14,22,.85);border:1px solid #C9A24D;color:#FFE7A3;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:14px;white-space:nowrap}
+#hud .mrot{display:none}
+@media (max-width:980px){#hud .mico span{display:none}#hud .mico{min-width:34px}#hud .mlv small{display:none}#hud .mtab i{display:none}#hud .mres em{display:none}#hud .mres{padding-right:7px}#hud .mres-row{gap:4px}#hud .mhelp{display:none}}
+@media (max-width:760px){#hud .mres em{display:none}#hud .micons{display:none}}
+@media (orientation:portrait) and (pointer:coarse){body.ingame.mob #hud .mrot{display:grid;place-items:center;position:fixed;inset:0;background:rgba(8,10,14,.94);font-size:20px;font-weight:700;pointer-events:auto;z-index:60}}
 </style>
 </head>
 <body>
@@ -1720,7 +1797,7 @@ function supState(s,k){const T=s.T[k];const x=T&&T.o;if(!x||!s.N||!s.N[x])return
 const SUP_NEED={inf:1,art:1.5,arm:2.5,sea:0};
 function supOn(s){return!!s&&!s.tut}
 /* 보급력(식량): 매 턴 보급력(수송력)에서 군대 소요를 뺀 남는 만큼 비축 → 인구를 늘릴 때 쓴다 */
-const FOOD_MAX=300,POP_FOOD=3,FOOD_TILE=1;
+const FOOD_MAX=300,POP_FOOD=4,FOOD_TILE=1;
 function foodGain(s,x){const N=supNat(s,x);let g=0;for(const o of Object.values(supRegs(s,x)))g+=Math.max(0,o.cap-o.load);return{sur:Math.round(g*GROW_K),farm:0,def:0,N}}
 function popFood(s){return supOn(s)&&!s.camp}
 function popPay(s,x,t){return popFood(s)?popCost(s,x,t)*POP_FOOD:popCost(s,x,t)}
@@ -1793,7 +1870,7 @@ const REG_OF={},REGS={};
 function regOf(k){return REG_OF[k]||null}
 /* 🌾 나라 보급력(식량): 영토마다 2 + 곡창 지대 + 국가 기술. 군대 소요를 넘는 몫이 성장 게이지로 간다. 땅마다의 보급은 supCap */
 const BREAD=new Set(['키예프','체르니고프','하리코프','오데사','보로네시','쿠르스크','크라스노다르','로스토프','부다페스트','데브레첸','세게드','부쿠레슈티','몰다비아','베사라비아','롬바르디아','에밀리아','베네토','샹파뉴','부르주','루아르','포메른','동프로이센','유틀란트','포즈난','우치']);
-const SUP_BASE=42,SUP_TILE=0,SUP_BREAD=2,FARM_SUP=2,FARM_FERT=2,FARM_COMBO=1,COAL_BASE=1,MINE_COAL=2,REG_HUB=10,REG_RAIL=2,REG_PORT=2,GROW_K=.2;
+const SUP_BASE=42,SUP_TILE=0,SUP_BREAD=2,FARM_SUP=2,FARM_FERT=2,FARM_COMBO=1,COAL_BASE=1,MINE_COAL=2,REG_HUB=10,REG_RAIL=2,REG_PORT=2,GROW_K=.08;
 function supNat(s,x){const n=s.N&&s.N[x];if(!n)return{thru:0,dem:0,f:1};let T0=0,B=0,D=0;
   for(const k in s.T){const T=s.T[k];if(T.o!==x)continue;if(!(T.fallout>0)){T0++;if(BREAD.has(k))B++}for(const u of T.u)D+=supNeedU(u)}
   const tech=rfx(s,x).supT||0;const FM=farmSup(s,x);const thru=SUP_BASE+SUP_TILE*T0+SUP_BREAD*B+FM.v+tech;return{thru,FM,dem:Math.round(D*10)/10,f:1,T:T0,B,tech}}
@@ -5107,11 +5184,16 @@ function m3Init(box){
   M3.tgt=new THREE.Vector3(0,0,25);M3.az=0;M3.el=1.0;M3.dist=1150;
   let dn=null;cv.addEventListener('contextmenu',e=>e.preventDefault());
   cv.addEventListener('pointerdown',e=>{dn={x:e.clientX,y:e.clientY,b:(e.button===2||e.shiftKey)?'rot':'pan',m:false};cv.setPointerCapture(e.pointerId)});
-  cv.addEventListener('pointermove',e=>{if(!dn)return;const dx=e.clientX-dn.x,dy=e.clientY-dn.y;if(!dn.m&&Math.hypot(dx,dy)<4)return;dn.m=true;dn.x=e.clientX;dn.y=e.clientY;
+  cv.addEventListener('pointermove',e=>{if(!dn||M3.pinch)return;const dx=e.clientX-dn.x,dy=e.clientY-dn.y;if(!dn.m&&Math.hypot(dx,dy)<4)return;dn.m=true;dn.x=e.clientX;dn.y=e.clientY;
     if(dn.b==='rot'){M3.az-=dx*0.006;M3.el=Math.max(0.78,Math.min(1.5,M3.el+dy*0.005))}
     else{const k=M3.dist/cv.clientHeight*0.9;const c=Math.cos(M3.az),s=Math.sin(M3.az);M3.tgt.x-=(dx*c+dy*s*1.0)*k;M3.tgt.z-=(-dx*s+dy*c)*k;M3.tgt.x=Math.max(-W/2,Math.min(W/2,M3.tgt.x));M3.tgt.z=Math.max(-H/2,Math.min(H/2,M3.tgt.z))}
     m3Kick()});
-  cv.addEventListener('pointerup',e=>{const d=dn;dn=null;if(d&&!d.m&&e.button===0)m3Click(e)});
+  cv.addEventListener('pointerup',e=>{const d=dn;dn=null;if(d&&!d.m&&e.button===0&&!M3.pinch)m3Click(e)});
+  /* 휴대폰: 두 손가락 벌리기·오므리기 = 확대·축소, 비틀기 = 회전 */
+  {let p3=null;const pd=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY),pa=t=>Math.atan2(t[1].clientY-t[0].clientY,t[1].clientX-t[0].clientX);
+   cv.addEventListener('touchstart',e=>{if(e.touches.length===2){p3={d:pd(e.touches),D:M3.dist,a:pa(e.touches),az:M3.az};M3.pinch=true;if(dn)dn.m=true}},{passive:true});
+   cv.addEventListener('touchmove',e=>{if(!p3||e.touches.length!==2)return;e.preventDefault();const t=e.touches;M3.dist=Math.max(140,Math.min(1500,p3.D*p3.d/Math.max(1,pd(t))));let da=pa(t)-p3.a;if(da>Math.PI)da-=2*Math.PI;if(da<-Math.PI)da+=2*Math.PI;M3.az=p3.az-da;m3Kick()},{passive:false});
+   cv.addEventListener('touchend',e=>{if(p3&&e.touches.length<2){p3=null;dn=null;setTimeout(()=>{M3.pinch=false},120)}})}
   cv.addEventListener('wheel',e=>{e.preventDefault();const dy=e.deltaMode===1?e.deltaY*33:e.deltaY;M3.dist=Math.max(140,Math.min(1500,M3.dist*Math.exp(dy*0.0012)));m3Kick()},{passive:false});
   if(!M3.keys){M3.keys=1;addEventListener('keydown',e=>{if(!m3On||/INPUT|TEXTAREA/.test((e.target||{}).tagName||''))return;if(e.key==='q'||e.key==='Q'){M3.az+=0.15;m3Kick()}else if(e.key==='e'||e.key==='E'){M3.az-=0.15;m3Kick()}})}
   M3.rs=new ResizeObserver(es=>{for(const e of es){M3.cw=e.contentRect.width;M3.ch=e.contentRect.height}m3Kick()});M3.rs.observe(box);
@@ -5537,9 +5619,9 @@ function setCnt(n){cnt=n;tgt=null;render()}
 function renderGame(app){
   const s=V;const x=s.cur;const mn=myNat();const opts=curOpts();const myT=myTurn();
   if(!document.getElementById('gmap')){app.innerHTML=`<div id="gbar"></div><div class="game"><div><div class="mapbox tex"><div class="mapwrap">${mapStatic()}</div><div id="banner"></div><div id="emoB" class="emob"></div><div class="stratleg" id="stratLeg"></div>
-    <button class="sidetog" id="sideTog" onclick="toggleSide()" title="오른쪽 패널 접기/펴기 (H)">⟩</button><div class="ztools"><button class="ghost sm" onclick="helpOpen()" title="단축키·지도 보는 법 (?)" style="font-size:13px;font-weight:700">?</button><button class="ghost sm" id="resBtn" onclick="toggleRes()" title="자원 지도 (R): 자원 아이콘 · 자원별 지명 색" style="font-size:12px${resView?';font-weight:700':''}">자원</button><button class="ghost sm" id="supBtn" onclick="toggleSup()" title="보급 보기: 땅마다 보급 사용/용량" style="font-size:12px">보급</button><button class="ghost sm" id="stratBtn" onclick="toggleStrat()" aria-label="전략 보기" title="전략 보기: 토큰·지명 없이 나라 색만" style="font-size:12px">전략</button><button class="ghost sm" id="flagBtn" onclick="toggleFlag()" title="국기 보기: 영토와 부대를 나라 국기로" style="font-size:12px">국기</button><button class="ghost sm" id="m3Btn" onclick="m3Toggle()" title="3D 지도 ↔ 2D 지도 (3D: 왼쪽 끌기 이동 · 오른쪽 끌기 회전 · 휠 확대 · Q/E 회전)" style="font-size:12px">3D</button><button class="ghost sm" id="nightBtn" onclick="toggleNight()" aria-label="야경 보기">☾</button><button class="ghost sm" onclick="zoom(.3)" aria-label="확대">＋</button><button class="ghost sm" onclick="zoom(-.3)" aria-label="축소">－</button></div></div>
+    <button class="sidetog" id="sideTog" onclick="toggleSide()" title="오른쪽 패널 접기/펴기 (H)">⟩</button><div class="ztools"><button class="ghost sm" onclick="helpOpen()" title="단축키·지도 보는 법 (?)" style="font-size:13px;font-weight:700">?</button><button class="ghost sm" id="resBtn" onclick="toggleRes()" title="자원 지도 (R): 자원 아이콘 · 자원별 지명 색" style="font-size:12px${resView?';font-weight:700':''}">자원</button><button class="ghost sm" id="supBtn" onclick="toggleSup()" title="보급 보기: 땅마다 보급 사용/용량" style="font-size:12px">보급</button><button class="ghost sm" id="stratBtn" onclick="toggleStrat()" aria-label="전략 보기" title="전략 보기: 토큰·지명 없이 나라 색만" style="font-size:12px">전략</button><button class="ghost sm" id="flagBtn" onclick="toggleFlag()" title="국기 보기: 영토와 부대를 나라 국기로" style="font-size:12px">국기</button><button class="ghost sm" id="m3Btn" onclick="m3Toggle()" title="3D 지도 ↔ 2D 지도 (3D: 왼쪽 끌기 이동 · 오른쪽 끌기 회전 · 휠 확대 · Q/E 회전)" style="font-size:12px">3D</button><button class="ghost sm" id="nightBtn" onclick="toggleNight()" aria-label="야경 보기">☾</button><button class="ghost sm" onclick="toggleMob()" title="모바일 화면으로 보기 (M)" style="font-size:14px">📱</button><button class="ghost sm" onclick="zoom(.3)" aria-label="확대">＋</button><button class="ghost sm" onclick="zoom(-.3)" aria-label="축소">－</button></div></div>
     <p class="note">내 영토를 누르면 갈 수 있는 곳은 <b style="color:var(--ok)">초록</b>, 칠 수 있는 곳은 <b style="color:var(--hot)">빨강</b>으로 깜빡입니다. 바다를 건너는 상륙은 점선 호로 이어집니다. 파란 선 = 강(건너면 이동 -1, 방어 +1), 산 모양 = 산, 물결 = 언덕, ★ = 수도, 굴뚝 = 공장. 부대 칩의 숫자는 부대 수, 금색 별은 특수 유닛, 빨간 점은 부상입니다. 지도는 끌어서 옮기고 마우스 휠(휴대폰은 두 손가락)이나 ＋/－ 로 확대합니다.</p></div>
-    <div id="side"></div></div><div id="gmodal"></div>`;mz=1;bindMap();nightStr='';wonStr='';statStr='';applyNight();m3Apply();sideApply()}
+    <div id="side"></div></div><div id="hud"></div><div id="gmodal"></div>`;mz=1;bindMap();nightStr='';wonStr='';statStr='';applyNight();m3Apply();sideApply()}
   const turnTxt=s.ph==='end'?'종전':`${s.rd}라운드 <span class="note" title="${SEASONN[seasonOf(s.rd)][2]}">${calOf(s.rd).y}.${calOf(s.rd).m} ${SEASONN[seasonOf(s.rd)][1]}${SEASONN[seasonOf(s.rd)][0]}</span>${evActive(s).map(([id,t])=>` <span class="evchip" title="${esc(EVN[id][0]+' — '+EVN[id][3])}">${EVN[id][1]} ${EVN[id][0]} <span class="note">${esc(t)}</span></span>`).join('')} · ${emb(x)}${NAT[x].n} 차례 <span class="note">${s.seats[x]==='ai'?(s.sim?'(컴퓨터 · '+DOCT[x].n+')':'(컴퓨터)'):s.seats[x]?((s.pf&&s.pf[s.seats[x]]&&s.pf[s.seats[x]].av?avHtml(s.pf[s.seats[x]].av,40):'')+esc(nickOf(s.seats[x])))+(s.on[x]?'':' (연결 끊김)'):'(자동)'}</span>`;
   const strip=ORDER.filter(y=>s.N[y]).map(y=>{const n=s.N[y];const out=n.st==='annexed'||n.st==='dead';const AG=eraOn(s)&&!out?(n.age?AGE[n.age]:{n:'민심 보통',i:'🙂',d:'특별한 효과 없음'}):null;return`<span class="oc ${y===x&&s.ph==='play'?'now':''} ${out?'out':''}" style="--c:${MAPC[y]}" ${AG?`data-tip="${esc(`<div class="th">${AG.i} ${NAT[y].n}: ${AG.n}</div>${AG.d}<div class="tm" style="margin-top:4px">지지율 ${Math.round(n.app??APP0)} · 이대로면 다음 시대 <b>${(ageNext(n)?AGE[ageNext(n)].n:'민심 보통')}</b></div>`)}"`:''}><i></i>${emb(y)}${NAT[y].n}${AG?`<span class="ocag ${n.age||''}">${AG.i}</span>`:''}${polOn(s)&&regOf(s,y)?`<small title="${REG[regOf(s,y)].n}">${REG[regOf(s,y)].i}</small>`:''}${n.st==='puppet'?'<small>괴뢰</small>':''}${n.ls?'<small style="color:var(--hot)">결사항전</small>':''}<b>${out?'—':n.r}</b></span>`}).join('');
   $('#gbar').innerHTML=`<div class="bar"><span class="big">${turnTxt}</span><span id="tmr" class="stat" style="color:var(--hot)"></span><span style="flex:1"></span>
@@ -5548,7 +5630,8 @@ function renderGame(app){
     ${mn&&s.N[mn].ls?`<span class="pill bad" style="font-weight:700">⚠ 결사항전 · 이번 차례 안에 ${NAT[mn].cap} 탈환</span>`:''}
     ${myT?`<button class="ghost" title="적과 맞닿은 내 영토(전선)에 후방 병력을 고르게 나눠 방어 부대로 보냅니다. 병력이 적은 곳 → 수도 → 공장 → 해안 순으로 먼저 채웁니다. 수도에는 2부대를 남기고, 이번 턴에 움직인 부대는 그대로 둡니다." onclick="sendAct({k:'spread'})">🛡 전선 배치</button><button class="${arrowMode?'':'ghost'}" title="공세 화살표: 출발지(내 땅) → 목표 땅 순서로 누르기. 턴을 끝낼 때 그 방향으로 진격" onclick="arrowMode=arrowMode?null:{};airMode=null;nukeMode=false;render()">➹ 공세 화살표</button><button class="ghost" title="전선별 명령(방어·신중 진격·총공세) 설정" onclick="tab='nat';ntab='front';render()">🧭 전선</button>${arrowMode?`<span class="pill">${arrowMode.f?`➹ ${arrowMode.f} → 목표 땅을 누르세요 (같은 땅 = 다시 고르기)`:'➹ 출발지(내 땅)를 누르세요'}</span>`:''}<button class="ghost" ${s.undoN?'':'disabled'} title="${s.undoN?`이번 차례의 직전 행동 되돌리기 (${s.undoN}번 가능) · Ctrl+Z`:'되돌릴 행동이 없습니다 (전투·공습·첩보·선전포고·지원·거래 이후에는 그 전으로 돌아갈 수 없음)'}" onclick="undoTurn()">↩ 실행 취소${s.undoN?` <span class="note">${s.undoN}</span>`:''}</button><button class="red" onclick="endTurn()">턴 종료</button>`:''}
     ${mode==='host'&&s.ph==='play'&&!s.on[x]&&s.seats[x]&&s.seats[x]!=='ai'?`<button class="ghost sm" onclick="sendAct({k:'auto'})">자동 진행</button>`:''}</div><div class="order">${strip}</div>`;
-  $('#side').innerHTML=`${s.ph==='end'?endSheet():''}${tutSheet()}${simSheet()}${campPanel()}${sidePanel(opts)}${logSheet()}${hostPanel()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button>`;
+  mobRender(s,mn,myT);
+  $('#side').innerHTML=`${mobOn()?`<button class="mclose" onclick="mobClose()" aria-label="닫기">✕</button>`:''}${s.ph==='end'?endSheet():''}${tutSheet()}${simSheet()}${campPanel()}${sidePanel(opts)}${logSheet()}${hostPanel()}${chatSheet()}<button class="ghost sm" onclick="leaveRoom()">방 나가기</button>`;
   if(!myTurn()){airMode=null;nukeMode=false;nukeTgt=null;arrowMode=null;fdraw=null}
   {const tt=document.querySelector('#gmodal .ttree');const sl=tt?[tt.scrollLeft,tt.scrollTop]:null;$('#gmodal').innerHTML=capModal()+nukeModal()+techModal();const t2=document.querySelector('#gmodal .ttree');if(t2&&sl){t2.scrollLeft=sl[0];t2.scrollTop=sl[1]}}
   updateMap(opts);bindHost();bindChat();try{eraSplash()}catch(e){}}
@@ -5559,9 +5642,62 @@ window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&(e
 let sideOff=false;try{sideOff=localStorage.getItem('eu-side')==='0'}catch(e){}
 function sideApply(){document.body.classList.toggle('sideoff',sideOff);const b=document.getElementById('sideTog');if(b){b.textContent=sideOff?'⟨':'⟩';b.title=sideOff?'오른쪽 패널 펴기 (H)':'오른쪽 패널 접기 (H)'}}
 function toggleSide(){sideOff=!sideOff;try{localStorage.setItem('eu-side',sideOff?'0':'1')}catch(e){}sideApply()}
+
+/* ================= 모바일 화면: 지도 전체 + 위 프로필·재화 · 왼쪽 지도 모드 · 아래 메뉴 · 오른쪽 결재 =================
+   휴대폰(터치)에서 자동으로 켜지고, PC에서는 📱 버튼이나 M 키로 바꿔 볼 수 있다. 패널은 오른쪽에서 밀려 나오는 서랍(#side). */
+let mobUI=null;try{const v=localStorage.getItem('eu-mob');mobUI=v==null?null:v==='1'}catch(e){}
+let mobSheet=null,mobLastSel=null;const MOB_FULL=new Set(['rs','focus','bp','gov','era','dip','trade','stat','trait']);
+function mobOn(){return mobUI!=null?mobUI:matchMedia('(pointer:coarse)').matches}
+function toggleMob(){mobUI=!mobOn();try{localStorage.setItem('eu-mob',mobUI?'1':'0')}catch(e){}mobSheet=null;sfx('click');if(typeof M3!=='undefined')M3.cw=0;render();setTimeout(()=>{if(typeof m3On!=='undefined'&&m3On&&M3.ok){M3.cw=0;M3.dirty=true;m3Kick()}},60)}
+function mobScroll(f){requestAnimationFrame(()=>{const sd=document.getElementById('side');if(!sd)return;const t=f(sd);sd.scrollTop=t?Math.max(0,t.getBoundingClientRect().top-sd.getBoundingClientRect().top+sd.scrollTop-6):0})}
+function mobOpen(t,nt){if(mobSheet&&tab===t&&(!nt||ntab===nt)){mobSheet=null}else{tab=t;if(nt)ntab=nt;mobSheet=t}sfx('click');render();if(mobSheet)mobScroll(sd=>nt&&nt!=='trait'?sd.querySelectorAll('.tabs')[1]:null)}
+function mobClose(){mobSheet=null;if(tab==='act'){sel=null;tgt=null}render()}
+function mobProd(){const x=myNat();if(!x||!V.N[x])return;const cap=NAT[x].cap;const k=V.T[cap]&&V.T[cap].o===x&&V.T[cap].f?cap:Object.keys(V.T).find(t=>V.T[t].o===x&&V.T[t].f);if(!k){toast('공장이 있는 땅이 없습니다');return}sel='L:'+k;tgt=null;mobLastSel=sel;tab='act';mobSheet='act';sfx('click');render();mobScroll(sd=>[...sd.querySelectorAll('.lab')].find(e=>/^생산/.test(e.textContent.trim())))}
+function mobRes(ic,v,d,tip,bad,on){return`<span class="mres${bad?' bad':''}" ${tip?`data-tip="${esc(tip)}"`:''} ${on?`onclick="${on}"`:''}><i>${ic}</i><b>${v}</b>${d!=null&&d!==''?`<em>${d}</em>`:''}</span>`}
+function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mobOn();document.body.classList.toggle('mob',on);
+  if(!on){if(H&&H.innerHTML)H.innerHTML='';document.body.classList.remove('mobside');return}
+  /* 땅을 누르면 지역 서랍이 열리고, 선택을 풀면 닫힌다 */
+  if(sel&&sel!==mobLastSel){mobSheet='act';tab='act'}else if(!sel&&mobLastSel&&mobSheet==='act')mobSheet=null;mobLastSel=sel;
+  if(s.ph==='end'&&!mobSheet)mobSheet='nat';
+  document.body.classList.toggle('mobside',!!mobSheet);
+  /* 지도가 필요 없는 화면(연구·중점·설계도·내정·외교·통계…)은 전체 화면으로 */
+  document.body.classList.toggle('mobfull',!!mobSheet&&(tab==='world'||(tab==='nat'&&MOB_FULL.has(ntab))));
+  const n=mn&&s.N[mn];const live=n&&s.ph==='play';
+  /* 위: 프로필(국기) */
+  const app=n?Math.round(n.app??APP0):0;const cal=calOf(s.rd),se=SEASONN[seasonOf(s.rd)];
+  const prof=mn?`<button class="mprof" onclick="mobOpen('nat','trait')" title="내 나라 · 지도자 · 특성"><span class="mflag" style="background-image:url('${flagURL(mn)}')"></span><span class="mpi"><b>${NAT[mn].n}</b><span class="mlv"><i>${s.ph==='end'?'종전':s.rd+'R'}</i><span class="mxp"><em style="width:${Math.max(0,Math.min(100,app))}%"></em></span><small>${cal.y}.${cal.m} ${se[1]}${se[0]}${eraOn(s)?' · 지지율 '+app:''}</small></span></span></button>`:`<span class="mprof"><span class="mpi"><b>관전 중</b></span></span>`;
+  /* 위 가운데: 아이콘 메뉴 */
+  const sm=live?staffMust(s,mn):0;const pi=live&&typeof pactIn==='function'?pactIn().length+incoming().length:0;
+  const ic=(k,i,l,cl,b)=>`<button class="mico${cl?' on':''}" onclick="${k}"><i>${i}</i><span>${l}</span>${b?`<s>${b}</s>`:''}</button>`;
+  const icons=ic(`mobOpen('staff')`,'📋','참모',mobSheet==='staff',sm)+ic(`mobOpen('world')`,'🌍','세계',mobSheet==='world')+(mn?ic(`mobOpen('nat','dip')`,'🤝','외교',mobSheet==='nat'&&ntab==='dip',pi):'')+(mn?ic(`mobOpen('nat','stat')`,'📊','통계',mobSheet==='nat'&&ntab==='stat'):'');
+  /* 위 오른쪽: 재화 */
+  let res='';if(n){const q=bqOn(s)?(n.bq||[]):null;
+    res+=bqOn(s)?mobRes('🏭','+'+bqRate(s,mn),q.length?bqEta(s,mn,0)+'턴':'비었음',incTip(s,mn),!q.length,'mobProd()'):mobRes('🏭',n.r,'+'+income(s,mn),incTip(s,mn));
+    if(tutOn(s,'gov')||bqOn(s))res+=mobRes('💰',n.r||0,'+'+capitalIncome(s,mn),capTip(s,mn));
+    if(tutOn(s,'air')&&n.rs){const rq=n.rs.sl[0];res+=mobRes('🔬','+'+sciIncome(s,mn),rq?rsLeft(s,mn,rq.id)+'턴':'없음','',!rq,`mobOpen('nat','rs')`)}
+    if(supOn(s)){const N=supNat(s,mn);res+=mobRes('🌾',N.thru,'','',false,'toggleSup()')}
+    if(live&&!s.tut){const o=oilBal(s,mn);res+=mobRes(resImg('oil','mresimg'),o.have,'/'+o.need,'',o.have<o.need)}
+    if(polOn(s))res+=mobRes('⚖',n.pp||0,'','',(n.conf??POL.conf0)<POL.low,`mobOpen('nat','gov')`)}
+  const sys=`<button class="mico sm" onclick="document.getElementById('snd').click();render()" title="소리"><i>${soundOn?'🔊':'🔇'}</i></button><button class="mico sm mhelp" onclick="helpOpen()" title="도움말"><i>❔</i></button><button class="mico sm" onclick="toggleMob()" title="PC 화면으로 (M)"><i>🖥</i></button>`;
+  /* 왼쪽: 지도 모드 */
+  const md=(f,i,l,a)=>`<button class="mmode${a?' on':''}" onclick="${f};render()"><i>${i}</i><span>${l}</span></button>`;
+  const modes=md('toggleRes()',resImg('oil','mresimg'),'자원',resView)+md('toggleSup()','📦','보급',supView)+md('toggleFlag()',mn?`<span class="mmflag" style="background-image:url('${flagURL(mn)}')"></span>`:'🚩',flagView?(flagMine?'내 국기':'국기'):'국기',flagView)+md('toggleStrat()','♟','전략',strat)+md('m3Toggle()','⛰','3D',typeof m3On!=='undefined'&&m3On)+md('toggleNight()',night?'☀':'☾',night?'낮':'야경',night);
+  /* 아래: 메뉴 */
+  const bt=(f,i,l,a,b)=>`<button class="mtab${a?' on':''}" onclick="${f}"><i>${i}</i><span>${l}</span>${b?`<s>${b}</s>`:''}</button>`;
+  const NT=[['rs','🔬','연구','air'],['focus','🎯','중점','focus'],['bp','📐','설계도','up'],['gov','🏛','내정','gov'],['air','✈','공군','air'],['front','🧭','전선']].filter(t=>!t[3]||tutOn(s,t[3]));
+  const tabs=mn&&n?bt('lensToggle();render()','🏗','건설',buildLens!==null)+bt('mobProd()','🏭','생산',mobSheet==='act'&&tab==='act'&&sel&&V.T[sel.slice(2)]&&V.T[sel.slice(2)].f)+NT.map(([k,i,l])=>bt(`mobOpen('nat','${k}')`,i,l,mobSheet==='nat'&&ntab===k)).join(''):'';
+  /* 오른쪽 아래: 결재(턴 종료) 카드 + 빠른 명령 */
+  const cur=s.cur;const turnN=s.ph!=='play'?'':myT?'':`${NAT[cur].n} 차례${s.seats[cur]==='ai'?' · 컴퓨터':''}`;
+  const quick=myT&&s.ph==='play'?`<button class="mq" title="전선 배치" onclick="sendAct({k:'spread'})">🛡</button><button class="mq${arrowMode?' on':''}" title="공세 화살표" onclick="arrowMode=arrowMode?null:{};airMode=null;nukeMode=false;render()">➹</button><button class="mq" ${s.undoN?'':'disabled'} title="실행 취소" onclick="undoTurn()">↩${s.undoN?`<s>${s.undoN}</s>`:''}</button>`:'';
+  const end=s.ph!=='play'?'':myT?`<button class="mend" onclick="staffEnd()"><b>결재</b><span>${sm?`할 일 ${sm}개 남음`:'턴 종료'}</span><i class="mseal">印</i></button>`:`<div class="mend wait"><b>대기</b><span>${turnN}</span></div>`;
+  const hint=arrowMode?`<div class="mhint">${arrowMode.f?`➹ ${arrowMode.f} → 목표 땅을 누르세요`:'➹ 출발지(내 땅)를 누르세요'}</div>`:buildLens!==null?'<div class="mhint">🏗 건설 렌즈 — 아래 「건설」을 다시 누르면 닫힘</div>':'';
+  H.innerHTML=`<div class="mtop">${prof}<div class="micons">${icons}</div><div class="mres-row">${res}</div><div class="msys">${sys}</div></div>
+    <div class="mleft">${modes}</div>${hint}
+    <div class="mright">${quick?`<div class="mqs">${quick}</div>`:''}${end}</div>
+    <div class="mbot">${tabs}</div><div class="mrot">📱 가로로 돌려 주세요</div>`}
 /* ---- 단축키 · 도움말 ---- */
 const KEYS=[['Space ×2','턴 종료 (실수 방지로 두 번)'],['Esc','선택 해제 · 화살표/공습/전선 그리기 취소 · 창 닫기'],['1 ~ 9 · 0','고른 땅에서 움직일 부대 수 (0 = 전부)'],['Ctrl + Z','직전 행동 되돌리기'],
-  ['A','공세 화살표'],['T','기술 트리'],['H','오른쪽 패널 접기/펴기'],['F','국기 보기'],['S','전략 보기'],['B','보급 보기'],['R','자원 지도'],['🏗','건설 렌즈: 지도 오른쪽 아래 버튼'],['D','3D ↔ 2D'],['N','야경'],['+ / −','확대 · 축소'],['Q / E','3D 지도 회전'],['?','이 도움말']];
+  ['A','공세 화살표'],['T','기술 트리'],['H','오른쪽 패널 접기/펴기'],['F','국기 보기'],['S','전략 보기'],['B','보급 보기'],['R','자원 지도'],['🏗','건설 렌즈: 지도 오른쪽 아래 버튼'],['D','3D ↔ 2D'],['N','야경'],['+ / −','확대 · 축소'],['Q / E','3D 지도 회전'],['M','모바일 화면 ↔ PC 화면'],['?','이 도움말']];
 function helpOpen(){const L=document.getElementById('achLayer');if(!L)return;
   L.innerHTML=`<div class="modal helpm" onclick="if(event.target===this)helpClose()"><div class="sheet"><div class="row" style="justify-content:space-between"><h2 style="margin:0">단축키 · 지도 보는 법</h2><button class="ghost sm" onclick="helpClose()">닫기</button></div>
    <div class="keys">${KEYS.map(([k,d])=>`<div><kbd>${k}</kbd><span>${d}</span></div>`).join('')}</div>
@@ -5584,7 +5720,7 @@ window.addEventListener('keydown',e=>{const t=e.target||{};if(/INPUT|TEXTAREA|SE
   if(k===' '){e.preventDefault();if(!myTurn()||V.ph!=='play')return;const n=performance.now();if(n-spaceT<1500){spaceT=0;endTurn()}else{spaceT=n;toast('턴을 끝내려면 Space를 한 번 더 누르세요')}return}
   if(/^[0-9]$/.test(k)&&sel){const f=selName();const us=sel[0]==='L'?(V.T[f]&&V.T[f].u):(V.S[f]&&V.S[f].u);if(!us||!myTurn())return;const e2=eligible(us);if(!e2)return;setCnt(k==='0'?e2:Math.min(+k,e2));return}
   const K=k.toLowerCase();
-  if(K==='h'){toggleSide();return}if(K==='f'){toggleFlag();return}if(K==='r'){toggleRes();return}if(K==='s'){toggleStrat();return}if(K==='b'){toggleSup();return}if(K==='d'){m3Toggle();return}if(K==='n'){toggleNight();return}
+  if(K==='m'){toggleMob();return}if(K==='h'){toggleSide();return}if(K==='f'){toggleFlag();return}if(K==='r'){toggleRes();return}if(K==='s'){toggleStrat();return}if(K==='b'){toggleSup();return}if(K==='d'){m3Toggle();return}if(K==='n'){toggleNight();return}
   if(k==='+'||k==='='){zoom(.3);return}if(k==='-'||k==='_'){zoom(-.3);return}
   if(K==='a'&&myTurn()){arrowMode=arrowMode?null:{};airMode=null;nukeMode=false;render();return}});
 function logSheet(){const L=V.log.slice(-40);return`<section class="sheet"><span class="lab">전황 기록</span><div class="log" id="logBox">${L.map(l=>`<div>${l.x?`${emb(l.x)}`:''}<span class="note">R${l.r}</span> ${esc(l.m)}</div>`).join('')}</div></section>`}
