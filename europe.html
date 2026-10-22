@@ -506,6 +506,8 @@ header.top .sp{flex:1}
 #gmap{display:block;width:100%;min-width:760px;height:auto;user-select:none;-webkit-user-select:none}
 .ztools{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:4px}
 .ztools button{background:var(--sheet);width:34px;height:34px;padding:0;font-size:18px}
+/* 3D 야경: 지도 위 HTML 글씨·표시도 함께 어둡게 */
+.mapbox.night.m3 .vpl{filter:brightness(.62) saturate(.85)}.mapbox.night.m3 .vpl.chl{filter:brightness(.78)}
 #banner{position:absolute;left:0;right:0;top:40%;pointer-events:none;text-align:center;z-index:20}   /* 지도 위 글씨·부대 칩(4)·전투 팝업(6)보다 위 */
 #banner .bn{display:inline-block;padding:10px 30px;font:400 28px/1.2 var(--f-display);color:#fff;background:rgba(20,22,26,.82);border-top:3px solid var(--gold);border-bottom:3px solid var(--gold);animation:ban 2.5s ease forwards;box-shadow:0 8px 30px rgba(0,0,0,.35)}
 #banner .bn.war{background:rgba(120,14,10,.88);border-color:#FFB199}
@@ -653,6 +655,13 @@ header.top .sp{flex:1}
 .stratleg{position:absolute;left:10px;bottom:10px;display:none;flex-direction:column;gap:3px;padding:8px 10px;border-radius:10px;background:rgba(20,22,26,.72);color:#fff;font-size:12px;pointer-events:none;min-width:150px}.mapbox.strat .stratleg{display:flex}
 .stratleg .r{display:flex;align-items:center;gap:6px}.stratleg .sw{width:14px;height:14px;border-radius:3px;border:1px solid rgba(255,255,255,.5)}.stratleg .bar{height:4px;border-radius:2px;margin-left:20px}
 .mapbox.night .nshade{opacity:.62}
+/* 야경: 바다 이름·나침반·제목 카드·해협선·지도 밖 글씨도 같이 어둡게 */
+.mapbox.night .snm{fill:#6f8fb3;stroke:#08111f;opacity:.7;transition:opacity .9s,fill .9s}
+.mapbox.night .compI,.mapbox.night .cart,.mapbox.night .compass{filter:brightness(.38) saturate(.6);transition:filter .9s}
+.mapbox.night .offl{opacity:.35}
+.mapbox.night .strait{opacity:.35}
+.mapbox.night .szp{stroke:rgba(255,255,255,.12)}
+.mapbox.night .cs{fill:rgba(255,255,255,.3)}
 .mapbox.night .clouds{opacity:0}
 .mapbox.night .wvp{stroke:rgba(140,190,255,.18)}
 #gNight{opacity:0;transition:opacity .9s ease}
@@ -4852,6 +4861,8 @@ function mapStatic(){if(MAPSTATIC)return MAPSTATIC;const W=MAP.W,H=MAP.H;
   const offLbl=Object.keys(MAP.an).filter(k=>k[0]==='#').map(k=>{const[x,y]=MAP.an[k];return`<text x="${x}" y="${y}" class="offl" text-anchor="middle">${k.slice(1)}</text>`}).join('');
   const lakes=Object.keys(MAP.sh).filter(k=>k[0]==='~').map(k=>`<path d="${MAP.sh[k]}" class="lake"/>`).join('');
   const grat=MAP.gr.x.map(x=>`<line x1="${x}" y1="0" x2="${x}" y2="${H}"/>`).join('')+MAP.gr.y.map(y=>`<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`).join('');
+  /* 강은 땅 안에서만 보이게 (하구가 바다로 삐져나오지 않도록) */
+  const seaN=new Set(SEA.map(z=>z[0]));const landClip=`<clipPath id="landClip"><path d="${Object.keys(MAP.sh).filter(k=>!seaN.has(k)&&k[0]!=='~').map(k=>MAP.sh[k]).join('')}"/></clipPath>`;
   const rv=Object.values(MAP.rv).map(p=>`<polyline points="${p}" class="rv1"/><polyline points="${p}" class="rv2"/>`).join('');
   const st=MAP.st.map(([a,b,c,d])=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="strait"/>`).join('');
   const clouds=[[140,.9,70],[420,1.3,110],[260,1.1,150]].map(([y,s,dur],i)=>`<g class="cloud" style="animation-duration:${dur}s;animation-delay:-${dur*i/3}s"><ellipse cx="0" cy="${y}" rx="${160*s}" ry="${46*s}" fill="url(#cl)"/><ellipse cx="${90*s}" cy="${y-18}" rx="${110*s}" ry="${38*s}" fill="url(#cl)"/></g>`).join('');
@@ -4859,7 +4870,7 @@ function mapStatic(){if(MAPSTATIC)return MAPSTATIC;const W=MAP.W,H=MAP.H;
   const title=`<g transform="translate(18,18)" class="cart"><rect width="232" height="58" rx="4"/><rect x="4" y="4" width="224" height="50" rx="2" class="in"/><text x="116" y="31" text-anchor="middle" class="t1">EUROPA 1939</text><text x="116" y="46" text-anchor="middle" class="t2">유럽 작전 지도 · 참모본부</text></g>`;
   const syms=Object.entries(ICONS).map(([k,v])=>`<symbol id="ic-${k}" viewBox="0 0 16 16">${v}</symbol>`).join('');
   MAPSTATIC=`<svg id="gmap" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="유럽 작전 지도">
-  <defs>${syms}${flagSyms()}${imgSyms()}<pattern id="rvTex" patternUnits="userSpaceOnUse" width="36" height="36"><image href="${IU('img/map/rivtex.webp')}" width="36" height="36" preserveAspectRatio="none"/></pattern></defs><defs id="flagPat"></defs><defs>
+  <defs>${syms}${flagSyms()}${imgSyms()}${landClip}<pattern id="rvTex" patternUnits="userSpaceOnUse" width="36" height="36"><image href="${IU('img/map/rivtex.webp')}" width="36" height="36" preserveAspectRatio="none"/></pattern></defs><defs id="flagPat"></defs><defs>
    <pattern id="wv" width="46" height="22" patternUnits="userSpaceOnUse"><path d="M2 8q5-4 10 0t10 0M25 18q5-4 10 0t10 0" class="wvp"/><animateTransform attributeName="patternTransform" type="translate" from="0 0" to="46 0" dur="9s" repeatCount="indefinite"/></pattern>
    <pattern id="hatchX" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" style="fill:var(--void)"/><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--voidl)" stroke-width="2.5"/></pattern>
    <pattern id="hatchO" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--offl)" stroke-width="1"/></pattern>
@@ -4885,7 +4896,7 @@ function mapStatic(){if(MAPSTATIC)return MAPSTATIC;const W=MAP.W,H=MAP.H;
   <g id="gTer">${LAND.map((a,i)=>`<path id="tp${i}" data-t="${i}" class="ter" d="${MAP.sh[a[0]]}"/>`).join('')}</g>
   ${lakes}
   <g class="decor" pointer-events="none">${decorSVG()}</g>
-  <g pointer-events="none" class="rvst">${rv}${st}</g>
+  <g pointer-events="none" class="rvst"><g clip-path="url(#landClip)">${rv}</g>${st}</g>
   <g id="gSup" pointer-events="none"></g>
   <g id="gRail" pointer-events="none"></g>
   <g pointer-events="none" class="offlbl">${offLbl}</g>
@@ -5264,7 +5275,7 @@ function m3Terrain(hi,ci){const W=MAP.W,H=MAP.H;const c=document.createElement('
      .replace('#include <map_fragment>','#include <map_fragment>\n{float ma=texture2D(meshT,vMapUv).a;diffuseColor.rgb=mix(vec3(.50,.43,.28),diffuseColor.rgb,smoothstep(.25,.75,ma));vec4 o=texture2D(ownT,vMapUv);float l=dot(diffuseColor.rgb,vec3(.3,.59,.11));diffuseColor.rgb=mix(diffuseColor.rgb,o.rgb*(0.62+0.62*l),o.a);diffuseColor.a=texture2D(maskT,vMapUv).a;vec4 hq=texture2D(hlT,vMapUv);diffuseColor.rgb=mix(diffuseColor.rgb,mix(hq.rgb,vec3(1.),hlP*.6),hq.a*(.45+.15*hlP));}')};
   const t=new THREE.Mesh(g,m);t.castShadow=t.receiveShadow=true;M3.S.add(t);M3.ter=t;m3City(true);m3Units(true)}
 /* 2D SVG → 그림. 화면용 장식(바탕 그림·바다 물결·구름·야간 그늘·2D 산 그림)은 빼고, 보이는 모양은 원본에서 계산된 스타일을 그대로 옮긴다 */
-const M3_PROPS=['mix-blend-mode','fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','display','font-size','font-weight','font-family','text-anchor','dominant-baseline','paint-order','letter-spacing'];
+const M3_PROPS=['filter','mix-blend-mode','fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','display','font-size','font-weight','font-family','text-anchor','dominant-baseline','paint-order','letter-spacing'];
 const M3_DROP='.vpn,text.nm,.nosup,.uico,.uicoS,.uicoB,.flgc,.facg,.won,.porti,.fort,.hubi,.labi,.hl-mv,.hl-atk,.cart,.mapD,.mapN,.wvbg,.shore1,.shore2,.clouds,#nightShade,#gNight,.grat,.decor,.compass,.compI,.grainr,.lakes,[fill="url(#oc)"]';
 function m3Hl(){const svg=document.getElementById('gmap');if(!svg||!M3.hc)return;const x=M3.hc.getContext('2d');x.clearRect(0,0,M3.hc.width,M3.hc.height);let n=0;
   for(const e of svg.querySelectorAll('#gHl .hl-mv,#gHl .hl-atk')){x.fillStyle=e.classList.contains('hl-atk')?'#FF4B3E':'#3FD07A';x.fill(new Path2D(e.getAttribute('d')));n++}
@@ -5356,7 +5367,7 @@ function m3Draw(){if(!M3.ok)return;const cv=M3.cv;if(!M3.cw){M3.cw=cv.clientWidt
   M3.cam.aspect=w/h;M3.cam.updateProjectionMatrix();const t=M3.tgt,d=M3.dist,e=M3.el;
   m3Clamp();
   try{m3Vp()}catch(e){}try{m3Chips()}catch(e){}
-  const nt=document.querySelector('.mapbox.night');M3.sun.intensity=nt?0.35:2.4;M3.hemi.intensity=nt?0.35:0.95;{C3.night=!!nt;if(C3.nightU)C3.nightU.value=nt?1:0;for(const k in C3.geo){const g=C3.geo[k];const a=g.userData.day;if(g.getAttribute('color')!==a)g.setAttribute('color',a)}}M3.R.render(M3.S,M3.cam)}
+  const nt=document.querySelector('.mapbox.night');M3.sun.intensity=nt?0.35:2.4;if(M3.ovSea){const v=nt?0.42:1;if(M3.ovSea.material.color.r!==v)M3.ovSea.material.color.setScalar(v)}M3.hemi.intensity=nt?0.35:0.95;{C3.night=!!nt;if(C3.nightU)C3.nightU.value=nt?1:0;for(const k in C3.geo){const g=C3.geo[k];const a=g.userData.day;if(g.getAttribute('color')!==a)g.setAttribute('color',a)}}M3.R.render(M3.S,M3.cam)}
 function m3Place(){const t=M3.tgt,d=M3.dist,e=M3.el;M3.cam.position.set(t.x+d*Math.cos(e)*Math.sin(M3.az),t.y+d*Math.sin(e),t.z+d*Math.cos(e)*Math.cos(M3.az));M3.cam.lookAt(t);M3.cam.updateMatrixWorld()}
 /* 화면 네 귀퉁이가 바닥에 닿는 곳이 액자 안쪽(테두리 살짝 포함)을 벗어나지 않게 거리·위치를 조정 */
 function m3Clamp(){const bx=MAP.W/2+165,bz=MAP.H/2+165;const pl=new THREE.Plane(new THREE.Vector3(0,1,0),0);const rc=new THREE.Raycaster();const p=new THREE.Vector3();
