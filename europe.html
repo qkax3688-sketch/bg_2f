@@ -816,6 +816,7 @@ body.ingame.mob.mobfull #side>section.sheet{border:0;box-shadow:none;background:
 #hud .mend.task span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:11px;line-height:1.25}
 #hud .mend.task .mseal{opacity:.22;filter:grayscale(1) brightness(1.8);color:#fff;font-size:clamp(40px,11vh,60px);transform:none;right:4px;bottom:-6px}
 @keyframes mtask{0%,100%{box-shadow:0 6px 18px rgba(0,0,0,.5),0 0 0 0 color-mix(in srgb,var(--a) 60%,transparent)}50%{box-shadow:0 6px 18px rgba(0,0,0,.5),0 0 0 6px color-mix(in srgb,var(--a) 0%,transparent)}}
+#hud .mend .mx{position:absolute;right:10px;top:50%;margin-top:-11px;font-style:normal;font-weight:800;font-size:13px;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:rgba(0,0,0,.35);color:#fff}
 #hud .mskip{position:absolute;right:6px;top:-11px;border:1px solid rgba(255,255,255,.35);background:rgba(10,14,22,.88);color:#e8e2d2;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px}
 #hud .mend.wait{background:linear-gradient(135deg,#59616b,#2c3239);border-color:#8a939c;color:#e5e7ea}
 #hud .mbot{position:absolute;left:0;right:0;bottom:0;height:var(--mb);display:flex;padding:0 max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left));background:linear-gradient(180deg,#203038,#121c22);border-top:2px solid #2FA88A;box-shadow:0 -4px 14px rgba(0,0,0,.4);pointer-events:auto}
@@ -5655,8 +5656,9 @@ function doAttack(){const f=selName();if(!tgt)return;const us=sel[0]==='L'?V.T[f
 function setCnt(n){cnt=n;tgt=null;render()}
 
 /* ---- 게임 화면 ---- */
+let lensTurn='';
 function renderGame(app){
-  const s=V;const x=s.cur;const mn=myNat();const opts=curOpts();const myT=myTurn();
+  const s=V;const x=s.cur;{const tk=s.rd+'|'+s.cur;if(tk!==lensTurn){lensTurn=tk;buildLens=null}}   /* 턴이 바뀌면 건설 렌즈 닫기 */const mn=myNat();const opts=curOpts();const myT=myTurn();
   if(!document.getElementById('gmap')){app.innerHTML=`<div id="gbar"></div><div class="game"><div><div class="mapbox tex"><div class="mapwrap">${mapStatic()}</div><div id="banner"></div><div id="emoB" class="emob"></div><div class="stratleg" id="stratLeg"></div>
     <button class="sidetog" id="sideTog" onclick="toggleSide()" title="오른쪽 패널 접기/펴기 (H)">⟩</button><div class="ztools"><button class="ghost sm" onclick="helpOpen()" title="단축키·지도 보는 법 (?)" style="font-size:13px;font-weight:700">?</button><button class="ghost sm" id="resBtn" onclick="toggleRes()" title="자원 지도 (R): 자원 아이콘 · 자원별 지명 색" style="font-size:12px${resView?';font-weight:700':''}">자원</button><button class="ghost sm" id="supBtn" onclick="toggleSup()" title="보급 보기: 땅마다 보급 사용/용량" style="font-size:12px">보급</button><button class="ghost sm" id="stratBtn" onclick="toggleStrat()" aria-label="전략 보기" title="전략 보기: 토큰·지명 없이 나라 색만" style="font-size:12px">전략</button><button class="ghost sm" id="flagBtn" onclick="toggleFlag()" title="국기 보기: 영토와 부대를 나라 국기로" style="font-size:12px">국기</button><button class="ghost sm" id="m3Btn" onclick="m3Toggle()" title="3D 지도 ↔ 2D 지도 (3D: 왼쪽 끌기 이동 · 오른쪽 끌기 회전 · 휠 확대 · Q/E 회전)" style="font-size:12px">3D</button><button class="ghost sm" id="nightBtn" onclick="toggleNight()" aria-label="야경 보기">☾</button><button class="ghost sm" onclick="toggleMob()" title="새 화면으로 (M)" style="font-size:14px">📱</button><button class="ghost sm" onclick="zoom(.3)" aria-label="확대">＋</button><button class="ghost sm" onclick="zoom(-.3)" aria-label="축소">－</button></div></div>
     <p class="note">내 영토를 누르면 갈 수 있는 곳은 <b style="color:var(--ok)">초록</b>, 칠 수 있는 곳은 <b style="color:var(--hot)">빨강</b>으로 깜빡입니다. 바다를 건너는 상륙은 점선 호로 이어집니다. 파란 선 = 강(건너면 이동 -1, 방어 +1), 산 모양 = 산, 물결 = 언덕, ★ = 수도, 굴뚝 = 공장. 부대 칩의 숫자는 부대 수, 금색 별은 특수 유닛, 빨간 점은 부상입니다. 지도는 끌어서 옮기고 마우스 휠(휴대폰은 두 손가락)이나 ＋/－ 로 확대합니다.</p></div>
@@ -5701,7 +5703,7 @@ function mobProd(){const x=myNat();if(!x||!V.N[x])return;const cap=NAT[x].cap;co
 const MOB_TASK={bq0:['건설','#F2A33A','#C25E12','#6b2f05'],rs:['연구','#4FA8E8','#1F5FA8','#06223f'],fo:['중점','#A98BE0','#5B3BA8','#1e0f40'],sup:['보급','#E8C24F','#B07A12','#3b2a04'],cut:['보급','#F07A5A','#B42A1F','#3a0905'],pact:['외교','#4FD1C5','#16827A','#05302c'],trade:['거래','#4FD1C5','#16827A','#05302c'],conf:['내정','#C77DDB','#7B2E99','#2a0a36'],ls:['탈환','#FF6B5A','#9E1B12','#fff']};
 function mobTask(s,x){return staffItems(s,x).find(i=>i.lv==='must')}
 function mobTaskGo(){const x=myNat();if(!x||!V.N[x])return;const it=mobTask(V,x);if(!it)return;
-  if(it.id==='bq0'){mobSheet=null;if(buildLens===null)lensToggle();render();return}
+  if(it.id==='bq0'){mobSheet=null;lensToggle();render();return}   /* 다시 누르면 닫힘 */
   if(it.id==='rs'){mobOpen('nat','rs');return}if(it.id==='fo'){mobOpen('nat','focus');return}
   try{(new Function(it.go))()}catch(e){}if(sel){mobLastSel=sel;mobSheet='act'}else mobSheet=tab;render();if(tab==='nat')mobScroll(()=>null)}
 function mobSkip(){const x=myNat();const it=mobTask(V,x);if(!it)return;if(staffSkip.rd!==V.rd||staffSkip.x!==x)staffSkip={rd:V.rd,x,ids:[]};staffSkip.ids.push(it.id);sfx('click');render()}
@@ -5742,7 +5744,7 @@ function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mob
   const cur=s.cur;const turnN=s.ph!=='play'?'':myT?'':`${NAT[cur].n} 차례${s.seats[cur]==='ai'?' · 컴퓨터':''}`;
   const quick=myT&&s.ph==='play'?`<button class="mq" title="전선 배치" onclick="sendAct({k:'spread'})">🛡</button><button class="mq${arrowMode?' on':''}" title="공세 화살표" onclick="arrowMode=arrowMode?null:{};airMode=null;nukeMode=false;render()">➹</button><button class="mq" ${s.undoN?'':'disabled'} title="실행 취소" onclick="undoTurn()">↩${s.undoN?`<s>${s.undoN}</s>`:''}</button>`:'';
   const task=myT&&s.ph==='play'?mobTask(s,mn):null;const TK=task&&(MOB_TASK[task.id]||['할 일','#F2A33A','#C25E12','#3b2205']);
-  const end=s.ph!=='play'?'':task?`<div class="mendw"><button class="mend task" data-snd="utask" style="--a:${TK[1]};--b:${TK[2]};--c:${TK[3]}" onclick="mobTaskGo()"><b>${TK[0]}</b><span>${esc(task.t)}</span><i class="mseal">${task.ic}</i></button><button class="mskip" data-snd="uskip" onclick="mobSkip()" title="이번 턴엔 넘기기">${sm>1?`할 일 ${sm} · `:''}넘기기 ›</button></div>`:myT?`<button class="mend" onclick="staffEnd()"><b>결재</b><span>턴 종료</span><i class="mseal">印</i></button>`:`<div class="mend wait"><b>대기</b><span>${turnN}</span></div>`;
+  const end=s.ph!=='play'?'':task?`<div class="mendw"><button class="mend task" data-snd="utask" style="--a:${TK[1]};--b:${TK[2]};--c:${TK[3]}" onclick="mobTaskGo()"><b>${TK[0]}</b><span>${task.id==='bq0'&&buildLens!==null?'다시 누르면 건설 렌즈 닫기':esc(task.t)}</span><i class="mseal">${task.ic}</i>${task.id==='bq0'&&buildLens!==null?'<em class="mx">✕</em>':''}</button><button class="mskip" data-snd="uskip" onclick="mobSkip()" title="이번 턴엔 넘기기">${sm>1?`할 일 ${sm} · `:''}넘기기 ›</button></div>`:myT?`<button class="mend" onclick="staffEnd()"><b>결재</b><span>턴 종료</span><i class="mseal">印</i></button>`:`<div class="mend wait"><b>대기</b><span>${turnN}</span></div>`;
   const hint=arrowMode?`<div class="mhint">${arrowMode.f?`➹ ${arrowMode.f} → 목표 땅을 누르세요`:'➹ 출발지(내 땅)를 누르세요'}</div>`:buildLens!==null?'<div class="mhint">🏗 건설 렌즈 — 왼쪽 「건설」을 다시 누르면 닫힘</div>':'';
   H.innerHTML=`<div class="mtop">${prof}<div class="micons">${icons}</div><div class="mres-row">${res}</div><div class="msys">${sys}</div></div>
     <div class="mleft">${modes}</div>${hint}
