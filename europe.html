@@ -339,6 +339,11 @@ header.top .sp{flex:1}
 .rpbar button.ghost{opacity:.85;font-weight:500}
 .gpanel{margin:10px 0 0;padding:8px;border:1px dashed var(--line);border-radius:10px}
 .gchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#genL{position:fixed;z-index:25;width:min(270px,calc(100% - 90px));max-height:min(62%,560px);overflow:auto;background:var(--card,#f6efdc);color:var(--ink,#2a2418);border:1px solid rgba(201,162,77,.6);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:2px 8px 8px;animation:fbdk .2s ease-out}
+#genL .gpanel{border:0;margin:0;padding:6px 0 0}#genL .gchip{min-width:0;flex:1 1 calc(50% - 6px)}#genL .lab{display:block;font-weight:700;padding-right:22px}
+#genL .genLx{position:absolute;top:4px;right:6px;border:0;background:none;font-size:18px;line-height:1;cursor:pointer;color:inherit;opacity:.6;padding:2px 4px}
+body.fbOn #genL,body:not(.ingame) #genL{display:none}
+#genL.nar{left:6px;right:6px;bottom:max(6px,env(safe-area-inset-bottom));top:auto;width:auto;max-height:42%}#genL.nar .gchips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}#genL.nar .gchip{flex:0 0 auto;min-width:118px}
 .gchip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:5px 9px;border-radius:9px;border:1px solid var(--line);background:rgba(128,128,128,.08);color:inherit;cursor:pointer;text-align:left;min-width:96px}
 .gchip b{font-size:13px}.gchip small.gab{color:#b8862e;opacity:1}.gchip small{font-size:11px;opacity:.75}
 .gchip.on{border-color:#d9a441;box-shadow:inset 0 0 0 2px rgba(217,164,65,.45)}
@@ -5530,7 +5535,7 @@ function stratLeg(s){const c={};let tot=0;for(const k in s.T){const o=s.T[k].o;i
   return`<div style="font-weight:700;margin-bottom:2px">전략 보기 · ${s.rd||1}라운드</div>${rows}${c.N?`<div class="r"><span class="sw" style="background:var(--neu)"></span>중립·반군<span style="margin-left:auto">${c.N}곳</span></div>`:''}`}
 function flagBtnSet(){const b=document.getElementById('flagBtn');if(!b)return;b.style.fontWeight=flagView?'700':'';b.textContent=flagMine?'내 국기':'국기';b.style.whiteSpace='nowrap';b.style.fontSize=flagMine?'10.5px':'';b.title=flagView?(flagMine?'국기 보기: 내 나라만 (누르면 끔)':'국기 보기: 모든 나라 (누르면 내 나라만)'):'국기 보기: 영토와 부대를 나라 국기로'}
 function applyNight(){const b=document.querySelector('.mapbox');if(b){b.classList.toggle('night',night);b.classList.toggle('strat',strat);b.classList.toggle('flagm',flagView)}flagBtnSet();{const sb=document.getElementById('stratBtn');if(sb){sb.textContent=strat?'일반':'전략';sb.style.fontWeight=strat?'700':'';sb.title=strat?'일반 지도로 보기':'전략 보기: 토큰·지명 없이 나라 색만'}}const btn=document.getElementById('nightBtn');if(btn){btn.textContent=night?'☀':'☾';btn.setAttribute('aria-label',night?'낮으로 보기':'야경 보기');btn.title=night?'낮으로 보기':'야경 켜기'}}
-function updateMap(opts){setTimeout(()=>{resLegSync();lensSync()},0);const s=V;if(!document.getElementById('gmap'))return;
+function updateMap(opts){setTimeout(()=>{resLegSync();lensSync()},0);const s=dispView(V);if(!document.getElementById('gmap'))return;
   {const st=statSVG(s);if(st!==statStr){statStr=st;document.getElementById('gStat').innerHTML=st}{const r=railSVG(s);const g=document.getElementById('gRail');if(g&&g.innerHTML!==r)g.innerHTML=r;const sv=supSVG(s);const g2=document.getElementById('gSup');if(g2&&g2.innerHTML!==sv)g2.innerHTML=sv}const n=nightSVG(s);if(n!==nightStr){nightStr=n;document.getElementById('gNight').innerHTML=n}const w=wonderSVG(s);if(w!==wonStr){wonStr=w;document.getElementById('gWon').innerHTML=w}}
   LAND.forEach((a,i)=>{const p=document.getElementById('tp'+i);if(!p)return;const o=s.T[a[0]].o;p.style.fill=flagOn(o)?`url(#${flagComps(s)[a[0]]||'flg-'+o})`:ownerFill(o);{const pl=strat&&flagView&&flagMine&&o!=='X'&&!flagOn(o);p.classList.toggle('plain',pl);p.classList.toggle('fnot',!strat&&flagView&&flagMine&&!flagOn(o));p.style.stroke=strat&&!pl?ownerFill(o):''}p.classList.toggle('now',s.ph==='play'&&o===s.cur);{const tp=s.pend&&trMine()?trUIget(s.pend):null;const ce=tp&&(tp.st==='puppet'||tp.st==='truce');p.classList.toggle('trsel',!!(ce&&tp.cede.includes(a[0])));p.classList.toggle('trok',!!(tp&&o===s.pend.v&&a[0]!==NAT[s.pend.v].cap&&!(ce&&tp.cede.includes(a[0]))))}p.classList.toggle('void',o==='X');p.classList.toggle('neu',o==='N')});
   SEA.forEach((z,i)=>{const p=document.getElementById('sp'+i);if(!p)return;const S=s.S[z[0]];p.style.stroke=S.o?MAPC[S.o]:'';p.classList.toggle('ctl',!!S.o)});
@@ -5544,10 +5549,11 @@ function updateMap(opts){setTimeout(()=>{resLegSync();lensSync()},0);const s=V;i
   if(tgt&&MAP.an[tgt]){const[x,y]=MAP.an[tgt];h+=`<g transform="translate(${x},${y})" class="xhair"><circle r="17"/><path d="M-24 0h11M13 0h11M0-24v11M0 13v11"/></g>`}
   document.getElementById('gHl').innerHTML=h;{const fp=document.getElementById('flagPat');if(fp){const f=flagView?flagPatSVG(s):'';if(fp._v!==f){fp.innerHTML=f;fp._v=f}}}document.getElementById('gLbl').innerHTML=strat?'':labelsSVG();{const lg=document.getElementById('stratLeg');if(lg)lg.innerHTML=strat?stratLeg(s):''}
   const svg=document.getElementById('gmap');svg.style.width=(100*mz)+'%';svg.style.minWidth=(760*mz)+'px';
-  flushFx()}
+  flushFx();try{genLeft()}catch(e){}}
+addEventListener('resize',()=>{try{genLeft()}catch(e){}});
 function queueFx(v){if(!Array.isArray(v.fx))return;if(v.gen!==fxGen){fxGen=v.gen;fxSeen=-1}
   const mx=v.fx.reduce((a,f)=>Math.max(a,f.n),0);if(fxSeen<0){fxSeen=mx;return}
-  for(const f of v.fx)if(f.n>fxSeen)pendFx.push(f);fxSeen=Math.max(fxSeen,mx)}
+  for(const f of v.fx)if(f.n>fxSeen){pendFx.push(f);if(f.k==='btl')try{rpHold(f)}catch(e){}}fxSeen=Math.max(fxSeen,mx)}
 function flushFx(){const L=document.getElementById('gFx');if(!L){pendFx=[];return}
   if(pendBanner){showBanner(pendBanner[0],pendBanner[1]);pendBanner=null}
   const list=pendFx.slice(-6);pendFx=[];list.forEach((f,i)=>setTimeout(()=>playFx(f),i*260))}
@@ -5724,7 +5730,7 @@ function vpIcon(k,fill,rim){const key=k+fill+rim;if(VPI_URL[key])return VPI_URL[
 function vpSet(s){s=s||V;const S=new Set();for(const x in NAT){if(NAT[x].cap)S.add(NAT[x].cap);for(const k of KEYC[x]||[])S.add(k)}if(s&&s.capOv)for(const x in s.capOv)S.add(s.capOv[x]);for(const id in WONDERS)S.add(WONDERS[id].t);return S}
 function m3Vp(){if(!M3.ok||!V||!V.T||!MAP.an)return;const box=M3.cv.parentElement;if(!box)return;if(M3.vpEl&&(!M3.vpEl.isConnected||M3.vpEl.parentElement!==box)){M3.vpEl.remove();if(M3.tnEl)M3.tnEl.remove();M3.vpEl=null;M3.tnEl=null}   // 새 게임에서 지도 상자가 새로 만들어지면 글씨 층도 다시 만든다
   if(!M3.vpEl){M3.vpEl=document.createElement('div');M3.vpEl.className='vpl';box.insertBefore(M3.vpEl,M3.cv.nextSibling);M3.vpN={}}
-  const s=V,W=MAP.W,H=MAP.H,v=new THREE.Vector3(),cw=M3.cw,ch=M3.ch;const caps=new Set(Object.keys(NAT).map(x=>NAT[x].cap));const won=new Set(Object.values(WONDERS).map(w=>w.t));
+  const s=dispView(V),W=MAP.W,H=MAP.H,v=new THREE.Vector3(),cw=M3.cw,ch=M3.ch;const caps=new Set(Object.keys(NAT).map(x=>NAT[x].cap));const won=new Set(Object.values(WONDERS).map(w=>w.t));
   for(const nm of vpSet(s)){const T=s.T[nm],an=MAP.an[nm];if(!T||!an)continue;let el=M3.vpN[nm];if(!el){el=document.createElement('div');el.className='vpi';el.innerHTML=`<i></i><img alt=""><span>${nm}</span>`;M3.vpEl.appendChild(el);M3.vpN[nm]=el}
     const o=T.o;const col=o==='X'?'#777':o==='N'?'#9a9480':(MAPC[o]||'#888');const kind=caps.has(nm)&&(s.N[Object.keys(NAT).find(x=>NAT[x].cap===nm)]||{}).st?'★':won.has(nm)?'◆':'';
     const rg=s.N&&s.N[o]?regOf(s,o):null;const rim=REG_RIM[rg]||'#d8d2c0';   // 테두리 = 체제 색 (사회주의 빨강 · 자본주의 파랑 · 군국주의 회색)
@@ -5758,7 +5764,7 @@ const FLAG_URL={};function flagURL(x){return FLAG_URL[x]||(FLAG_URL[x]='data:ima
 function m3Chips(){if(!M3.ok||!V||!V.T)return;const box=M3.cv.parentElement;if(!box)return;
   if(M3.chEl&&(!M3.chEl.isConnected||M3.chEl.parentElement!==box)){M3.chEl.remove();M3.chEl=null}
   if(!M3.chEl){M3.chEl=document.createElement('div');M3.chEl.className='vpl chl';box.insertBefore(M3.chEl,M3.vpEl||M3.cv.nextSibling);M3.chN={}}
-  const s=V,W=MAP.W,H=MAP.H,v=new THREE.Vector3(),cw=M3.cw,ch=M3.ch;const far=M3.dist>600;M3.chEl.classList.toggle('far',far);M3.chEl.classList.toggle('flg',!!flagView);M3.chEl.classList.toggle('vfar',M3.dist>1000);const seen=new Set();
+  const s=dispView(V),W=MAP.W,H=MAP.H,v=new THREE.Vector3(),cw=M3.cw,ch=M3.ch;const far=M3.dist>600;M3.chEl.classList.toggle('far',far);M3.chEl.classList.toggle('flg',!!flagView);M3.chEl.classList.toggle('vfar',M3.dist>1000);const seen=new Set();
   const one=(nm,us,o,hid,sea)=>{const an=MAP.an[nm];if(!an)return;seen.add(nm);let el=M3.chN[nm];if(!el){el=document.createElement('div');el.className='uc';M3.chEl.appendChild(el);M3.chN[nm]=el}el.classList.toggle('neu',o==='N');
     const g=[];if(!hid)for(const u of us){const d=!!u.d||o==='N';let e=g.find(e=>e.t===u.t&&e.d===d);if(!e){e={t:u.t,n:0,d,dmg:0};g.push(e)}e.n++;const mh=o==='N'?UT[u.t].p:maxHp(s,o,u.t,u);if(u.hp<mh)e.dmg=1}
     const fo=!hid&&flagOn(o);const key=o+(fo?'F':'')+(hid?'?':g.map(e=>e.t+e.n+(e.d?'d':'a')+e.dmg).join(','));
@@ -5884,7 +5890,7 @@ function u3Play(f,n){if(f.cur===n)return;const a=f.A[n];if(!a)return;if(f.cur&&f
   for(const k in f.rif)f.rif[k].visible=k===n}
 function u3Model(t,o){if(U3_SOL[t]!==undefined){const k=U3_SOL[t]||(U3D.sol[o]?o:'neutral');return{s:U3D.sol[k]?k:'neutral'}}return{v:U3_VEH[t]||'tank'}}
 function u3Sig(s){let o='';for(const a of LAND){const T=s.T[a[0]];if(!T||T.hid||!T.u.length)continue;o+=a[0]+T.o+T.u.map(u=>u.t+(u.d?1:0)).sort().join('')+';'}for(const z in s.S){const S=s.S[z];if(S.hid||!S.u.length)continue;o+=z+S.o+S.u.map(u=>u.t).sort().join('')+';'}return o}
-function m3Units(force){if(!M3.ok||!M3.hAt||!window.U3D||!V||!V.T||!C3.mat)return;const s=V;const sig=u3Sig(s);if(!force&&sig===U3.sig)return;U3.sig=sig;
+function m3Units(force){if(!M3.ok||!M3.hAt||!window.U3D||!V||!V.T||!C3.mat)return;const s=dispView(V);const sig=u3Sig(s);if(!force&&sig===U3.sig)return;U3.sig=sig;
   for(const f of U3.figs){M3.S.remove(f.root);f.mx.stopAllAction()}for(const m of U3.veh){M3.S.remove(m);m.dispose&&m.dispose()}U3.figs=[];U3.veh=[];
   const W=MAP.W,H=MAP.H,X=x=>x-W/2,Z=y=>y-H/2;const inst={};const add=(k,x,y,h,rot,sz)=>(inst[k]=inst[k]||[]).push([x,y,h,rot,sz]);
   const place=(nm,us,o,sea,path)=>{const an=MAP.an[nm];if(!an)return;const[x0,y0,r]=an;const inP=(x,y)=>!path||M3.hx.isPointInPath(path,x,y);const g=[];for(const u of us){const d=!!u.d||o==='N';let e=g.find(e=>e.t===u.t&&e.d===d);if(!e){e={t:u.t,n:0,d};g.push(e)}e.n++}
@@ -6363,6 +6369,8 @@ function fbPreview(d,ux,uy,pw){const g={x:d.x,y:d.y,vx:ux*fbV0(d,pw),vy:uy*fbV0(
    피로가 쌓이면 후보 수가 줄고 조준이 흔들린다. 전투 방식에 따라 무엇을 중시하는지가 달라진다 */
 function fbPick(side,P){P=P||genP(null);const foe=side==='A'?'D':'A';const mine=BT.discs.map((d,i)=>[d,i]).filter(([d])=>d.side===side&&!d.out&&d.hp>0);const foes=BT.discs.filter(q=>q.side===foe&&!q.out&&q.hp>0);
   if(!mine.length||!foes.length)return null;const rnd=Math.random;
+  if(P.dumb){/* 장군 없음: 아무 말이나 골라 대충 쏜다 — 엉뚱한 쪽으로 쏘거나 살살 치는 일이 잦다 */const[d,i]=mine[Math.floor(rnd()*mine.length)];const q=foes[Math.floor(rnd()*foes.length)];
+    let a=Math.atan2(q.y-d.y,q.x-d.x)+(rnd()-.5)*2*.85;if(rnd()<.35)a=rnd()*Math.PI*2;return{i,a,pw:.25+rnd()*.65}}
   const near=d=>{let m=1e9;for(const q of foes)m=Math.min(m,Math.hypot(q.x-d.x,q.y-d.y));return m};
   mine.sort((a,b)=>(P.sty==='art'?(UT[b[0].t].k==='art')-(UT[a[0].t].k==='art'):0)||near(a[0])-near(b[0]));
   const nM=Math.max(1,Math.round(3*P.cand)),nF=Math.max(1,Math.round(4*P.cand));const wl=P.sty==='ass'?.55:P.sty==='cau'?1.6:1.15,wr=P.sty==='man'?3:1.5;
@@ -6823,7 +6831,7 @@ function genDef(x,id){return(GENS[x]||[]).find(g=>g[0]===id)}
 function genMap(s,x){const n=s&&s.N&&s.N[x];if(!n||!GENS[x])return{};if(n.gen)return n.gen;const m={};for(const g of GENS[x])m[g[0]]={t:null,fat:0};return m}
 function genN(x){const n=G.N[x];if(!n||!GENS[x])return null;if(!n.gen){n.gen={};for(const g of GENS[x])n.gen[g[0]]={t:null,fat:0}}return n.gen}
 function genAt(s,k){const T=s&&s.T[k];if(!T)return null;const x=T.o;const m=genMap(s,x);for(const id in m)if(m[id].t===k){const d=genDef(x,id);if(d)return{x,id,n:d[1],st:d[2],fat:m[id].fat||0}}return null}
-function genP(g){if(!g)return{sty:'',fat:45,noise:.16,cand:.65,n:'참모진'};const f=g.fat/100;let noise=.03+f*.34;if(g.st==='cau')noise*=.5;return{sty:g.st,fat:g.fat,noise,cand:Math.max(.34,1-f*.66),n:g.n}}
+function genP(g){if(!g)return{sty:'',fat:100,noise:.9,cand:.2,dumb:1,n:'참모진'};const f=g.fat/100;let noise=.03+f*.34;if(g.st==='cau')noise*=.5;return{sty:g.st,fat:g.fat,noise,cand:Math.max(.34,1-f*.66),n:g.n}}
 function genTire(g,k){const m=G.N[g.x]&&G.N[g.x].gen;if(!m||!m[g.id])return;const e=m[g.id];e.fat=Math.min(100,(e.fat||0)+(g.st==='ass'?25:18)*(k||1));e.f2=1}
 function genRest(x){const m=G.N[x]&&G.N[x].gen;if(!m)return;for(const id in m){const e=m[id];e.fat=Math.max(0,(e.fat||0)-(e.f2?4:12));e.f2=0}}
 function genLose(y,k){const m=G.N[y]&&G.N[y].gen;if(!m)return;for(const id in m){const e=m[id];if(e.t!==k)continue;e.t=null;e.fat=Math.min(100,(e.fat||0)+30);const d=genDef(y,id);lg(`🎖 ${NAT[y].n} ${d?d[1]:''} 장군이 ${k}을(를) 잃고 물러났습니다 (피로 +30)`,y)}}
@@ -6909,10 +6917,20 @@ function borderShift(x){if(!G.N[x]||!['on','puppet'].includes(G.N[x].st))return;
    내 나라가 낀 교전은 2D·3D 지도의 그 땅 위에서 짧게 다시 보여준다(창 없이). 기록된 사격을 그대로 다시 굴리고,
    일제 사격이 끝날 때마다 호스트가 계산한 자리로 맞춘다. */
 let RPQ=[],RP=null;
+/* 스포 방지: 연출이 끝나기 전까지 그 땅(과 출발 땅)은 전투 전 모습(주인 색·부대)으로 보여 준다 */
+let RPH={};
+function rpHold(f){if(!rpWant(f)||!V||!V.T[f.t])return;const now=Date.now();
+  const keep=(k,o,u)=>{if(!V.T[k]||RPH[k])return;RPH[k]={o,u,at:now,id:f.n}};
+  const def=(f.i||[]).filter(q=>q[0]).map(q=>({t:q[1],hp:Math.max(1,Math.round(q[4]/Math.max(1,q[5])*maxHp(V,f.y,q[1]))),mv:0,a:0}));
+  const att=(f.i||[]).filter(q=>!q[0]).map(q=>({t:q[1],hp:Math.max(1,Math.round(q[4]/Math.max(1,q[5])*maxHp(V,f.x,q[1]))),mv:0,a:1,cbt:1}));
+  const T=V.T[f.t],F=V.T[f.f];keep(f.t,f.res==='win'?f.y:T.o,def);
+  if(F&&F.o===f.x&&(f.res==='win'||f.res==='lose'))keep(f.f,F.o,F.u.filter(u=>!(f.res==='win'&&T.u.includes(u))).concat(att))}
+function rpRelease(f){let ch=false;for(const k in RPH)if(!f||RPH[k].id===f.n){delete RPH[k];ch=true}if(ch)try{updateMap(curOpts())}catch(e){}}
+function dispView(s){if(!s||!s.T||s!==V)return s;const now=Date.now();let o=null;for(const k in RPH){const h=RPH[k];if(now-h.at>120000||!s.T[k]){delete RPH[k];continue}if(!o)o={...s,T:{...s.T}};o.T[k]={...s.T[k],o:h.o,u:h.u}}return o||s}
 function rpOff(){try{return localStorage.getItem('eu-rpoff')==='1'}catch(e){return false}}
 function rpWant(f){return!!(V&&V.ph==='play'&&!rpOff()&&f&&Array.isArray(f.v)&&f.v.length&&(myCtl(f.x)||(f.y&&f.y!=='N'&&myCtl(f.y))))}
-function rpQueue(f){RPQ.push(f);if(RPQ.length>6)RPQ.shift();rpKick()}
-function rpKick(){if(RP||BT||!RPQ.length)return;const f=RPQ.shift();if(!rpBegin(f))setTimeout(rpKick,0)}
+function rpQueue(f){RPQ.push(f);if(RPQ.length>6)rpRelease(RPQ.shift());rpKick()}
+function rpKick(){if(RP||BT||!RPQ.length)return;const f=RPQ.shift();if(!rpBegin(f)){rpRelease(f);setTimeout(rpKick,0)}}
 function rpBegin(f){if(!V||!MAP.an[f.t])return false;const c={S:V,f:f.f,to:f.t,x:f.x,o:f.y,ph:'rp',me:'',rows:{},discs:[],obs:[],fx:[],log:[],busy:false,walled:1,sty:{A:f.sa||'',D:f.sd||''},tr:f.tr||'p',winter:!!f.w,river:!!f.rv,E:f.E||null,dir:f.dr||null};
   if(!c.E)c.river=false;if(!fbGeo(c))return false;
   c.discs=f.i.map((q,i)=>({i,side:q[0]?'D':'A',t:q[1],x:q[2],y:q[3],hp:q[4],max:q[5],r:q[6],m:q[7],vx:0,vy:0,out:null}));c.obs=(f.ob||[]).map(o=>({x:o[0],y:o[1],r:o[2],k:o[3]}));
@@ -6931,8 +6949,8 @@ function rpLoop(){if(!RP)return;const now=performance.now();const dt=Math.min(.0
     else if(RP.ph==='out'&&RP.t>1.7)done=true;
     if(c.slow>0)c.slow-=dt;if(!done)rpDraw(dt)}catch(e){console.error(e);done=true}finally{BT=sv}
   if(done)return rpDone();requestAnimationFrame(rpLoop)}
-function rpDone(){RP=null;document.querySelector('.mapbox')?.classList.remove('fbmap');fb3Hide(false);if(RPcam&&!RPQ.length){const c=RPcam;RPcam=null;setTimeout(()=>{if(!RP&&!BT)fbCamOut(c)},260)}const cv=document.querySelector('.mapbox canvas.rpcv');if(cv){const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height)}const b=document.querySelector('.mapbox .rpbar');if(b)b.remove();rpBadges();setTimeout(rpKick,250)}
-function rpSkip(all){if(all){RPQ=[];try{localStorage.setItem('eu-rpoff','1')}catch(e){}toast('지도 위 전투 연출을 껐습니다 — 땅 패널의 장군 칸에서 다시 켤 수 있어요')}rpDone()}
+function rpDone(){const fin=RP&&RP.f;RP=null;if(fin)rpRelease(fin);document.querySelector('.mapbox')?.classList.remove('fbmap');fb3Hide(false);if(RPcam&&!RPQ.length){const c=RPcam;RPcam=null;setTimeout(()=>{if(!RP&&!BT)fbCamOut(c)},260)}const cv=document.querySelector('.mapbox canvas.rpcv');if(cv){const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height)}const b=document.querySelector('.mapbox .rpbar');if(b)b.remove();rpBadges();setTimeout(rpKick,250)}
+function rpSkip(all){if(all){RPQ=[];setTimeout(()=>rpRelease(),0);try{localStorage.setItem('eu-rpoff','1')}catch(e){}toast('지도 위 전투 연출을 껐습니다 — 땅 패널의 장군 칸에서 다시 켤 수 있어요')}rpDone()}
 function rpToggle(){try{localStorage.setItem('eu-rpoff',rpOff()?'0':'1')}catch(e){}render()}
 function rpLayer(){const box=document.querySelector('.mapbox');if(!box)return null;let cv=box.querySelector('canvas.rpcv');if(!cv){cv=document.createElement('canvas');cv.className='rpcv';box.appendChild(cv)}return cv}
 function rpBar(box){if(box.querySelector('.rpbar'))return;const d=document.createElement('div');d.className='rpbar';d.innerHTML='<button onclick="rpSkip()">건너뛰기 ›</button><button class="ghost" onclick="rpSkip(1)">연출 끄기</button>';box.appendChild(d)}
@@ -6988,10 +7006,16 @@ function genLine(s,k){const g=genAt(s,k);const b=btlOf(s,k)||(s.btl||[]).find(q=
   if(g)h+=`<p class="note gnl">🎖 <b>${esc(g.n)}</b> ${GSTY[g.st].ic} ${GSTY[g.st].n} · 피로 <span class="gfat"><i style="width:${Math.round(g.fat)}%;background:${g.fat>=70?'#c8414f':g.fat>=40?'#d9a441':'#5fae5a'}"></i></span> ${Math.round(g.fat)}${GAB[g.id]?`<br>★ ${esc(gabTxt(g.id))}`:''}</p>`;
   if(b)h+=`<p class="note gnl" style="color:var(--hot)">⚔ 교전 중: ${esc(b.src.join('·'))} → ${esc(b.to)} · ${b.rd}/${b.max}라운드 (교전 중인 부대는 움직일 수 없음)</p>`;
   if(genOn(s)&&fbVP(k))h+=`<p class="note gnl">★ 승점 도시 — 이곳은 장군에게 맡기지 않고 <b>직접 결전(벽꿍)</b>으로 싸웁니다</p>`;return h}
+function genLeft(){const box=document.querySelector('.mapbox');let el=document.getElementById('genL');if(!box){if(el)el.remove();return}const s=V;const nm=sel&&sel.startsWith('L:')?sel.slice(2):null;
+  const ok=s&&s.ph==='play'&&nm&&s.T[nm]&&myTurn()&&s.T[nm].o===s.cur&&genOn(s)&&GENS[s.cur]&&!BT;
+  if(!ok){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='genL';document.body.appendChild(el)}
+  const br=box.getBoundingClientRect();const narrow=innerWidth<600;el.classList.toggle('nar',narrow);
+  if(narrow){el.style.left=el.style.top=''}else{let lx=10;for(const e of document.querySelectorAll('#hud .mgems')){const q=e.getBoundingClientRect();if(q.width>0&&q.left<br.left+120)lx=Math.max(lx,q.right-br.left+8)}
+    el.style.left=(br.left+lx)+'px';el.style.top=(br.top+fbTopIn(br)+8)+'px'}const h=`<button class="genLx" onclick="sel=null;tgt=null;render()" aria-label="닫기">×</button>`+genPanel(nm);if(el._h!==h){el._h=h;el.innerHTML=h}}
 function genPanel(nm){const s=V,x=s.cur;if(!genOn(s)||!GENS[x])return'';const m=genMap(s,x);const here=genAt(s,nm);
   const chip=id=>{const d=genDef(x,id),e=m[id];const st=GSTY[d[2]];const tired=e.fat>=70;return`<button class="gchip${e.t===nm?' on':''}${tired?' tired':''}" title="${esc(st.n+' — '+st.d+(GAB[id]?' / ★ '+gabTxt(id):''))}" onclick="sendAct({k:'gen',id:'${id}',t:${e.t===nm?'null':`'${nm}'`}})"><b>${st.ic} ${esc(d[1])}</b>${GAB[id]?`<small class="gab">${esc(GAB[id][0])}</small>`:''}<small>${e.t?(e.t===nm?'여기 · 해임':esc(e.t)):'대기'} · 피로 ${Math.round(e.fat)}</small></button>`};
   return`<div class="gpanel"><span class="lab">🎖 장군 ${here?`— ${esc(here.n)} 지휘 중`:'— 이 땅의 전투를 맡길 장군'}</span><div class="gchips">${Object.keys(m).map(chip).join('')}</div>
-    <div class="row" style="margin:6px 0 0"><button class="sm ghost" onclick="sendAct({k:'genauto'})">🎖 자동 배치</button><span class="note">장군이 있는 땅의 공격·방어 전투를 그 장군이 직접 튕겨 싸웁니다. 피로가 높을수록 실수가 많아요(전투 없으면 턴마다 -12).</span></div>
+    <div class="row" style="margin:6px 0 0"><button class="sm ghost" onclick="sendAct({k:'genauto'})">🎖 자동 배치</button><span class="note">장군이 있는 땅의 공격·방어 전투를 그 장군이 직접 튕겨 싸웁니다. 피로가 높을수록 실수가 많아요(전투 없으면 턴마다 -12). <b>장군이 없으면 참모진이 지휘하는데 매우 서툴러요.</b></span></div>
     <div class="row" style="margin:6px 0 0"><button class="sm ghost" onclick="rpToggle()">🎬 지도 위 전투 연출: ${rpOff()?'끔':'켬'}</button></div></div>`}
 
 function selName(){return sel?sel.slice(2):null}
@@ -7322,7 +7346,7 @@ function regionBody(opts){
     h+=`<div class="rtabs">${[['unit','⚔ 부대'+(T.u.length?` <small>${T.u.length}</small>`:'')],['build','🏗 건설'],...(T.f?[['prod','🏭 생산']]:[])].map(([k,l])=>`<button class="${rt===k?'on':''}" onclick="rtab='${k}';render()">${l}</button>`).join('')}</div>`;
     if(rt==='unit'){
     if(eligible(T.u))h+=cntPicker(T.u)+(fdraw&&fdraw.f===nm?'':`<div class="row" style="margin:6px 0 0"><button class="sm" title="이 땅의 부대를 여러 땅(전선)에 고르게 나눠 배치" onclick="fdraw={f:'${nm}',ts:[]};arrowMode=null;airMode=null;render()">🧭 전선 그리기</button></div>`);
-    if(T.u.length)h+=rowPanel(nm,T);h+=genPanel(nm);
+    if(T.u.length)h+=rowPanel(nm,T);
     {const D=T.u.filter(u=>u.d),A=T.u.filter(u=>!u.d);if(D.length){const ok=A.length<LSTACK;const nn=Math.min(D.length,LSTACK-A.length);
       h+=`<div class="row" style="margin:8px 0 0"><button class="sm ${ok?'':'ghost'}" ${ok?'':'disabled'} onclick="sendAct({k:'toatk',t:'${nm}'})">⚔ 방어 → 공격 부대 전환${ok?` (${nn})`:''}</button>${ok&&nn>1?`<button class="sm ghost" onclick="sendAct({k:'toatk',t:'${nm}',n:1})">1부대만</button>`:''}${ok?'':`<span class="note">공격 부대와 종류가 다르거나 가득 찼습니다</span>`}</div>`}
       if(A.length){const ok2=D.length<LSTACK;const n2=Math.min(A.length,LSTACK-D.length);
