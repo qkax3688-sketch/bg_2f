@@ -953,6 +953,15 @@ body.inlobby #app{position:fixed;inset:0;max-width:none;margin:0;padding:0}
 .fbw{width:min(1180px,100%);height:min(760px,100%);display:flex;flex-direction:column;background:#0f171e;border:1px solid rgba(201,162,77,.55);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .fbtop{display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(180deg,#22303b,#141e26);color:#f3e3bd;border-bottom:1px solid rgba(201,162,77,.4)}.fbtop b{font:700 17px var(--f-display,serif);letter-spacing:.03em}.fbtop span{flex:1;font-size:13px;color:#cfc6b0}.fbtop .fbmy{color:#ffd24a}
 .fbcap{flex:none!important;font-weight:800;color:#ffd24a!important;font-size:12.5px!important}.fbx{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:5px 10px;font-size:12.5px}
+.fbmapcv{position:absolute;inset:0;width:100%;height:100%;z-index:30;touch-action:none;cursor:crosshair;display:block}
+#fbov.fbdock{position:absolute;z-index:31;inset:auto;top:8px;right:8px;bottom:8px;left:auto;width:282px;padding:0;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;background:rgba(14,21,28,.9);backdrop-filter:blur(3px);border:1px solid rgba(201,162,77,.55);border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:fbdk .25s ease-out}
+#fbov.fbdock .fbtop{flex-wrap:wrap;gap:4px 8px;padding:7px 10px}#fbov.fbdock .fbtop span{flex:1 1 100%;order:3}#fbov.fbdock .fbside{width:auto;flex:1;min-height:0;border-left:0;background:transparent}
+.mapbox.fbnarrow #fbov.fbdock{top:auto;left:6px;right:6px;bottom:6px;width:auto;height:42%}
+body.mob.fbOn #side{display:none!important}.mapbox.fbmap .vpl{display:none!important}.mapbox.fbmap #gStat,.mapbox.fbmap #gLbl,.mapbox.fbmap #gWon,.mapbox.fbmap #gArr,.mapbox.fbmap #gHl,.mapbox.fbmap #gSup,.mapbox.fbmap .offlbl,.mapbox.fbmap .decor{display:none}
+@keyframes fbdk{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+body.fbOn #gbar,body.fbOn #side,body.fbOn #hud,body.fbOn header.top,body.fbOn .sidetog{pointer-events:none!important;opacity:.4;filter:grayscale(.5);transition:opacity .25s}
+body.fbOn #hud{pointer-events:none!important;opacity:1;filter:none}body.fbOn #hud .mtop{opacity:.45;filter:grayscale(.5)}body.fbOn #hud>:not(.mtop){display:none!important}
+body.fbOn .ztools,body.fbOn .mnav,body.fbOn .mmode,body.fbOn .mleft,body.fbOn .lensbar,body.fbOn .lenshint,body.fbOn .bigbuild,body.fbOn .resleg,body.fbOn .rpbar,body.fbOn .stratleg,body.fbOn #emoB{display:none!important}
 .fbmain{flex:1;min-height:0;display:flex}#fbcv{flex:1;min-width:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
 .fbside{width:min(260px,34%);overflow:auto;padding:10px;background:#141e26;color:#e9e2cf;border-left:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:6px}
 .fbh{margin:0;font-weight:800;color:#ffe7a3}.fbnote{margin:0;font-size:12px;color:#b9b19c;line-height:1.45}
@@ -5610,7 +5619,7 @@ function evCard(id,t){const E=EVN[id];document.querySelectorAll('.evcard').forEa
   el.innerHTML=`<div class="evc-in">${EV_IMG.has(id)?`<img src="${IU('img/ev/'+id+'.webp')}" alt="" onerror="this.remove()">`:''}<div class="evc-tx"><small>${E[1]} 역사 변수</small><b>${esc(E[0])}</b><span>${esc(t||E[3])}</span></div></div>`;
   el.onclick=()=>el.remove();document.body.appendChild(el);setTimeout(()=>el.classList.add('out'),5200);setTimeout(()=>el.remove(),5800)}
 function showBanner(text,kind){const b=document.getElementById('banner');if(!b)return;b.innerHTML=`<div class="bn ${kind||''}">${esc(text)}</div>`;clearTimeout(showBanner.t);showBanner.t=setTimeout(()=>{b.innerHTML=''},2600)}
-function zoomAt(nz,cx,cy){const w=document.querySelector('.mapwrap');const svg=document.getElementById('gmap');if(!svg||!w)return;nz=Math.max(1,Math.min(4,nz));if(Math.abs(nz-mz)<.002)return;
+function zoomAt(nz,cx,cy,zmax){const w=document.querySelector('.mapwrap');const svg=document.getElementById('gmap');if(!svg||!w)return;nz=Math.max(1,Math.min(zmax||4,nz));if(Math.abs(nz-mz)<.002)return;
   const r=w.getBoundingClientRect();const ox=cx==null?w.clientWidth/2:cx-r.left,oy=cy==null?w.clientHeight/2:cy-r.top;const fx=(w.scrollLeft+ox)/w.scrollWidth,fy=(w.scrollTop+oy)/w.scrollHeight;
   mz=+nz.toFixed(3);svg.style.width=(100*mz)+'%';svg.style.minWidth=(mapMinW()*mz)+'px';w.scrollLeft=fx*w.scrollWidth-ox;w.scrollTop=fy*w.scrollHeight-oy}
 function zoom(d){if(m3On&&M3.ok){M3.dist=Math.max(140,Math.min(1500,M3.dist*(d>0?0.75:1.33)));m3Kick();return}zoomAt(mz+d)}
@@ -6124,7 +6133,43 @@ function fbOpen(f,to,n){if(!myTurn())return;const s=V,x=s.cur,T=s.T[f],D=s.T[to]
   el.innerHTML=`<div class="fbw"><div class="fbtop"><b>${wall?'★':'🎯'} 결전 · ${esc(f)} → ${esc(to)}</b><span id="fbst"></span>${tag}</div>
     <div class="fbmain"><canvas id="fbcv"></canvas><div class="fbside" id="fbside"></div></div></div>`;
   sfx('war');requestAnimationFrame(()=>{fbLayout();fbPlace();itInit(Math.random);fbBg();fbSide();fbLoop()})}
-function fbClose(){BT=null;const el=document.getElementById('fbov');if(el)el.remove();setTimeout(()=>{try{rpKick()}catch(e){}},300)}
+function fbClose(){const c=BT;BT=null;document.getElementById('fbov')?.remove();document.getElementById('fbcv')?.remove();document.body.classList.remove('fbOn');document.querySelector('.mapbox')?.classList.remove('fbnarrow','fbmap');
+  fb3Hide(false);if(c)fbCamOut(c);setTimeout(()=>{try{rpKick()}catch(e){}},300)}
+/* ===== 지도 위 결전: 카메라를 그 땅으로 당기고, 전투는 지도 바로 위 층에 그린다 ===== */
+function fbTopIn(br){let t=0;for(const e of document.querySelectorAll('#hud .mtop,#hud .mleft')){const q=e.getBoundingClientRect();if(q.height>0&&q.height<120&&q.bottom>br.top&&q.top<br.top+130&&getComputedStyle(e).display!=='none')t=Math.max(t,q.bottom-br.top)}return t}
+function fbFree(box,br){const d=document.querySelector('#fbov.fbdock');const t0=fbTopIn(br);const r={x:0,y:t0,w:br.width,h:br.height-t0};
+  // 지도 위에 떠 있는 옆 패널(땅 패널 등)은 피한다
+  for(const e of document.querySelectorAll('#side,#hud .mright,#hud .mleft')){const q=e.getBoundingClientRect();if(q.width<40||q.height<br.height*.4||q.right<=br.left||q.left>=br.right)continue;const cs=getComputedStyle(e);if(cs.display==='none'||cs.visibility==='hidden')continue;
+    if(q.left>br.left+br.width*.45){r.w=Math.min(r.w,q.left-br.left-8-r.x)}else if(q.right<br.left+br.width*.55){const nx=q.right-br.left+8;r.w-=nx-r.x;r.x=nx}}
+  r.w=Math.max(160,r.w);if(!d)return r;const q=d.getBoundingClientRect();
+  if(box.classList.contains('fbnarrow'))r.h=Math.max(120,q.top-br.top-6-r.y);else r.w=Math.max(160,q.left-br.left-6);return r}
+function fbJac(c){const P=MAP.an[c.to];if(!P)return null;const h=(m3On&&typeof M3!=='undefined'&&M3&&M3.ok&&M3.hAt)?M3.hAt(P[0],P[1])+3:0;const s0=mapScr(P[0],P[1],h),s1=mapScr(P[0]+20,P[1],h),s2=mapScr(P[0],P[1]+20,h);if(!s0||!s1||!s2)return null;return{s0,ex:[(s1[0]-s0[0])/20,(s1[1]-s0[1])/20],ey:[(s2[0]-s0[0])/20,(s2[1]-s0[1])/20],P}}
+/* 땅 상자(지도 좌표)의 화면 크기·중심 */
+function fbScrBox(c,br){const J=fbJac(c);if(!J)return null;const[x0,y0,x1,y1]=c.bb;const mx=(x0+x1)/2-J.P[0],my=(y0+y1)/2-J.P[1];
+  return{cx:J.s0[0]+J.ex[0]*mx+J.ey[0]*my-br.left,cy:J.s0[1]+J.ex[1]*mx+J.ey[1]*my-br.top,w:Math.hypot(...J.ex)*(x1-x0),h:Math.hypot(...J.ey)*(y1-y0),J}}
+function fbCamIn(c){c=c||BT;const box=document.querySelector('.mapbox');if(!box)return;const br=box.getBoundingClientRect();const fr=fbFree(box,br);const fit=b=>Math.min(fr.w*.8/Math.max(1,b.w),fr.h*.78/Math.max(1,b.h));
+  if(m3On&&typeof M3!=='undefined'&&M3.ok){const o={x:M3.tgt.x,y:M3.tgt.y,z:M3.tgt.z,d:M3.dist,el:M3.el};c.cam0=o;
+    const[x0,y0,x1,y1]=c.bb;M3.tgt.x=(x0+x1)/2-MAP.W/2;M3.tgt.z=(y0+y1)/2-MAP.H/2;M3.el=Math.max(M3.el,1.12);
+    for(let i=0;i<6;i++){m3Place();const b=fbScrBox(c,br);if(!b)break;M3.dist=Math.max(70,Math.min(1500,M3.dist/fit(b)));m3Place();const b2=fbScrBox(c,br);if(!b2)break;
+      const dx=fr.x+fr.w/2-b2.cx,dy=fr.y+fr.h/2-b2.cy,J=b2.J,det=J.ex[0]*J.ey[1]-J.ex[1]*J.ey[0];if(Math.abs(det)<1e-6)break;const mx=(dx*J.ey[1]-dy*J.ey[0])/det,my=(J.ex[0]*dy-J.ex[1]*dx)/det;M3.tgt.x-=mx;M3.tgt.z-=my}
+    c.camT={x:M3.tgt.x,y:M3.tgt.y,z:M3.tgt.z,d:M3.dist,el:M3.el};Object.assign(M3.tgt,{x:o.x,y:o.y,z:o.z});M3.dist=o.d;M3.el=o.el;m3Place();c.camK=0;return}
+  const w=box.querySelector('.mapwrap');if(!w)return;c.cam0={mz,sl:w.scrollLeft,st:w.scrollTop};
+  for(let i=0;i<3;i++){const b=fbScrBox(c,br);if(!b)break;zoomAt(Math.max(1,Math.min(9,mz*fit(b))),null,null,9);const b2=fbScrBox(c,br);if(!b2)break;w.scrollLeft-=fr.x+fr.w/2-b2.cx;w.scrollTop-=fr.y+fr.h/2-b2.cy}}
+/* 3D: 결전 동안 지도 위 병사·전차 모형은 감춘다(판 위 말과 겹치지 않게) */
+function fb3Hide(on){if(typeof U3==='undefined'||typeof M3==='undefined'||!M3.ok)return;let ch=false;for(const f of U3.figs||[])if(f.root&&f.root.visible===on){f.root.visible=!on;ch=true}for(const im of U3.veh||[])if(im.visible===on){im.visible=!on;ch=true}if(ch)m3Kick()}
+function fbCamStep(dt,c){fb3Hide(true);c=c||BT;if(!c||!c.camT||!(m3On&&M3.ok))return;const T=c.camT;if(c.camK>=1)return;c.camK=Math.min(1,c.camK+dt/.65);const k=1-Math.pow(1-c.camK,3);const A=c.camA||(c.camA={x:M3.tgt.x,y:M3.tgt.y,z:M3.tgt.z,d:M3.dist,el:M3.el});
+  M3.tgt.x=A.x+(T.x-A.x)*k;M3.tgt.y=A.y+(T.y-A.y)*k;M3.tgt.z=A.z+(T.z-A.z)*k;M3.dist=A.d+(T.d-A.d)*k;M3.el=A.el+(T.el-A.el)*k;m3Kick()}
+function fbCamOut(c){const o=c.cam0;if(!o)return;if(o.d!=null&&m3On&&typeof M3!=='undefined'&&M3.ok){const A={x:M3.tgt.x,y:M3.tgt.y,z:M3.tgt.z,d:M3.dist,el:M3.el};let k=0,lt=performance.now();
+    const st=()=>{const now=performance.now();k=Math.min(1,k+(now-lt)/1000/.6);lt=now;const e=1-Math.pow(1-k,3);M3.tgt.x=A.x+(o.x-A.x)*e;M3.tgt.y=A.y+(o.y-A.y)*e;M3.tgt.z=A.z+(o.z-A.z)*e;M3.dist=A.d+(o.d-A.d)*e;M3.el=A.el+(o.el-A.el)*e;m3Kick();if(k<1&&!BT&&!RP)requestAnimationFrame(st)};requestAnimationFrame(st);return}
+  if(o.mz!=null){const w=document.querySelector('.mapbox .mapwrap');zoomAt(o.mz);if(w){w.scrollLeft=o.sl;w.scrollTop=o.st}}}
+/* 가상 판 → 지도 상자 안 화면(CSS px). 땅이 너무 작거나 빈 칸 밖이면 그 자리에서 키워 띄운다(렌즈) */
+function fbAff(c,br,fr){const b=fbScrBox(c,br);let M=null;c.lens=0;
+  if(b){const J=b.J,qx=c.ox/c.sc+J.P[0],qy=c.oy/c.sc+J.P[1];M=[J.ex[0]/c.sc,J.ex[1]/c.sc,J.ey[0]/c.sc,J.ey[1]/c.sc,J.s0[0]-br.left-qx*J.ex[0]-qy*J.ey[0],J.s0[1]-br.top-qx*J.ex[1]-qy*J.ey[1]]}
+  if(!M||!isFinite(M[0]+M[1]+M[2]+M[3]+M[4]+M[5])){const k=Math.min(fr.w*.9/c.W,fr.h*.9/c.H);c.lens=1;return[k,0,0,k,fr.x+fr.w/2-c.W*k/2,fr.y+fr.h/2-c.H*k/2]}
+  let cx=b.cx,cy=b.cy,w=b.w,h=b.h;const need=Math.max(1,Math.min(fr.w*.55/Math.max(1,w),fr.h*.5/Math.max(1,h)));
+  if(need>1.04){M=[M[0]*need,M[1]*need,M[2]*need,M[3]*need,cx+need*(M[4]-cx),cy+need*(M[5]-cy)];w*=need;h*=need;c.lens=1}
+  const tx=fr.w>w+20?Math.max(fr.x+w/2+10,Math.min(fr.x+fr.w-w/2-10,cx)):fr.x+fr.w/2,ty=fr.h>h+20?Math.max(fr.y+h/2+10,Math.min(fr.y+fr.h-h/2-10,cy)):fr.y+fr.h/2;
+  if(Math.hypot(tx-cx,ty-cy)>3){M[4]+=tx-cx;M[5]+=ty-cy;c.lens=1}return M}
 function fbAuto(){if(!BT)return;const{f,to,n}=BT;fbClose();sendAct({k:'go',f,to,n});tgt=null;cnt=0;render()}
 function fbLayout(){const cv=document.getElementById('fbcv');if(!cv)return;const r=cv.getBoundingClientRect();const dpr=Math.min(2,window.devicePixelRatio||1);
   cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);BT.W=r.width;BT.H=r.height;BT.dpr=dpr;
@@ -6411,7 +6456,7 @@ function fbDrawWorld(g,dt,hint){
     else if(f.k==='spark'){g.globalAlpha=a;g.fillStyle='#fff6d6';g.beginPath();g.arc(f.x,f.y,(4+f.t*40)*f.s,0,7);g.fill()}
     else if(f.k==='b'){const q=f.t/f.life;g.globalAlpha=a*.85;g.fillStyle='#ff9a3c';g.beginPath();g.arc(f.x,f.y,FB_R*f.s*(.5+q*.8),0,7);g.fill();g.globalAlpha=a;g.strokeStyle='#ffe2a0';g.lineWidth=4;g.beginPath();g.arc(f.x,f.y,FB_R*f.s*(.6+q*1.1),0,7);g.stroke();g.fillStyle='rgba(80,70,60,.45)';g.beginPath();g.arc(f.x+6,f.y-5,FB_R*f.s*(.3+q*1.4),0,7);g.fill()}}
   g.globalAlpha=1}
-function fbDraw(dt){dt=dt||1/60;const cv=document.getElementById('fbcv');if(!cv||!BT||!BT.bg)return;const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);
+function fbDraw(dt){dt=dt||1/60;if(BT&&BT.onMap)return fbDrawMap(dt);const cv=document.getElementById('fbcv');if(!cv||!BT||!BT.bg)return;const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);
   const sh=BT.shake||0;BT.shake=Math.max(0,sh-dt*40);const ox=(Math.random()-.5)*sh,oy=(Math.random()-.5)*sh;g.drawImage(BT.bg,ox,oy);g.setTransform(BT.dpr,0,0,BT.dpr,ox,oy);
   if(BT.walled){g.save();g.setTransform(BT.dpr*BT.sc,0,0,BT.dpr*BT.sc,BT.dpr*(BT.ox+ox),BT.dpr*(BT.oy+oy));const p=fbPath(BT.to);g.lineWidth=7/BT.sc;g.strokeStyle='rgba(255,179,71,.55)';g.setLineDash([10/BT.sc,6/BT.sc]);g.stroke(p);g.restore();g.setTransform(BT.dpr,0,0,BT.dpr,ox,oy)}
   fbDrawWorld(g,dt,BT.ph==='play'&&BT.ready&&!BT.busy&&!BT.aim);
@@ -6422,9 +6467,41 @@ function fbDraw(dt){dt=dt||1/60;const cv=document.getElementById('fbcv');if(!cv|
   if(BT.banner){const b=BT.banner;b.t+=dt;if(b.t>1.1)BT.banner=null;else{const a=Math.min(1,(1.1-b.t)*2.5),sc=1+Math.max(0,.2-b.t)*1.5;g.globalAlpha=a;g.fillStyle='rgba(20,14,8,.78)';g.fillRect(0,H/2-28,W,56);g.fillStyle=b.side==='A'?'#d9a441':'#c8414f';g.fillRect(0,H/2-28,W,4);
       g.font=`900 ${Math.round(28*sc)}px ${FBD}`;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff3c9';g.fillText(b.txt,W/2,H/2+2);g.textBaseline='alphabetic';g.globalAlpha=1}}
   if(BT.ph==='end'&&BT.endT!=null){BT.endT+=dt;const t=BT.endT,sc=1+Math.max(0,.35-t)*2.2;g.globalAlpha=Math.min(1,t*4);g.font=`900 ${Math.round(64*sc)}px ${FBD}`;g.textAlign='center';g.textBaseline='middle';g.lineWidth=9;g.strokeStyle='rgba(10,6,2,.9)';const txt=BT.win?'돌파!':'저지당함';g.strokeText(txt,W/2,H*.42);g.fillStyle=BT.win?'#7dff9a':'#ff8a6a';g.fillText(txt,W/2,H*.42);g.textBaseline='alphabetic';g.globalAlpha=1}}
+function fbDrawMap(dt){const cv=document.getElementById('fbcv');if(!cv||!BT)return;const box=cv.parentElement;const br=box.getBoundingClientRect();if(br.width<20)return;const dpr=Math.min(2,window.devicePixelRatio||1);
+  const PW=Math.round(br.width*dpr),PH=Math.round(br.height*dpr);if(cv.width!==PW||cv.height!==PH){cv.width=PW;cv.height=PH}const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,PW,PH);
+  const fr=fbFree(box,br);const M0=fbAff(BT,br,fr);BT.M=M0;BT.br=br;const ppu=Math.hypot(M0[0],M0[1])||1;BT.ppu=ppu;
+  const sh=BT.shake||0;BT.shake=Math.max(0,sh-dt*40);const jx=(Math.random()-.5)*sh*.7,jy=(Math.random()-.5)*sh*.7;
+  const M=[M0[0]*dpr,M0[1]*dpr,M0[2]*dpr,M0[3]*dpr,(M0[4]+jx)*dpr,(M0[5]+jy)*dpr];
+  if(!BT.t0)BT.t0=performance.now();const fade=Math.min(1,(performance.now()-BT.t0)/300);
+  fbPaint(g,dpr,M,dt,fade,BT.ph==='play'&&BT.ready&&!BT.busy&&!BT.aim);
+  // 화면 글씨: 땅 둘레 기준
+  g.setTransform(dpr,0,0,dpr,0,0);const ap=(x,y)=>[M0[0]*x+M0[2]*y+M0[4],M0[1]*x+M0[3]*y+M0[5]];const mid=ap(BT.W/2,BT.H/2);const topY=Math.max(fr.y+40,ap(BT.W/2,BT.H*.06)[1]);
+  fbScreenFx(g,dt,fr,mid,topY)}
+/* 지도 위 전장 그리기 (직접 지휘·장군 전투 공용). M = 가상 판 → 캔버스 픽셀 */
+function fbPaint(g,dpr,M,dt,fade,hint){const PW=g.canvas.width,PH=g.canvas.height;const Mm=[M[0]*BT.sc,M[1]*BT.sc,M[2]*BT.sc,M[3]*BT.sc,M[0]*BT.ox+M[2]*BT.oy+M[4],M[1]*BT.ox+M[3]*BT.oy+M[5]];const pu=Math.hypot(Mm[0],Mm[1])||1;
+  const tp=fbPath(BT.to);
+  // 바깥은 어둡게, 싸우는 땅만 밝게 뚫는다
+  g.globalAlpha=.5*fade;g.fillStyle='#070a0e';g.fillRect(0,0,PW,PH);g.globalAlpha=1;g.save();g.setTransform(...Mm);g.globalCompositeOperation='destination-out';g.fill(tp);g.restore();
+  g.save();g.setTransform(...Mm);
+  if(BT.lens){g.shadowColor='rgba(0,0,0,.7)';g.shadowBlur=26*dpr;g.shadowOffsetY=10*dpr;g.fillStyle=BT.winter?'#e3ebef':BT.tr==='m'?'#b9ad8e':BT.tr==='h'?'#c4bd8a':'#d9cfa8';g.fill(tp);g.shadowBlur=0;g.shadowOffsetY=0}
+  else{g.fillStyle=BT.winter?'rgba(236,242,246,.42)':'rgba(246,238,214,.4)';g.fill(tp)}
+  g.lineWidth=3*dpr/pu;g.strokeStyle='#f3e3b0';g.stroke(tp);
+  if(BT.walled){const t=performance.now()/1000;g.lineWidth=7*dpr/pu;g.strokeStyle='rgba(255,170,60,.7)';g.setLineDash([10*dpr/pu,6*dpr/pu]);g.lineDashOffset=-t*14*dpr/pu;g.stroke(tp);g.setLineDash([])}
+  g.restore();
+  if(BT.river&&BT.E){const e=BT.E,[dx,dy]=BT.dir;g.save();g.setTransform(...Mm);g.clip(tp);g.setTransform(...M);g.strokeStyle='rgba(70,150,210,.5)';g.lineWidth=FB_R*1.6;g.beginPath();g.moveTo(e[0]-dy*900-dx*FB_R,e[1]+dx*900-dy*FB_R);g.lineTo(e[0]+dy*900-dx*FB_R,e[1]-dx*900-dy*FB_R);g.stroke();g.restore()}
+  g.save();g.globalAlpha=fade;g.setTransform(...M);fbDrawWorld(g,dt,hint);g.restore();g.globalAlpha=1}
+function fbScreenFx(g,dt,fr,mid,topY){
+  if(BT.combo){const c=BT.combo;c.t+=dt;if(c.t>.9)BT.combo=null;else{const sc=1+Math.max(0,.25-c.t)*2,sz=Math.min(46,24+c.n*3);g.globalAlpha=Math.min(1,(1-c.t/.9)*2);g.font=`900 ${Math.round(sz*sc)}px ${FBD}`;g.textAlign='center';g.lineWidth=6;g.strokeStyle='rgba(20,12,4,.9)';const col=c.n>=6?'#ff4d4d':c.n>=4?'#ff9a3c':'#ffd774';g.strokeText(c.n+'연타!',mid[0],topY);g.fillStyle=col;g.fillText(c.n+'연타!',mid[0],topY);
+      g.font=`700 14px ${FBF}`;g.lineWidth=3;const m='피해 ×'+Math.min(2,1+.1*(c.n-1)).toFixed(1);g.strokeText(m,mid[0],topY+24);g.fillStyle='#fff3c9';g.fillText(m,mid[0],topY+24);g.globalAlpha=1}}
+  fbCycleFx(g,dt,fr.w,fr.h);fbDrawProcs(g,dt,BT.me||'A',fr.x+14,fr.y+fr.h-18,1);fbDrawProcs(g,dt,BT.me==='A'?'D':'A',fr.x+fr.w-14,fr.y+18,-1);
+  if(BT.banner){const b=BT.banner;b.t+=dt;if(b.t>1.1)BT.banner=null;else{const a=Math.min(1,(1.1-b.t)*2.5),sc=1+Math.max(0,.2-b.t)*1.5;g.globalAlpha=a;g.fillStyle='rgba(20,14,8,.78)';g.fillRect(fr.x,mid[1]-28,fr.w,56);g.fillStyle=b.side==='A'?'#d9a441':'#c8414f';g.fillRect(fr.x,mid[1]-28,fr.w,4);
+      g.font=`900 ${Math.round(28*sc)}px ${FBD}`;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff3c9';g.fillText(b.txt,fr.x+fr.w/2,mid[1]+2);g.textBaseline='alphabetic';g.globalAlpha=1}}
+  if(BT.ph==='end'&&BT.endT!=null){BT.endT+=dt;const t=BT.endT,sc=1+Math.max(0,.35-t)*2.2;g.globalAlpha=Math.min(1,t*4);g.font=`900 ${Math.round(64*sc)}px ${FBD}`;g.textAlign='center';g.textBaseline='middle';g.lineWidth=9;g.strokeStyle='rgba(10,6,2,.9)';const txt=BT.win?'돌파!':'저지당함';g.strokeText(txt,mid[0],mid[1]);g.fillStyle=BT.win?'#7dff9a':'#ff8a6a';g.fillText(txt,mid[0],mid[1]);g.textBaseline='alphabetic';g.globalAlpha=1}}
+/* 화면(클라이언트) 좌표 → 가상 판 좌표 */
+function fbPt(e){const M=BT.M,br=BT.br;if(!M||!br)return null;const x=e.clientX-br.left-M[4],y=e.clientY-br.top-M[5],det=M[0]*M[3]-M[1]*M[2];if(Math.abs(det)<1e-9)return null;return[(x*M[3]-y*M[2])/det,(M[0]*y-M[1]*x)/det]}
 function fbLoop(){if(!BT)return;const now=performance.now();const dt=Math.min(.05,BT.lt?(now-BT.lt)/1000:0);BT.lt=now;
   if(BT.ph==='play'&&BT.busy){BT.acc=(BT.acc||0)+dt*(BT.slow>0?.35:1);let n=0;while(BT.acc>=1/120&&n<10){fbStep(BT.W0,1/120,true);BT.acc-=1/120;n++}BT.shotT=(BT.shotT||0)+dt;if(!fbMoving(BT.W0)||BT.shotT>9){BT.busy=false;BT.acc=0;for(const d of BT.discs){d.vx=d.vy=0}fbAfterVol()}}
-  if(BT.slow>0)BT.slow-=dt;fbDraw(dt);requestAnimationFrame(fbLoop)}
+  if(BT.slow>0)BT.slow-=dt;fbCamStep(dt);fbDraw(dt);requestAnimationFrame(fbLoop)}
 function fbFire(i,ax,ay,pw){if(!BT.ready||BT.busy)return;BT.ready=false;BT.useMode=null;const sh=[{i,ax,ay,pw}];const p=BT.pend;BT.pend=null;const uses=[];if(BT.useQ)uses.push({s:BT.me,...BT.useQ});if(BT.aiUse)uses.push(BT.aiUse);
   if(p){let q={i:p.i,ax:Math.cos(p.a),ay:Math.sin(p.a),pw:p.pw};if(BT.useQ&&BT.useQ.k==='smoke'&&!nab(BT.me==='A'?'D':'A','radar'))q=itSmoke(q,Math.random);sh.push(q);const d=BT.discs[p.i];BT.ghost={x:d.x,y:d.y,a:p.a,t:0}}
   BT.useQ=null;BT.aiUse=null;BT.radar=0;BT.W0=fbWorld();BT.busy=true;BT.shotT=0;BT.combo=null;fbApplyUses(BT.W0,uses,true);fbVolley(BT.W0,sh,true);BT.shake=Math.max(BT.shake||0,4+pw*5);try{tone(160,.18,'sawtooth',.06,0,70);tone(120,.2,'sawtooth',.05,.03,60);noiseHit(.25,.2+pw*.15,500)}catch(e){}fbSide()}
@@ -6441,13 +6518,14 @@ function fbCommit(){if(!BT)return;const res=d=>{if(d.hp<=0||d.out==='dead')retur
   const a={k:'fb',f:BT.f,to:BT.to,n:BT.n,win:BT.win?1:0,att:BT.discs.filter(d=>d.side==='A').sort((p,q)=>p.i-q.i).map(res),def:BT.discs.filter(d=>d.side==='D').sort((p,q)=>p.i-q.i).map(res)};
   fbClose();sendAct(a);tgt=null;cnt=0;sel=null;render()}
 /* 조준 입력 */
-document.addEventListener('pointerdown',e=>{if(!BT||BT.ph!=='play'||!BT.ready||BT.busy)return;const cv=document.getElementById('fbcv');if(!cv||e.target!==cv)return;const r=cv.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;
+document.addEventListener('wheel',e=>{if(BT&&BT.onMap&&e.target&&e.target.id==='fbcv')e.preventDefault()},{passive:false});
+document.addEventListener('pointerdown',e=>{if(!BT||BT.ph!=='play'||!BT.ready||BT.busy)return;const cv=document.getElementById('fbcv');if(!cv||e.target!==cv)return;let x,y;if(BT.onMap){const q=fbPt(e);if(!q)return;[x,y]=q}else{const r=cv.getBoundingClientRect();x=e.clientX-r.left;y=e.clientY-r.top}
   if(BT.useMode){e.preventDefault();if(!fbInside(x,y)){toast('판 안쪽을 눌러 주세요');return}const k=BT.useMode,inv=BT.inv[BT.me],i=inv.indexOf(k);if(i>=0)inv.splice(i,1);BT.useQ={k,x,y};BT.useMode=null;sfx('click');fbSide();return}
   let best=-1,bd=1e9;BT.discs.forEach((d,i)=>{if(d.side!==BT.me||d.out||d.hp<=0)return;const dd=Math.hypot(d.x-x,d.y-y);if(dd<d.r+14&&dd<bd){bd=dd;best=i}});if(best<0)return;
   e.preventDefault();BT.aim={i:best,sx:x,sy:y,cx:x,cy:y,id:e.pointerId};sfx('click')},true);
-window.addEventListener('pointermove',e=>{if(!BT||!BT.aim||BT.aim.id!==e.pointerId)return;const cv=document.getElementById('fbcv');const r=cv.getBoundingClientRect();BT.aim.cx=e.clientX-r.left;BT.aim.cy=e.clientY-r.top;e.preventDefault()},{passive:false});
+window.addEventListener('pointermove',e=>{if(!BT||!BT.aim||BT.aim.id!==e.pointerId)return;if(BT.onMap){const q=fbPt(e);if(q){BT.aim.cx=q[0];BT.aim.cy=q[1]}}else{const cv=document.getElementById('fbcv');const r=cv.getBoundingClientRect();BT.aim.cx=e.clientX-r.left;BT.aim.cy=e.clientY-r.top}e.preventDefault()},{passive:false});
 window.addEventListener('pointerup',e=>{if(!BT||!BT.aim||BT.aim.id!==e.pointerId)return;const a=BT.aim;BT.aim=null;const dx=a.sx-a.cx,dy=a.sy-a.cy,L=Math.hypot(dx,dy);if(L<14)return;const pw=Math.min(1,L/140);fbFire(a.i,dx/L,dy/L,pw)});
-window.addEventListener('resize',()=>{if(BT&&BT.ph==='setup'){fbLayout();fbPlace();fbBg()}});
+window.addEventListener('resize',()=>{if(!BT)return;if(BT.onMap){const b=document.querySelector('.mapbox');if(b)b.classList.toggle('fbnarrow',b.clientWidth<760);return}if(BT.ph==='setup'){fbLayout();fbPlace();fbBg()}});
 /* ===== 나라 능력 (군단 튕기기 전투에서만) ===== */
 const NAB={
   DE:[['blitz','⚡ 전격전','기갑 계열 속도 +25%'],['v2','🚀 보복 무기','🚀 미사일 상자 → 50% V2 로켓 · V2가 2부대+ 맞히면 35% ⛽'],['wolf','🐺 늑대 사냥','기갑이 적을 격파하면 50% 추격 돌진 + ⛽ 연료통'],['fuel','✈ 슈투카','⛽ 연료통을 쓰면 기갑 속도 +40%, 처음 들이받은 적에게 슈투카 급강하']],
@@ -6839,7 +6917,9 @@ function rpBegin(f){if(!V||!MAP.an[f.t])return false;const c={S:V,f:f.f,to:f.t,x
   if(!c.E)c.river=false;if(!fbGeo(c))return false;
   c.discs=f.i.map((q,i)=>({i,side:q[0]?'D':'A',t:q[1],x:q[2],y:q[3],hp:q[4],max:q[5],r:q[6],m:q[7],vx:0,vy:0,out:null}));c.obs=(f.ob||[]).map(o=>({x:o[0],y:o[1],r:o[2],k:o[3]}));
   c.items=(f.it||[]).map(q=>({x:q[0],y:q[1],k:q[2]}));c.mines=(f.mn||[]).map(q=>({x:q[0],y:q[1],side:q[2]?'D':'A'}));c.zones=(f.zn||[]).map(q=>({x:q[0],y:q[1],r:q[2]}));c.inv={A:[],D:[]};c.buff={};c.reveal={};c.gid={A:(f.gi||[])[0]||'',D:(f.gi||[])[1]||''};c.gnm={A:f.ga,D:f.gd};c.gfat={A:(f.gf||[])[0]||0,D:(f.gf||[])[1]||0};c.cyc=JSON.parse(JSON.stringify(f.cy||{}));
-  RP={f,c,vi:-1,ph:'in',t:0,lt:0};sfx('war');requestAnimationFrame(rpLoop);return true}
+  RP={f,c,vi:-1,ph:'in',t:0,lt:0};{const sv=BT;BT=c;try{fbCamIn(c)}catch(e){}finally{BT=sv}if(RPcam)c.cam0=RPcam.cam0;else RPcam=c}
+  document.querySelector('.mapbox')?.classList.add('fbmap');sfx('war');requestAnimationFrame(rpLoop);return true}
+let RPcam=null;
 function rpSnap(e){for(let i=0;i<RP.c.discs.length;i++){const d=RP.c.discs[i],q=e[i];if(!q)continue;d.x=q[0];d.y=q[1];d.hp=q[2];d.out=q[3]||null;d.vx=d.vy=0;if(d.hp<=0)d.dead=1}}
 function rpNext(){RP.vi++;RP.t=0;if(RP.vi>=RP.f.v.length){RP.ph='out';sfx(RP.f.c?'cap':'battle');if(RP.f.c)RP.c.shake=14;return}RP.ph='aim';fbBanner(`제${RP.vi+1} 일제 사격 — 동시에!`,'A')}
 function rpLoop(){if(!RP)return;const now=performance.now();const dt=Math.min(.05,RP.lt?(now-RP.lt)/1000:0);RP.lt=now;const c=RP.c,f=RP.f;let done=false;
@@ -6851,7 +6931,7 @@ function rpLoop(){if(!RP)return;const now=performance.now();const dt=Math.min(.0
     else if(RP.ph==='out'&&RP.t>1.7)done=true;
     if(c.slow>0)c.slow-=dt;if(!done)rpDraw(dt)}catch(e){console.error(e);done=true}finally{BT=sv}
   if(done)return rpDone();requestAnimationFrame(rpLoop)}
-function rpDone(){RP=null;const cv=document.querySelector('.mapbox canvas.rpcv');if(cv){const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height)}const b=document.querySelector('.mapbox .rpbar');if(b)b.remove();rpBadges();setTimeout(rpKick,250)}
+function rpDone(){RP=null;document.querySelector('.mapbox')?.classList.remove('fbmap');fb3Hide(false);if(RPcam&&!RPQ.length){const c=RPcam;RPcam=null;setTimeout(()=>{if(!RP&&!BT)fbCamOut(c)},260)}const cv=document.querySelector('.mapbox canvas.rpcv');if(cv){const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height)}const b=document.querySelector('.mapbox .rpbar');if(b)b.remove();rpBadges();setTimeout(rpKick,250)}
 function rpSkip(all){if(all){RPQ=[];try{localStorage.setItem('eu-rpoff','1')}catch(e){}toast('지도 위 전투 연출을 껐습니다 — 땅 패널의 장군 칸에서 다시 켤 수 있어요')}rpDone()}
 function rpToggle(){try{localStorage.setItem('eu-rpoff',rpOff()?'0':'1')}catch(e){}render()}
 function rpLayer(){const box=document.querySelector('.mapbox');if(!box)return null;let cv=box.querySelector('canvas.rpcv');if(!cv){cv=document.createElement('canvas');cv.className='rpcv';box.appendChild(cv)}return cv}
@@ -6872,24 +6952,20 @@ function rpAff(c,br){const P=MAP.an[c.to];let M=null;
 function rpDraw(dt){const cv=rpLayer();if(!cv)return;const box=cv.parentElement;const br=box.getBoundingClientRect();if(br.width<20)return;const dpr=Math.min(2,window.devicePixelRatio||1);
   const W=Math.round(br.width*dpr),H=Math.round(br.height*dpr);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
   const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);rpBar(box);const c=RP.c,f=RP.f;
+  fbCamStep(dt,c);box.classList.add('fbmap');
   const fade=RP.ph==='in'?Math.min(1,RP.t*3):RP.ph==='out'?Math.max(0,1-(RP.t-1.1)*2):1;
-  g.globalAlpha=.42*fade;g.fillStyle='#070a0e';g.fillRect(0,0,W,H);g.globalAlpha=1;
+  const fr=fbFree(box,br);fr.h=Math.max(120,fr.h-56);const M0=fbAff(c,br,fr);
   const sh=c.shake||0;c.shake=Math.max(0,sh-dt*40);const jx=(Math.random()-.5)*sh*.6,jy=(Math.random()-.5)*sh*.6;
-  let M=rpAff(c,br);M=[M[0]*dpr,M[1]*dpr,M[2]*dpr,M[3]*dpr,(M[4]+jx)*dpr,(M[5]+jy)*dpr];
-  const Mm=[M[0]*c.sc,M[1]*c.sc,M[2]*c.sc,M[3]*c.sc,M[0]*c.ox+M[2]*c.oy+M[4],M[1]*c.ox+M[3]*c.oy+M[5]];const ppu=Math.hypot(Mm[0],Mm[1])||1;
-  g.save();g.globalAlpha=fade;g.setTransform(...Mm);const p=fbPath(c.to);
-  g.shadowColor='rgba(0,0,0,.7)';g.shadowBlur=28*dpr;g.shadowOffsetY=10*dpr;g.fillStyle=c.winter?'#dfe8ee':c.tr==='m'?'#8f866f':c.tr==='h'?'#97955f':'#8a9a55';g.fill(p);g.shadowBlur=0;g.shadowOffsetY=0;
-  g.lineWidth=3*dpr/ppu;g.strokeStyle='#f3e3b0';g.stroke(p);g.lineWidth=7*dpr/ppu;g.strokeStyle='rgba(255,90,60,.35)';g.stroke(p);g.restore();
-  g.save();g.globalAlpha=fade;g.setTransform(...M);fbDrawWorld(g,dt,false);g.restore();
-  // 제목 띠 · 일제 사격 알림
-  const ap=(x,y)=>[(M[0]*x+M[2]*y+M[4])/dpr,(M[1]*x+M[3]*y+M[5])/dpr];const top=ap(c.W/2,c.H),mid=ap(c.W/2,c.H/2);
+  const M=[M0[0]*dpr,M0[1]*dpr,M0[2]*dpr,M0[3]*dpr,(M0[4]+jx)*dpr,(M0[5]+jy)*dpr];
+  fbPaint(g,dpr,M,dt,fade,false);
+  const ap=(x,y)=>[M0[0]*x+M0[2]*y+M0[4],M0[1]*x+M0[3]*y+M0[5]];const mid=ap(c.W/2,c.H/2);
   g.setTransform(dpr,0,0,dpr,0,0);g.globalAlpha=fade;const ic=s=>GSTY[s]?GSTY[s].ic+' ':'';
-  const t1=`⚔ ${f.t} 전투 ${f.r}/${f.m}`,t2=`${ic(f.sa)}${f.ga} (${NAT[f.x]?NAT[f.x].n:''})  vs  ${ic(f.sd)}${f.gd}`;
-  g.font=`900 20px ${FBD}`;const w1=Math.max(g.measureText(t1).width,(g.font=`700 13px ${FBF}`,g.measureText(t2).width))+36;const by=Math.min(br.height-108,top[1]+4);
-  g.fillStyle='rgba(18,12,6,.82)';g.fillRect(top[0]-w1/2,by,w1,48);g.fillStyle=MAPC[f.x]||'#d9a441';g.fillRect(top[0]-w1/2,by,w1,3);
-  g.textAlign='center';g.textBaseline='middle';g.font=`900 20px ${FBD}`;g.fillStyle='#fff3c9';g.fillText(t1,top[0],by+18);g.font=`700 13px ${FBF}`;g.fillStyle='#e8dcc0';g.fillText(t2,top[0],by+37);
+  // 작은 이름표: 땅 위쪽에 장군 이름만
+  {const t1=`⚔ ${f.t} ${f.r}/${f.m}`,t2=`${ic(f.sa)}${f.ga}  vs  ${ic(f.sd)}${f.gd}`;g.font=`900 16px ${FBD}`;const w1=Math.max(g.measureText(t1).width,(g.font=`700 12px ${FBF}`,g.measureText(t2).width))+26;
+   const tx=Math.max(fr.x+w1/2+6,Math.min(fr.x+fr.w-w1/2-6,mid[0])),ty=fr.y+8;g.fillStyle='rgba(18,12,6,.72)';g.beginPath();g.roundRect?g.roundRect(tx-w1/2,ty,w1,40,8):g.rect(tx-w1/2,ty,w1,40);g.fill();g.fillStyle=MAPC[f.x]||'#d9a441';g.fillRect(tx-w1/2+8,ty,w1-16,3);
+   g.textAlign='center';g.textBaseline='middle';g.font=`900 16px ${FBD}`;g.fillStyle='#fff3c9';g.fillText(t1,tx,ty+15);g.font=`700 12px ${FBF}`;g.fillStyle='#e8dcc0';g.fillText(t2,tx,ty+31)}
   if(c.banner){const b=c.banner;b.t+=dt;if(b.t>1)c.banner=null;else{const a=Math.min(1,(1-b.t)*3);g.globalAlpha=a*fade;g.font=`900 ${Math.round(24*(1+Math.max(0,.2-b.t)*1.5))}px ${FBD}`;g.lineWidth=6;g.strokeStyle='rgba(15,8,2,.9)';g.strokeText(b.txt,mid[0],mid[1]);g.fillStyle='#ffd774';g.fillText(b.txt,mid[0],mid[1])}}
-  {const bw=br.width,bh=br.height;fbCycleFx(g,dt,bw,bh);fbDrawProcs(g,dt,'A',14,bh-64,1);fbDrawProcs(g,dt,'D',bw-14,64,-1)}
+  g.globalAlpha=fade;fbCycleFx(g,dt,fr.w,fr.h);fbDrawProcs(g,dt,'A',fr.x+14,fr.y+fr.h-18,1);fbDrawProcs(g,dt,'D',fr.x+fr.w-14,fr.y+64,-1);
   if(c.combo){const q=c.combo;q.t+=dt;if(q.t>.8)c.combo=null;else{g.globalAlpha=Math.min(1,(1-q.t/.8)*2)*fade;g.font=`900 ${Math.min(34,20+q.n*3)}px ${FBD}`;g.lineWidth=5;g.strokeStyle='rgba(15,8,2,.9)';g.strokeText(q.n+'연타!',mid[0],mid[1]-40);g.fillStyle=q.n>=4?'#ff9a3c':'#ffd774';g.fillText(q.n+'연타!',mid[0],mid[1]-40)}}
   if(RP.ph==='out'){g.globalAlpha=Math.min(1,RP.t*4)*fade;const r=f.res==='win'?['돌파! 점령','#7dff9a']:f.res==='hold'?['방어 성공','#ffb27a']:f.res==='lose'?['공격군 궤멸','#ff8a6a']:[`${f.r}라운드 종료 · 다음 차례에 계속`,'#fff3c9'];
     g.font=`900 ${f.res?40:22}px ${FBD}`;g.lineWidth=7;g.strokeStyle='rgba(10,6,2,.9)';g.strokeText(r[0],mid[0],mid[1]);g.fillStyle=r[1];g.fillText(r[0],mid[0],mid[1]);
