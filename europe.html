@@ -339,6 +339,8 @@ header.top .sp{flex:1}
 .rpbar button.ghost{opacity:.85;font-weight:500}
 .gpanel{margin:10px 0 0;padding:8px;border:1px dashed var(--line);border-radius:10px}
 .gchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.gcards{display:flex;flex-direction:column;gap:8px}.gcard{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:rgba(128,128,128,.06)}.gcard.on{border-color:#d9a441;box-shadow:inset 0 0 0 1px rgba(217,164,65,.35)}
+.gch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gch b{font-size:14px}.gch button{margin-left:auto}.gcard .gab{color:#b8862e;margin:3px 0}.gfr{display:flex;align-items:center;gap:8px;margin:4px 0 6px}.gfr .gfat{width:90px}.gcard select{width:100%}
 #genL{position:fixed;z-index:25;width:min(270px,calc(100% - 90px));max-height:min(62%,560px);overflow:auto;background:var(--card,#f6efdc);color:var(--ink,#2a2418);border:1px solid rgba(201,162,77,.6);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:2px 8px 8px;animation:fbdk .2s ease-out}
 #genL .gpanel{border:0;margin:0;padding:6px 0 0}#genL .gchip{min-width:0;flex:1 1 calc(50% - 6px)}#genL .lab{display:block;font-weight:700;padding-right:22px}
 #genL .genLx{position:absolute;top:4px;right:6px;border:0;background:none;font-size:18px;line-height:1;cursor:pointer;color:inherit;opacity:.6;padding:2px 4px}
@@ -2826,7 +2828,7 @@ function keyNeed(s,v){if(!polOn(s))return 1;const c=s.N[v]?(s.N[v].conf??POL.con
 function surrenderNow(v,by,why){G.pend={v,by,adv:0,[why]:1};lg(`🏳 ${NAT[v].n} 항복 — ${why==='lc'?'결속도가 낮아 수도 함락과 함께 정부가 무너졌습니다':`핵심 도시 ${keyLost(G,v)}곳을 잃었습니다`}`,v);fx({k:'ls',x:v,t:NAT[v].cap})}
 /* 중립국 수도를 점령하면 그 나라가 항복: 남은 땅을 모두 얻고, 전리품(공업력 = 나라 가치×5)과 수비대 절반(최대 8, 보유 한도 안)을 보병으로 편입 */
 function capture(x,to,units,prev,how){if(genOn(G)&&prev&&prev!==x&&G.N[prev])genLose(prev,to);if(G.N[x]){achG(x,'@tile',1);if(prev&&NAT[prev]&&NAT[prev].cap===to)achG(x,'@capc',1)}const T0=G.T[to];const nc0=prev==='N'&&!T0.reb&&CTRY_OF[to]?CTRY_OF[to]:null;const v0=nc0?ctryValue(G,nc0):0;
-  capture0(x,to,units,prev,how);
+  capture0(x,to,units,prev,how);try{genShiftAll()}catch(e){}
   /* 중립국 항복: 땅 2곳 이하 나라는 수도만 빼앗으면, 큰 나라는 수도 + 땅 절반 이상을 빼앗아야 항복 (그 전엔 끝까지 항전) */
   if(nc0&&G.N[x]&&G.T[to].o===x){const C=CTRY[nc0],cap=C.t[0],tot=C.t.length,left=neuLand(nc0).length;const capGone=G.T[cap].o!=='N';
     if(capGone&&(tot<=2||left<=Math.floor(tot/2)))neuSurrender(nc0,x,to,v0);
@@ -3478,7 +3480,7 @@ function act0(x,a){supTick++;
     ecoBank(x);fx({k:'build',x,t:a.t,u:tp.n});lg(`🎖 ${a.t}에서 「${tp.n}」 편성 (${tpTxt(tp)} · 공업력 -${c})`,x);return}
   if(k==='row'){const T=G.T[a.t];if(!T||T.o!==x)return'내 땅이 아닙니다';if(a.auto){T.u.forEach(u=>{delete u.row});return}const u=T.u[int(a.i)];if(!u)return'부대가 없습니다';if(!ROWS.includes(a.r))return'알 수 없는 줄입니다';u.row=a.r;return}
   if(k==='gen'){if(!genOn(G))return'이 모드에서는 장군을 쓸 수 없습니다';const gm=genN(x);if(!gm||!gm[a.id])return'없는 장군입니다';
-    if(a.t==null){gm[a.id].t=null;gm[a.id].hold=1;return}const T=G.T[a.t];if(!T||T.o!==x)return'내 땅에만 배치할 수 있습니다';for(const id in gm)if(gm[id].t===a.t)gm[id].t=null;gm[a.id].t=a.t;delete gm[a.id].hold;lg(`🎖 ${genDef(x,a.id)[1]} 장군 → ${a.t}`,x);return}
+    if(a.t==null){gm[a.id].t=null;gm[a.id].hold=1;return}const T=G.T[a.t];if(!T||T.o!==x)return'내 땅에만 배치할 수 있습니다';if(!genFront(G,x,a.t))return'장군은 다른 나라와 맞닿은 전선 땅에만 배치할 수 있습니다';for(const id in gm)if(gm[id].t===a.t)gm[id].t=null;gm[a.id].t=a.t;delete gm[a.id].hold;lg(`🎖 ${genDef(x,a.id)[1]} 장군 → ${a.t}`,x);return}
   if(k==='genauto'){if(!genOn(G))return'이 모드에서는 장군을 쓸 수 없습니다';{const gq=genN(x)||{};for(const id in gq)delete gq[id].hold}const n2=genAuto(x);lg(`🎖 장군 자동 배치 (${n2}명 이동)`,x);return}
   if(k==='fb'){const T=G.T[a.f],D=G.T[a.to];if(!T||!D||T.o!==x)return'결전: 출발지가 내 땅이 아닙니다';const n=int(a.n);const o=landOpts(G,x,a.f,n)[a.to];if(!o||!['atk','aatk'].includes(o.k))return'결전: 공격할 수 없는 곳입니다';
     const att=pickAtk(T.u,n),def=D.u.slice();if(!Array.isArray(a.att)||!Array.isArray(a.def)||a.att.length!==att.length||a.def.length!==def.length)return'결전: 부대 구성이 바뀌었습니다 — 다시 시도하세요';
@@ -6861,11 +6863,18 @@ function genAt(s,k){const T=s&&s.T[k];if(!T)return null;const x=T.o;const m=genM
 function genP(g){if(!g)return{sty:'',fat:100,noise:.9,cand:.2,dumb:1,n:'참모진'};const f=g.fat/100;let noise=.03+f*.34;if(g.st==='cau')noise*=.5;return{sty:g.st,fat:g.fat,noise,cand:Math.max(.34,1-f*.66),n:g.n}}
 function genTire(g,k){const m=G.N[g.x]&&G.N[g.x].gen;if(!m||!m[g.id])return;const e=m[g.id];e.fat=Math.min(100,(e.fat||0)+(g.st==='ass'?25:18)*(k||1));e.f2=1}
 function genRest(x){const m=G.N[x]&&G.N[x].gen;if(!m)return;for(const id in m){const e=m[id];e.fat=Math.max(0,(e.fat||0)-(e.f2?4:12));e.f2=0}}
-function genLose(y,k){const m=G.N[y]&&G.N[y].gen;if(!m)return;for(const id in m){const e=m[id];if(e.t!==k)continue;e.t=null;e.fat=Math.min(100,(e.fat||0)+30);const d=genDef(y,id);lg(`🎖 ${NAT[y].n} ${d?d[1]:''} 장군이 ${k}을(를) 잃고 물러났습니다 (피로 +30)`,y)}}
-function genFront(s,x,k){const T=s.T[k];return!!T&&T.o===x&&ADJ[k].some(v=>{const o=s.T[v].o;return o!==x&&o!=='X'&&hostileTo(s,x,v)})}
+function genLose(y,k){const m=G.N[y]&&G.N[y].gen;if(!m)return;for(const id in m){const e=m[id];if(e.t!==k)continue;e.fat=Math.min(100,(e.fat||0)+30);const d=genDef(y,id);lg(`🎖 ${NAT[y].n} ${d?d[1]:''} 장군이 ${k}을(를) 잃고 물러납니다 (피로 +30)`,y)}}
+function genFront(s,x,k){const T=s&&s.T[k];return!!T&&T.o===x&&(ADJ[k]||[]).some(v=>{const o=s.T[v]&&s.T[v].o;return o&&o!==x&&o!=='X'})}
+/* 전선이 바뀌면 장군이 가장 가까운 전선 땅으로 스스로 옮긴다 (점령·전선 이동·땅을 잃었을 때) */
+function genShift(x,quiet){const gm=G.N[x]&&G.N[x].gen;if(!gm)return 0;const taken=new Set(Object.values(gm).map(e=>e.t).filter(k=>k&&genFront(G,x,k)));let n=0;
+  for(const id in gm){const e=gm[id];if(!e.t||genFront(G,x,e.t))continue;const from=e.t;let to=null;const seen=new Set([from]);let q=[from];
+    for(let d=0;d<12&&q.length&&!to;d++){const nq=[];for(const k of q)for(const v of ADJ[k]||[]){if(seen.has(v)||!G.T[v])continue;seen.add(v);if(G.T[v].o!==x&&!(d===0&&G.T[from]&&G.T[from].o!==x))continue;if(genFront(G,x,v)&&!taken.has(v)){to=v;break}nq.push(v)}q=nq;if(to)break}
+    e.t=to;if(to){taken.add(to);n++;if(!quiet){const df=genDef(x,id);lg(`🎖 ${df?df[1]:''} 장군 → ${to} (전선 이동)`,x)}}}
+  return n}
+function genShiftAll(){if(!genOn(G))return;for(const y of ORDER)if(G.N[y]&&G.N[y].gen)genShift(y)}
 /* 자동 배치: 피로가 적은 장군부터, 교전 중인 땅 → 병력이 많은 전선 순으로. 피로 80 이상은 쉬게 한다 */
 function genAuto(x,light){const gm=genN(x);if(!gm)return 0;const pri=k=>(G.btl||[]).some(b=>(b.a===x&&b.src.includes(k))||(b.d===x&&b.to===k))?100:0;
-  const front=Object.keys(G.T).filter(k=>G.T[k].o===x&&G.T[k].u.length&&(genFront(G,x,k)||pri(k))).sort((a,b)=>pri(b)-pri(a)||G.T[b].u.length-G.T[a].u.length);
+  genShift(x,true);const front=Object.keys(G.T).filter(k=>genFront(G,x,k)).sort((a,b)=>pri(b)-pri(a)||G.T[b].u.length-G.T[a].u.length);
   if(!light)for(const id in gm){const e=gm[id];if(e.t&&(!G.T[e.t]||G.T[e.t].o!==x||!front.includes(e.t)||(e.fat>=80&&!pri(e.t))))e.t=null}
   const has=new Set(Object.values(gm).map(e=>e.t).filter(Boolean));const free=Object.keys(gm).filter(id=>!gm[id].t&&gm[id].fat<80&&!(light&&gm[id].hold)).sort((a,b)=>gm[a].fat-gm[b].fat);let n=0;
   for(const k of front){if(!free.length)break;if(has.has(k))continue;gm[free.shift()].t=k;has.add(k);n++}return n}
@@ -6938,6 +6947,7 @@ function borderShift(x){if(!G.N[x]||!['on','puppet'].includes(G.N[x].st))return;
     if(fortLv(T)||fbVP(k)||(NAT[y]&&NAT[y].cap===k)||keyList(G,y).includes(k)||btlOf(G,k)||T.fallout>0)continue;
     const ax=cnt(k,x);if(ax>0&&ax>cnt(k,y))fl.push([k,y])}
   for(const[k,y]of fl){const T=G.T[k];if(T.o!==y||T.u.length)continue;genLose(y,k);T.o=x;T.cr=G.rd;T.reb=null;if(T.rail){T.rw=G.rd+(y==='SU'?2:1)}G.vul=G.vul.filter(e=>e.t!==k);if(G.N[y])G.N[y].lostR=1}
+  if(fl.length)try{genShiftAll()}catch(e){}
   if(fl.length){lg(`🗺 전선 이동 — 빈 땅 ${fl.length}곳이 ${NAT[x].n} 쪽으로 넘어왔습니다: ${fl.map(f=>f[0]).join(', ')}`,x);for(const[k]of fl)fx({k:'cap',x,t:k})}}
 
 /* ===== 지도 위 장군 전투 연출 =====
@@ -7034,11 +7044,24 @@ function genLine(s,k){const g=genAt(s,k);const b=btlOf(s,k)||(s.btl||[]).find(q=
   if(b)h+=`<p class="note gnl" style="color:var(--hot)">⚔ 교전 중: ${esc(b.src.join('·'))} → ${esc(b.to)} · ${b.rd}/${b.max}라운드 (교전 중인 부대는 움직일 수 없음)</p>`;
   if(genOn(s)&&fbVP(k))h+=`<p class="note gnl">★ 승점 도시 — 이곳은 장군에게 맡기지 않고 <b>직접 결전(벽꿍)</b>으로 싸웁니다</p>`;return h}
 function genLeft(){const box=document.querySelector('.mapbox');let el=document.getElementById('genL');if(!box){if(el)el.remove();return}const s=V;const nm=sel&&sel.startsWith('L:')?sel.slice(2):null;
-  const ok=s&&s.ph==='play'&&nm&&s.T[nm]&&myTurn()&&s.T[nm].o===s.cur&&genOn(s)&&GENS[s.cur]&&!BT;
+  const ok=s&&s.ph==='play'&&nm&&s.T[nm]&&myTurn()&&s.T[nm].o===s.cur&&genOn(s)&&GENS[s.cur]&&!BT&&genFront(s,s.cur,nm);
   if(!ok){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='genL';document.body.appendChild(el)}
   const br=box.getBoundingClientRect();const narrow=innerWidth<600;el.classList.toggle('nar',narrow);
   if(narrow){el.style.left=el.style.top=''}else{let lx=10;for(const e of document.querySelectorAll('#hud .mgems')){const q=e.getBoundingClientRect();if(q.width>0&&q.left<br.left+120)lx=Math.max(lx,q.right-br.left+8)}
     el.style.left=(br.left+lx)+'px';el.style.top=(br.top+fbTopIn(br)+8)+'px'}const h=`<button class="genLx" onclick="sel=null;tgt=null;render()" aria-label="닫기">×</button>`+genPanel(nm);if(el._h!==h){el._h=h;el.innerHTML=h}}
+/* 메뉴 › 장군 탭: 장군 전원 한눈에 · 전선 땅으로 배치 */
+function genGo(k){sel='L:'+k;tgt=null;if(typeof mobSheet!=='undefined')mobSheet=null;render()}
+function genTab(x,myT){const s=V;if(!genOn(s)||!GENS[x])return'<p class="note">이 모드에서는 장군이 없습니다.</p>';const m=genMap(s,x);
+  const fr=Object.keys(s.T).filter(k=>genFront(s,x,k)).sort((a,b)=>(btlOf(s,b)?1:0)-(btlOf(s,a)?1:0)||s.T[b].u.length-s.T[a].u.length||a.localeCompare(b,'ko'));
+  const who=k=>{for(const id in m)if(m[id].t===k){const d=genDef(x,id);return d?d[1]:''}return''};
+  const card=id=>{const d=genDef(x,id),e=m[id];if(!d)return'';const st=GSTY[d[2]];const f=Math.round(e.fat||0);const col=f>=70?'#c8414f':f>=40?'#d9a441':'#5fae5a';
+    const opts=`<option value="">대기 (배치 안 함)</option>`+fr.map(k=>{const w=who(k);return`<option value="${esc(k)}"${e.t===k?' selected':''}>${esc(k)} · ${s.T[k].u.length}부대${btlOf(s,k)?' ⚔':''}${w&&e.t!==k?' · '+esc(w):''}</option>`}).join('');
+    return`<div class="gcard${e.t?' on':''}"><div class="gch"><b>${st.ic} ${esc(d[1])}</b><span class="note">${st.n}</span>${e.t?`<button class="sm ghost" onclick="genGo('${esc(e.t)}')">📍 ${esc(e.t)}</button>`:'<span class="note">대기 중</span>'}</div>
+      ${GAB[id]?`<div class="note gab">★ ${esc(gabTxt(id))}</div>`:''}<div class="gfr"><span class="gfat"><i style="width:${f}%;background:${col}"></i></span><span class="note">피로 ${f}${f>=80?' · 쉬어야 해요':''}</span></div>
+      <select ${myT?'':'disabled'} onchange="sendAct({k:'gen',id:'${id}',t:this.value||null})">${opts}</select></div>`};
+  return`<p class="note">장군은 <b>다른 나라(중립국 포함)와 맞닿은 전선 땅</b>만 지휘합니다. 땅을 점령해 전선이 앞으로 나가면 장군도 <b>가장 가까운 새 전선으로 스스로 옮겨요</b>. 장군이 없는 전선은 참모진이 지휘하는데 매우 서툴러요.</p>
+    <div class="row" style="margin:6px 0">${myT?`<button class="sm" onclick="sendAct({k:'genauto'})">🎖 자동 배치</button>`:''}<button class="sm ghost" onclick="rpToggle()">🎬 지도 위 전투 연출: ${rpOff()?'끔':'켬'}</button><span class="note">전선 ${fr.length}곳 · 장군 ${Object.values(m).filter(e=>e.t).length}/${Object.keys(m).length}명 배치</span></div>
+    <div class="gcards">${Object.keys(m).map(card).join('')}</div>`}
 function genPanel(nm){const s=V,x=s.cur;if(!genOn(s)||!GENS[x])return'';const m=genMap(s,x);const here=genAt(s,nm);
   const chip=id=>{const d=genDef(x,id),e=m[id];const st=GSTY[d[2]];const tired=e.fat>=70;return`<button class="gchip${e.t===nm?' on':''}${tired?' tired':''}" title="${esc(st.n+' — '+st.d+(GAB[id]?' / ★ '+gabTxt(id):''))}" onclick="sendAct({k:'gen',id:'${id}',t:${e.t===nm?'null':`'${nm}'`}})"><b>${st.ic} ${esc(d[1])}</b>${GAB[id]?`<small class="gab">${esc(GAB[id][0])}</small>`:''}<small>${e.t?(e.t===nm?'여기 · 해임':esc(e.t)):'대기'} · 피로 ${Math.round(e.fat)}</small></button>`};
   return`<div class="gpanel"><span class="lab">🎖 장군 ${here?`— ${esc(here.n)} 지휘 중`:'— 이 땅의 전투를 맡길 장군'}</span><div class="gchips">${Object.keys(m).map(chip).join('')}</div>
@@ -7217,7 +7240,7 @@ function mobRender(s,mn,myT){const H=document.getElementById('hud');const on=mob
   const modes=md('toggleRes()',resImg('oil','mresimg'),'자원',resView)+md('toggleSup()','📦','보급',supView)+md('toggleFlag()',mn?`<span class="mmflag" style="background-image:url('${flagURL(mn)}')"></span>`:'🚩',flagView?(flagMine?'내 국기':'국기'):'국기',flagView)+md('toggleStrat()','♟','전략',strat)+md('m3Toggle()','⛰','3D',typeof m3On!=='undefined'&&m3On)+md('toggleNight()',night?'☀':'☾',night?'낮':'야경',night);
   /* 아래: 메뉴 */
   let bi=0;const bt=(f,i,l,a,b)=>`<button class="mmode mnav${a?' on':''}" data-snd="umenu" style="--i:${bi++}" onclick="${f}"><i>${i}</i><span>${l}</span>${b?`<s>${b}</s>`:''}</button>`;
-  const NT=[['rs','🔬','연구','air'],['focus','🎯','중점','focus'],['bp','📐','설계도','up'],['gov','🏛','내정','gov'],['air','✈','공군','air'],['front','🧭','전선']].filter(t=>!t[3]||tutOn(s,t[3]));
+  const NT=[['rs','🔬','연구','air'],['focus','🎯','중점','focus'],['bp','📐','설계도','up'],['gov','🏛','내정','gov'],['air','✈','공군','air'],['front','🧭','전선'],['gen','🎖','장군','@gen']].filter(t=>t[3]==='@gen'?genOn(s)&&mn&&GENS[mn]:!t[3]||tutOn(s,t[3]));
   const tabs=mn&&n?bt('lensToggle();render()','🏗','건설',buildLens!==null)+bt('mobProd()','🏭','생산',mobSheet==='act'&&tab==='act'&&sel&&V.T[sel.slice(2)]&&V.T[sel.slice(2)].f)+NT.map(([k,i,l])=>bt(`mobOpen('nat','${k}')`,i,l,mobSheet==='nat'&&ntab===k)).join(''):'';
   /* 오른쪽 아래: 결재(턴 종료) 카드 + 빠른 명령 */
   const cur=s.cur;const turnN=s.ph!=='play'?'':myT?'':`${NAT[cur].n} 차례${s.seats[cur]==='ai'?' · 컴퓨터':''}`;
@@ -7499,7 +7522,7 @@ function pactPanel(x,myT,others){const s=V,n=s.N[x];const P=pactOf(s,x);const po
 function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=facOf(s,x);
   const LDx=ldOf(s,x);let h=`<div class="nathead"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${emb(x)}${NAT[x].n}${LDx?` <span class="ldpill" data-tip="${esc(`<div class='th'>${LEAD_ICON[LDx]} ${LEAD[LDx].n}</div>`+ldTraits(LDx).map(t=>`<div class='${t.bad?'tbad':''}'>${t.bad?'▼':'▲'} <b>${t.n}</b> ${t.d}</div>`).join(''))}">${LEAD_ICON[LDx]} ${esc(LEAD[LDx].n)}</span>`:''}</h2><span class="pill">${n.st==='puppet'?NAT[n.m].n+'의 괴뢰국':n.st==='on'?affName(s,x):n.st==='annexed'?'병합됨':'몰락'}</span></div>
   <p class="note">💰 공업력 ${n.r} · 🏭 공업력 +${income(s,x)}/턴 · 영토 ${landCount(s,x)}</p>${eraOn(s)?`<p class="note">🕰 ${eraName(eraOf(s.rd))} 시대 (${eraLeft(s.rd)}라운드 남음) · 지지율 <b>${n.app??APP0}</b>${n.age?` · ${AGE[n.age].i} <b>${AGE[n.age].n}</b>`:''}</p>`:''}${keyRule(s)&&KEYC[x]&&['on','puppet'].includes(n.st)?`<p class="note" title="결속도 30 미만: 수도 함락 즉시 항복 · 30~49: 결사항전, 수도(1곳)를 잃으면 항복 · 50~69: 2곳 · 70 이상: 3곳">🏛 핵심 도시 ${(KEYC[x].concat(x==='FR'&&has(s,'FR','freefr')?['알제']:[])).map(k=>`${s.T[k]&&s.T[k].o===x?'✓':'✗'} ${k}${NAT[x].cap===k?'★':''}`).join(' · ')} — ${lowConf(s,x)?'<b style="color:var(--hot)">결속도 30 미만: 수도를 잃으면 결사항전 없이 바로 항복</b>':`결속도 ${cfv(s,x)}: 결사항전 + 핵심 도시 <b>${keyNeed(s,x)}곳</b>을 잃으면 항복`}</p>`:''}${capMeter(s,x)}
-  </div><div class="tabs ntabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],['trait','지도자·특성']].filter(([k])=>tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
+  </div><div class="tabs ntabs" style="margin-top:8px">${[['focus','중점'],['rs','연구'],['bp','설계도'],['era','시대'],['gov','내정'],['air','공군'],['dip','외교'+(pactIn().length?' ('+pactIn().length+')':'')],['trade','거래'+(incoming().length?' ('+incoming().length+')':'')],['front','전선'],...(genOn(s)&&GENS[x]?[['gen','장군']]:[]),['trait','지도자·특성']].filter(([k])=>k==='gen'||tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[k])&&(k!=='era'||eraOn(s))).map(([k,l])=>`<button class="sm ${ntab===k?'act':''}" onclick="ntab='${k}';render()">${l}</button>`).join('')}</div>`;
   if(!tutOn(s,{focus:'focus',gov:'gov',air:'air',rs:'air',bp:'up'}[ntab]))ntab='dip';
   if(ntab==='focus'){const fp=n.fp||0,up=n.up||{};
     h+=`<div class="sheet" style="margin:0 0 10px;padding:10px 12px;border-color:var(--gold)"><div class="row" style="justify-content:space-between"><span class="lab" style="margin:0">병기창 · 중점 포인트</span><span class="stat" style="font-size:18px;color:var(--gold)">${fp} FP</span></div>
@@ -7520,6 +7543,7 @@ function natPanel(x){const s=V,n=s.N[x];const myT=myTurn()&&s.cur===x;const fac=
     h+=`<span class="lab" style="margin-top:10px">동맹 지원 (이번 턴 ${n.sent}/${sendMax(s,x)})</span>`+(mates.length?`<div class="row"><select id="sendTo">${mates.map(y=>`<option value="${y}">${NAT[y].n}</option>`).join('')}</select><input id="sendAmt" type="number" min="1" max="${sendMax(s,x)}" value="${Math.max(1,Math.min(5,sendMax(s,x)-n.sent))}" style="width:70px" aria-label="금액"><button class="sm" ${myT?'':'disabled'} onclick="sendAct({k:'send',to:$('#sendTo').value,amt:$('#sendAmt').value})">보내기</button></div>`:'<p class="note">같은 진영이나 연합군에 속한 나라가 있어야 공업력을 보낼 수 있습니다.</p>')}
   else if(ntab==='trade')h+=tradePanel(x);
   else if(ntab==='front')h+=frontPanel(x,myT);
+  else if(ntab==='gen')h+=genTab(x,myT);
   else if(ntab==='gov')h+=govPanel(x,myT);
   else if(ntab==='air')h+=airPanel(x,myT);
   else if(ntab==='rs')h+=rsPanel(x,myT);
