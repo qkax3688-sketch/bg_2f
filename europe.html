@@ -339,6 +339,9 @@ header.top .sp{flex:1}
 .rpbar button.ghost{opacity:.85;font-weight:500}
 .gpanel{margin:10px 0 0;padding:8px;border:1px dashed var(--line);border-radius:10px}
 .gchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#ctxm{position:fixed;z-index:90;min-width:210px;background:#141d29;color:#eee;border:1px solid rgba(201,162,77,.6);border-radius:10px;padding:4px;box-shadow:0 10px 28px rgba(0,0,0,.45);animation:fbdk .12s ease-out}
+#ctxm .ctxh{font:700 12px var(--f-sans,sans-serif);color:#d9c79a;padding:6px 10px 4px}#ctxm button{display:block;width:100%;text-align:left;background:none;border:0;color:#fff3c9;font:700 14px var(--f-sans,sans-serif);padding:9px 10px;border-radius:7px;cursor:pointer}#ctxm button:hover{background:rgba(255,255,255,.08)}#ctxm small{display:block;font-weight:500;font-size:11px;color:#bfb49a;margin-top:2px}
+#fdl{position:absolute;inset:0;z-index:28;cursor:crosshair;touch-action:none}#fdl canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#fdl .fdh{position:absolute;left:50%;top:76px;transform:translateX(-50%);background:rgba(20,14,8,.85);color:#fff3c9;padding:8px 12px;border-radius:10px;font-size:13px;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35)}#fdl .fdh button{margin-left:8px}
 .gcards{display:flex;flex-direction:column;gap:8px}.gcard{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:rgba(128,128,128,.06)}.gcard.on{border-color:#d9a441;box-shadow:inset 0 0 0 1px rgba(217,164,65,.35)}
 .gch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gch b{font-size:14px}.gch button{margin-left:auto}.gcard .gab{color:#b8862e;margin:3px 0}.gfr{display:flex;align-items:center;gap:8px;margin:4px 0 6px}.gfr .gfat{width:90px}.gcard select{width:100%}
 #genL{position:fixed;z-index:25;width:min(270px,calc(100% - 90px));max-height:min(62%,560px);overflow:auto;background:var(--card,#f6efdc);color:var(--ink,#2a2418);border:1px solid rgba(201,162,77,.6);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:2px 8px 8px;animation:fbdk .2s ease-out}
@@ -542,6 +545,7 @@ body.fbOn #genL,body.rpOn #genL,body:not(.ingame) #genL{display:none}
 .optg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}.optg label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mute)}.optg select{color:var(--ink)}
 .simnow{margin:4px 0;padding:8px 10px;border-radius:8px;background:var(--line);font-weight:600;min-height:20px}.simt{width:100%;border-collapse:collapse;font-size:13px}.simt td{padding:3px 4px;border-bottom:1px solid var(--line)}
 .offarr.wgo .ab{stroke-dasharray:9 6;animation:wgdash 1s linear infinite}@keyframes wgdash{to{stroke-dashoffset:-15}}.wgn circle{stroke:#fff;stroke-width:2}.wgn text{font:800 11px var(--f-sans,sans-serif);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:2px}
+.goalarr .gw{fill:none;stroke:rgba(255,255,255,.85);stroke-width:7;stroke-linecap:round}.goalarr .gb{fill:none;stroke:#1f5f9e;stroke-width:3.4;stroke-linecap:round;stroke-dasharray:7 6;animation:wgdash 1.2s linear infinite}.goalarr polygon{fill:#1f5f9e;stroke:#fff;stroke-width:1.6;paint-order:stroke}.goalarr circle{fill:#1f5f9e;stroke:#fff;stroke-width:1.6}.goalarr text{font:800 10px var(--f-sans,sans-serif);fill:#fff}
 .offarr .ao{fill:none;stroke:rgba(0,0,0,.5);stroke-width:12;stroke-linecap:round}.offarr .aw{fill:none;stroke:#fff;stroke-width:9;stroke-linecap:round}.offarr .ab{fill:none;stroke-width:5.5;stroke-linecap:round}.offarr polygon{stroke:#fff;stroke-width:2;paint-order:stroke;filter:drop-shadow(0 0 1.5px rgba(0,0,0,.7))}.offarr{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}.offarr.ally .ab{stroke-dasharray:12 7}.offarr.ally{opacity:.8}
 .rl{stroke:rgba(30,20,10,.75);stroke-width:3.2;stroke-linecap:round}.rt{stroke:#E8DCC0;stroke-width:1.3;stroke-dasharray:2.5 2.5}.rl.on{stroke:#3A2A10}.rt.on{stroke:#FFD36B}.porti{font-size:12px;fill:#1E3A5A}
 .supt{font:700 11px var(--f-body,sans-serif);text-anchor:middle;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.75);stroke-width:3px}
@@ -3414,6 +3418,10 @@ function act0(x,a){supTick++;
   if(k==='arrowdel'){G.arr=(G.arr||[]).filter(q=>!(q.x===x&&(a.id==null||q.id===int(a.id))));return}
   if(k==='port'){const T=G.T[a.t];if(!T||T.o!==x)return'내 땅이 아닙니다';if(!CS[a.t].length)return'바다와 맞닿은 땅에만 항구를 지을 수 있습니다';if(T.port)return'이미 항구가 있습니다';{const w=facRoom(G,T);if(w)return w}if(a.probe)return;const pc=portCost(G,x);if(n.r<pc)return`공업력 ${pc}이 필요합니다`;
     n.r-=pc;T.port=1;lg(`⚓ ${a.t}에 항구 건설 (공업력 -${pc})`,x);fx({k:'build',x,t:a.t,u:'항구'});return}
+  if(k==='march'){const F=G.T[a.f],to=a.to,T=G.T[to];if(!F||F.o!==x)return'내 땅에서 출발해야 합니다';if(!T||T.o!==x)return'여러 턴에 걸친 이동은 내 땅으로만 걸 수 있어요 (적 땅은 공세선을 그으세요)';if(to===a.f)return'같은 땅입니다';
+    const hd=hopDist(G,x,to);if(hd[a.f]==null)return'우리 땅으로 이어진 길이 없습니다';const us=F.u.filter(u=>u.cbt==null&&!u.a);if(!us.length)return'움직일 수 있는 부대가 없습니다';
+    const nn=Math.max(1,Math.min(us.length,int(a.n)||us.length));const pick=us.sort((p,q)=>q.mv-p.mv||q.hp-p.hp).slice(0,nn);for(const u of pick){u.goal=to;u.gd=u.d?1:0;delete u.gw}
+    const r=advanceUnits(x);lg(`➜ 이동 명령: ${a.f} → ${to} ${nn}부대 (${hd[a.f]}칸 · 이번 턴 도착 ${r.arrived}, 나머지는 턴을 끝낼 때마다 이어서 이동)`,x);fx({k:'mv',x,f:a.f,t:to});return}
   if(k==='deploy'){const T=G.T[a.f];if(!T||T.o!==x)return'내 땅을 고르세요';const ts=[...new Set((a.ts||[]).filter(q=>G.T[q]&&G.T[q].o===x))];if(!ts.length)return'배치할 땅을 하나 이상 고르세요';
     const us=T.u.filter(u=>u.mv>0&&!u.a);if(!us.length)return'이번 턴에 움직일 수 있는 부대가 없습니다';const nn=Math.max(1,Math.min(us.length,int(a.n)||us.length));
     const pick=us.sort((p,q)=>q.mv-p.mv||q.hp-p.hp).slice(0,nn);const ps=new Set(pick);
@@ -4307,7 +4315,7 @@ function hostAct(pid,a){
 /* ── 실행 취소 (호스트 전용 스냅숏 스택) ──
    이동·생산·건설·중점·업그레이드처럼 '나만 아는' 행동만 되돌릴 수 있다.
    전투·공습·첩보·핵·선전포고·지원·거래·턴 종료처럼 운이 섞이거나 정보가 드러나거나 남에게 영향을 주는 행동 뒤에는 그 이전으로 돌아갈 수 없다. */
-const UNDO_OK=new Set(['port','deploy','front','arrow','arrowdel','ccamp','hub','toatk','todef','spread','go','build','up','tok','heal','lab','fort','pop','emerg','air','focus','fac']);const UNDO_MAX=40;let UNDO=[];
+const UNDO_OK=new Set(['port','deploy','march','front','arrow','arrowdel','ccamp','hub','toatk','todef','spread','go','build','up','tok','heal','lab','fort','pop','emerg','air','focus','fac']);const UNDO_MAX=40;let UNDO=[];
 const UNDO_KEEP=['seats','on','nk','fx','fxn','opts','te','trades','achq','achn','achd'];
 function undoSnap(){const o={};for(const k in G)if(!UNDO_KEEP.includes(k)&&k!=='undoN')o[k]=G[k];return{cur:G.cur,rd:G.rd,s:JSON.stringify(o)}}
 function undoAct(x){const u=UNDO[UNDO.length-1];if(!u||u.cur!==G.cur||u.rd!==G.rd){UNDO=[];G.undoN=0;return'되돌릴 행동이 없습니다'}
@@ -5547,7 +5555,7 @@ function updateMap(opts){setTimeout(()=>{resLegSync();lensSync()},0);const s=dis
     if((o.k==='amv'||o.k==='aatk')&&from){const c=curve(from,anc(k),.18);h+=`<path d="${c.d}" class="amph ${atk?'a':''}"/>`}}}
   if(airMode&&myTurn()){for(const t of airTargets(s,s.cur,airMode.sk))h+=`<path class="hl-air" d="${MAP.sh[t]}"/>`}
   if(nukeMode&&myTurn()){for(const a of LAND){if(s.T[a[0]].o!=='X')h+=`<path class="hl-nuke" d="${MAP.sh[a[0]]}"/>`}}
-  {const me=myNat();const tm=me?teamOf(s,me):null;let ah='';for(const A of s.arr||[]){if(!s.sim&&(!tm||teamOf(s,A.x)!==tm))continue;ah+=arrowSVG(A,me)}if(s.wg&&s.wg.ph==='plan')for(const o of s.wg.ord||[])ah+=wgArrowSVG(o,me);const ga=document.getElementById('gArr');if(ga&&ga.innerHTML!==ah)ga.innerHTML=ah;if(fdraw){for(const k of fdraw.ts)if(MAP.sh[k])h+=`<path class="hl-front" d="${MAP.sh[k]}"/>`;if(MAP.sh[fdraw.f])h+=`<path class="hl-sel" d="${MAP.sh[fdraw.f]}"/>`}if(arrowMode&&arrowMode.f&&MAP.sh[arrowMode.f])h+=`<path class="hl-sel" d="${MAP.sh[arrowMode.f]}"/>`}
+  {const me=myNat();const tm=me?teamOf(s,me):null;let ah='';for(const A of s.arr||[]){if(!s.sim&&(!tm||teamOf(s,A.x)!==tm))continue;ah+=arrowSVG(A,me)}if(s.wg&&s.wg.ph==='plan')for(const o of s.wg.ord||[])ah+=wgArrowSVG(o,me);ah+=goalSVG(s,me);const ga=document.getElementById('gArr');if(ga&&ga.innerHTML!==ah)ga.innerHTML=ah;if(fdraw){for(const k of fdraw.ts)if(MAP.sh[k])h+=`<path class="hl-front" d="${MAP.sh[k]}"/>`;if(MAP.sh[fdraw.f])h+=`<path class="hl-sel" d="${MAP.sh[fdraw.f]}"/>`}if(arrowMode&&arrowMode.f&&MAP.sh[arrowMode.f])h+=`<path class="hl-sel" d="${MAP.sh[arrowMode.f]}"/>`}
   if(tgt&&MAP.an[tgt]){const[x,y]=MAP.an[tgt];h+=`<g transform="translate(${x},${y})" class="xhair"><circle r="17"/><path d="M-24 0h11M13 0h11M0-24v11M0 13v11"/></g>`}
   document.getElementById('gHl').innerHTML=h;{const fp=document.getElementById('flagPat');if(fp){const f=flagView?flagPatSVG(s):'';if(fp._v!==f){fp.innerHTML=f;fp._v=f}}}document.getElementById('gLbl').innerHTML=strat?'':labelsSVG();{const lg=document.getElementById('stratLeg');if(lg)lg.innerHTML=strat?stratLeg(s):''}
   const svg=document.getElementById('gmap');svg.style.width=(100*mz)+'%';svg.style.minWidth=(760*mz)+'px';
@@ -6075,7 +6083,7 @@ function udDraw(){let ov=document.getElementById('udov');if(!UD){if(ov)ov.innerH
   s+=`<g transform="translate(${(e[0]+16).toFixed(1)},${(e[1]-18).toFixed(1)})"><rect x="0" y="-15" rx="9" height="26" width="${Math.max(80,I.lab.length*11.5+18)}" class="udlb" style="stroke:${col}"/><text x="9" y="3" class="udlt">${esc(I.lab)}</text></g>`;
   ov.innerHTML=s}
 function udDrop(e){const D=UD;UD=null;if(D&&D.lp)clearTimeout(D.lp);udDraw();if(!D)return;
-  if(!D.moved){if(D.mode==='fr'){udEnd=Date.now();return}   /* 그냥 누르고 뗌 = 보통 클릭 */
+  if(!D.moved){if(D.mode==='fr'){udEnd=Date.now();if(e&&!D.sea&&V&&myTurn()&&V.T[D.f]&&V.T[D.f].o===V.cur&&V.T[D.f].u.length)ctxOpen(D.f,e.clientX,e.clientY);return}   /* 오른쪽 클릭(휴대폰은 길게 누름) 후 그냥 뗌 = 전선·공세선 메뉴 */
     if(m3On&&e)try{m3Click(e)}catch(err){}return}
   udEnd=Date.now();const I=udInfo(D);
   if(D.mode==='fr'){if(!I.ok){sel=null;render();return}sendAct({k:'deploy',f:D.f,ts:I.ts,n:I.n});sfx('spread');toast(`🧭 ${D.f}의 ${I.n}부대를 전선 ${I.ts.length}곳에 나눠 보냅니다`);sel=null;cnt=0;render();return}
@@ -7080,6 +7088,32 @@ function fdrawSheet(){if(!fdraw||!myTurn())return'';const T=V.T[fdraw.f];if(!T||
    <p class="note" style="margin:4px 0">지도에서 내 땅을 눌러 전선에 넣거나 빼세요 (주황). 고른 땅마다 고르게 나뉘어 배치되고, 이번 턴에 못 간 부대는 턴을 끝낼 때마다 스스로 이어서 갑니다.</p>
    ${cntPicker(T.u)}<p style="margin:6px 0">고른 땅 <b>${fdraw.ts.length}</b>곳 · 한 곳에 약 ${per}부대</p>
    <div class="row"><button class="sm ghost" onclick="fdrawAuto()">적 국경 자동 선택</button><button class="sm ghost" onclick="fdraw.ts=[];render()">지우기</button><button class="sm ${fdraw.ts.length?'':'ghost'}" ${fdraw.ts.length?'':'disabled'} onclick="fdrawGo()">배치</button><button class="sm ghost" onclick="fdraw=null;render()">취소</button></div></div>`}
+let ctxT=0;
+function tileAtPt(cx,cy){if(typeof m3On!=='undefined'&&m3On&&M3&&M3.ok){const p=m3PickAt(cx,cy);return p&&p[0]==='L'?p[1]:null}
+  for(const e of document.elementsFromPoint(cx,cy)){if(e.id&&/^tp\d+$/.test(e.id))return LAND[+e.id.slice(2)][0]}return null}
+function ctxClose(){document.getElementById('ctxm')?.remove()}
+function ctxOpen(nm,cx,cy){ctxClose();const el=document.createElement('div');el.id='ctxm';el.innerHTML=`<div class="ctxh">${esc(nm)} · ${V.T[nm].u.length}부대</div><button onclick="ctxFront('${esc(nm)}')">🧭 전선 긋기<small>드래그해서 지나간 내 땅에 나눠 배치</small></button><button onclick="ctxArrow('${esc(nm)}')">➹ 공세선 긋기<small>목표 적 땅을 누르세요</small></button>`;
+  document.body.appendChild(el);const w=el.offsetWidth,h=el.offsetHeight;el.style.left=Math.max(6,Math.min(innerWidth-w-6,cx))+'px';el.style.top=Math.max(6,Math.min(innerHeight-h-6,cy))+'px';sfx('click');ctxT=Date.now()}
+function ctxArrow(nm){ctxClose();fdraw=null;arrowMode={f:nm};sel=null;tgt=null;render();toast('➹ 공세선: 목표 적 땅을 누르세요')}
+function ctxFront(nm){ctxClose();arrowMode=null;sel='L:'+nm;tgt=null;fdraw={f:nm,ts:[]};render();fdDragOn()}
+document.addEventListener('pointerdown',e=>{const m=document.getElementById('ctxm');if(m&&!m.contains(e.target))ctxClose()},true);
+document.addEventListener('contextmenu',e=>{if(!V||V.ph!=='play'||BT||(typeof UD!=='undefined'&&UD))return;const box=document.querySelector('.mapbox');if(!box||!box.contains(e.target)||e.target.closest('button,#genL,.fbdock'))return;
+  const nm=tileAtPt(e.clientX,e.clientY);if(!nm||!myTurn()||V.T[nm].o!==V.cur||!V.T[nm].u.length)return;e.preventDefault();e.stopPropagation();ctxOpen(nm,e.clientX,e.clientY)},true);
+/* 휴대폰: 길게 누르면 같은 메뉴 */
+{let lp=null;document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!V||V.ph!=='play'||BT)return;const box=document.querySelector('.mapbox');if(!box||!box.contains(e.target)||e.target.closest('button,#genL,.fbdock,#fdl'))return;if(typeof udChipAt==='function'&&udChipAt(e))return;
+  const x0=e.clientX,y0=e.clientY;clearTimeout(lp&&lp.t);lp={x0,y0,t:setTimeout(()=>{lp=null;if(typeof UD!=='undefined'&&UD)return;const nm=tileAtPt(x0,y0);if(!nm||!myTurn()||V.T[nm].o!==V.cur||!V.T[nm].u.length)return;ctxOpen(nm,x0,y0);if(navigator.vibrate)try{navigator.vibrate(15)}catch(e){}},560)}},true);
+ const stop=e=>{if(lp&&(e.type!=='pointermove'||Math.hypot(e.clientX-lp.x0,e.clientY-lp.y0)>10)){clearTimeout(lp.t);lp=null}};addEventListener('pointermove',stop,true);addEventListener('pointerup',stop,true);addEventListener('pointercancel',stop,true)}
+/* 전선 긋기: 지도 위 투명한 층에서 드래그 — 지나간 내 땅을 전선으로 고르고, 손을 떼면 바로 배치 */
+function fdDragOn(){const box=document.querySelector('.mapbox');if(!box)return;document.getElementById('fdl')?.remove();const L=document.createElement('div');L.id='fdl';L.innerHTML='<canvas></canvas><div class="fdh">🧭 <b>전선 긋기</b> — 지도를 드래그해서 선을 그으세요 · 손을 떼면 배치 <button onclick="fdDragOff(1)">취소</button></div>';box.appendChild(L);
+  const cv=L.querySelector('canvas');let pts=[],on=false;const x=V.cur;
+  const size=()=>{const r=L.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);cv.width=r.width*d;cv.height=r.height*d;return{r,d}};let S=size();
+  const draw=()=>{const g=cv.getContext('2d');g.setTransform(S.d,0,0,S.d,0,0);g.clearRect(0,0,cv.width,cv.height);if(pts.length<2)return;g.lineCap=g.lineJoin='round';g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=9;g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();g.strokeStyle='#c8414f';g.lineWidth=4.5;g.setLineDash([10,7]);g.stroke();g.setLineDash([])};
+  const add=(cx,cy)=>{const nm=tileAtPt(cx,cy);if(nm&&V.T[nm]&&V.T[nm].o===x&&fdraw&&!fdraw.ts.includes(nm)){fdraw.ts.push(nm);sfx('click');try{updateMap(curOpts())}catch(e){}}};
+  L.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;e.preventDefault();on=true;S=size();pts=[[e.clientX-S.r.left,e.clientY-S.r.top]];L.setPointerCapture(e.pointerId);add(e.clientX,e.clientY);draw()});
+  L.addEventListener('pointermove',e=>{if(!on)return;const p=[e.clientX-S.r.left,e.clientY-S.r.top],q=pts[pts.length-1];const n=Math.ceil(Math.hypot(p[0]-q[0],p[1]-q[1])/6);for(let i=1;i<=n;i++){const t=i/n;add(S.r.left+q[0]+(p[0]-q[0])*t,S.r.top+q[1]+(p[1]-q[1])*t)}pts.push(p);draw()});
+  const end=e=>{if(!on)return;on=false;if(fdraw&&fdraw.ts.length){fdDragOff();sel=null;tgt=null;fdrawGo()}else{pts=[];draw()}};L.addEventListener('pointerup',end);L.addEventListener('pointercancel',end)}
+function fdDragOff(cancel){document.getElementById('fdl')?.remove();if(cancel){fdraw=null;render()}}
+addEventListener('keydown',e=>{if(e.key==='Escape'){ctxClose();if(document.getElementById('fdl'))fdDragOff(1)}});
 function arrowClick(nm){if(!myTurn()){arrowMode=null;return false}const x=V.cur;
   if(!arrowMode.f){if(V.T[nm].o!==x){toast('출발지로 내 땅을 고르세요');return true}arrowMode={f:nm};render();return true}
   if(nm===arrowMode.f){arrowMode={};render();return true}
@@ -7088,6 +7122,14 @@ function wgArrowSVG(o,me){const a=anc(o.f),b=anc(o.to);if(!a||!b)return'';const 
   if(o.at!=null&&V&&V.wg&&V.wg.rt){const now=rtNow(V),f=Math.max(0,Math.min(1,(now-o.t0)/Math.max(.1,o.at-o.t0)));const p=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f-4],q=[b[0],b[1]-4];const sp=V.wg.sp||0;const dur=sp?Math.max(.05,(o.at-now)*RT_DAY/sp/1000):0;
     return g+`<g class="wgn rtm" transform="translate(${p[0].toFixed(1)},${p[1].toFixed(1)})">${dur?`<animateTransform attributeName="transform" type="translate" from="${p[0].toFixed(1)} ${p[1].toFixed(1)}" to="${q[0].toFixed(1)} ${q[1].toFixed(1)}" dur="${dur.toFixed(2)}s" fill="freeze"/>`:''}<circle r="10" style="fill:${MAPC[o.x]}"/><text y="4.2" text-anchor="middle">${o.n}</text></g>`}
   return g+`<g class="wgn" transform="translate(${m[0].toFixed(1)},${(m[1]-4).toFixed(1)})"><circle r="10" style="fill:${MAPC[o.x]}"/><text y="4.2" text-anchor="middle">${o.n}</text></g>`}
+/* 목표(u.goal)가 남은 부대: 지금 땅 → 목표 땅 점선 화살표 + 부대 수 */
+function goalSVG(s,me){if(!me||!s.T)return'';const g={};for(const k in s.T){const T=s.T[k];if(!T||T.o!==me)continue;for(const u of T.u)if(u.goal&&u.goal!==k){const id=k+'>'+u.goal;g[id]=(g[id]||0)+1}}
+  let h='';const f=v=>v.toFixed(1);for(const id in g){const[a0,b0]=id.split('>');const a=anc(a0),b=anc(b0);if(!a||!b)continue;const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
+    const s0=[a[0]+ux*8,a[1]+uy*8],e=[b[0]-ux*13,b[1]-uy*13];const cx=(s0[0]+e[0])/2+uy*L*.1,cy=(s0[1]+e[1])/2-ux*L*.1;const tx=e[0]-cx,ty=e[1]-cy,tl=Math.hypot(tx,ty)||1,hx=tx/tl,hy=ty/tl,W=6,H=11;
+    const d=`M${f(s0[0])},${f(s0[1])}Q${f(cx)},${f(cy)} ${f(e[0])},${f(e[1])}`;const head=`${f(e[0]+hx*H)},${f(e[1]+hy*H)} ${f(e[0]-hy*W)},${f(e[1]+hx*W)} ${f(e[0]+hy*W)},${f(e[1]-hx*W)}`;
+    const mx=.25*s0[0]+.5*cx+.25*e[0],my=.25*s0[1]+.5*cy+.25*e[1];
+    h+=`<g class="goalarr"><path d="${d}" class="gw"/><path d="${d}" class="gb"/><polygon points="${head}"/><circle cx="${f(mx)}" cy="${f(my)}" r="8"/><text x="${f(mx)}" y="${f(my+3.6)}" text-anchor="middle">${g[id]}</text><title>${a0} → ${b0}: ${g[id]}부대 이동 중 (턴을 끝낼 때마다 이어서 이동)</title></g>`}
+  return h}
 function arrowSVG(A,me){const a=anc(A.f),b=anc(A.t);if(!a||!b)return'';const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
   const s0=[a[0]+ux*10,a[1]+uy*10],e=[b[0]-ux*15,b[1]-uy*15];const cx=(s0[0]+e[0])/2-uy*L*.14,cy=(s0[1]+e[1])/2+ux*L*.14;
   const tx=e[0]-cx,ty=e[1]-cy,tl=Math.hypot(tx,ty)||1,hx=tx/tl,hy=ty/tl,W=8,H=14;const f=v=>v.toFixed(1);
@@ -7144,9 +7186,10 @@ function curOpts(){if(airMode||nukeMode)return null;if(!myTurn()||!sel)return nu
   const S=V.S[nm];if(S.o!==x)return null;return seaOpts(V,x,nm,effCnt(S.u,pickMv))}
 function eligible(us){return us.filter(u=>u.mv>0).length}
 function effCnt(us){const e=eligible(us);if(!e)return 1;return cnt>0?Math.min(cnt,e):e}
-function clkL(i){if(!V||V.ph==='lobby')return;const nm=LAND[i][0];if(buildLens){if(!buildLens){toast('먼저 지을 시설을 고르세요');return}const x=myNat();if(!myTurn()){toast('내 차례에 지을 수 있습니다');return}if(V.T[nm].o!==x){toast('내 영토가 아닙니다');return}const w=lensOk(V,x,buildLens,nm);if(w){toast(w);sfx('bad');return}sendAct({k:buildLens,t:nm});setTimeout(()=>{updateMap(curOpts())},60);return}if(trMine()&&trMapClick(nm))return;if(fdraw&&fdrawClick(nm))return;if(arrowMode&&arrowClick(nm))return;if(airClick(nm))return;const o=curOpts();
+function clkL(i){if(!V||V.ph==='lobby')return;if(Date.now()-ctxT<700)return;const nm=LAND[i][0];if(buildLens){if(!buildLens){toast('먼저 지을 시설을 고르세요');return}const x=myNat();if(!myTurn()){toast('내 차례에 지을 수 있습니다');return}if(V.T[nm].o!==x){toast('내 영토가 아닙니다');return}const w=lensOk(V,x,buildLens,nm);if(w){toast(w);sfx('bad');return}sendAct({k:buildLens,t:nm});setTimeout(()=>{updateMap(curOpts())},60);return}if(trMine()&&trMapClick(nm))return;if(fdraw&&fdrawClick(nm))return;if(arrowMode&&arrowClick(nm))return;if(airClick(nm))return;const o=curOpts();
   if(o&&o[nm]&&sel[0]==='L'){const k=o[nm].k;if(k==='mv'||k==='amv'||k==='vul'){const f=selName();const n=effCnt(V.T[f].u);sendAct({k:'go',f,to:nm,n});if(n>=eligible(V.T[f].u))sel='L:'+nm;cnt=0;tgt=null;render();return}
     tgt=nm;sfx(tileSnd(V.T[nm].u));render();return}
+  if(sel&&sel[0]==='L'&&myTurn()&&sel!=='L:'+nm){const f=selName(),x=V.cur,F=V.T[f];if(F&&F.o===x&&V.T[nm].o===x&&eligible(F.u)){const hd=hopDist(V,x,nm);if(hd[f]!=null){sendAct({k:'march',f,to:nm,n:effCnt(F.u)});sfx('click');sel=null;tgt=null;cnt=0;render();return}}}
   if(sel==='L:'+nm){sel=null;tgt=null;render();return}
   sfx(tileSnd(V.T[nm].u));sel='L:'+nm;tgt=null;cnt=0;tab='act';render()}
 function clkS(i){const nm=SEA[i][0];if(airClick(nm))return;const o=curOpts();
